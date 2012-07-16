@@ -1,0 +1,78 @@
+<html>
+<head>	
+
+  <meta name="viewport" content="initial-scale=1.0">
+
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.21/themes/base/jquery-ui.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="http://static.jquery.com/ui/css/demo-docs-theme/ui.theme.css" type="text/css" media="all" />
+
+  <script src="jquery-1.7.2.min.js"></script>
+  <script src="jquery-ui-1.8.21.custom.min.js"></script>
+  <script src="test-user-autocomplete.js"></script>
+	
+  <style>
+    .ui-menu .ui-menu-item a { 
+        padding: 4px 6px 4px 6px !important; 
+        line-height: 1 !important;
+    }
+    .ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active {
+        padding: 3px 5px !important; 
+        margin: 0 !important;
+    }
+    .ui-menu .ui-menu-item.odd { background: #F7EDD8; }
+    .ui-widget { font-family: arial !important; font-size: 1em !important; }
+    .ui-autocomplete-loading { background: white url('ui-anim_basic_16x16.gif') right center no-repeat; }
+    .details { font-size: 80% }
+    .match { font-weight: bold; }
+    .kind { 
+        color: #2E5693; 
+        font-variant: small-caps;
+        font-weight: bold;
+        font-size: 80%;
+        margin: 0.1em;
+        padding-top: 0.1em; 
+        border-top: dotted 1px;
+    }
+    .kind:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+   .xxstrikethrough {
+        display: block;
+        background: url(http://snook.ca/img/code-bookmark.png) no-repeat;
+        left: -18px;
+        position: absolute;
+        width: 20px;
+        //height: 41px;
+    }
+    li { display: block;  float: none !important; }
+        .ui-autocomplete { left: 20px !important; }
+
+
+    @media (max-width:600px)  {
+        .ui-autocomplete { 
+              width: 100% !important;
+              left: 0 !important;
+              padding: 0 !important;
+              border: none !important;
+        }
+        .ui-menu .ui-menu-item a { 
+              padding: 2px 35px 2px 2px !important; 
+              background: url(listArrow.png) no-repeat right center !important
+        }
+        .ui-menu .ui-menu-item a.ui-state-hover, .ui-menu .ui-menu-item a.ui-state-active {
+              padding: 1px 35px 1px 1px !important; 
+        }
+    }
+
+  </style>
+</head>
+<body>
+<p>FOO <p>FOO <p>FOO <p>FOO <p>FOO <p>FOO 
+
+
+  <div class="ui-widget">
+    <label for="foo">Cherchez une personne</label>
+    <input id="foo" />
+  </div>
+</body>
+</html>
+

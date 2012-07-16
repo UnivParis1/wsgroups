@@ -1,0 +1,262 @@
+<?php
+
+$DEBUG = 0;
+
+require ('./config.inc.php');
+
+function GET_ldapFilterSafe($name) {
+    return ldap_escape_string($_GET[$name]);
+}
+function GET_or_NULL($name) {
+  return isset($_GET[$name]) ? $_GET[$name] : NULL;
+}
+
+function GET_uid() {
+  return isset($_SERVER["HTTP_CAS_USER"]) ? $_SERVER["HTTP_CAS_USER"] : ''; // CAS-User
+}
+
+function people_filters($token) {
+    $r = array("(&(uid=$token)(!(supannListeRouge=TRUE)))");
+    if (strlen($token) > 3) 
+	// too short strings are useless
+	$r[] = "(&(eduPersonAffiliation=*)(|(displayName=*$token*)(cn=*$token*))(!(supannListeRouge=TRUE)))";
+    return $r;
+}
+function groups_filters($token) {
+  return array("(cn=$token)", "(|(description=*$token*)(ou=*$token*))");
+}
+function structures_filters($token) {
+  return array("(supannCodeEntite=$token)", "(&(|(description=*$token*)(ou=*$token*))(supannCodeEntite=*))");
+}
+function diploma_filters($token) {
+  return array("(ou=$token)", "(description=*$token*)");
+}
+function member_filter($uid) {
+  global $PEOPLE_DN;
+  return "member=uid=$uid,$PEOPLE_DN";
+}
+function responsable_filter($uid) {
+  global $PEOPLE_DN;
+  return "(|(supannGroupeAdminDN=uid=$uid,$PEOPLE_DN)(supannGroupeLecteurDN=uid=$uid,$PEOPLE_DN))";
+}
+function seeAlso_filter($cn) {
+  global $GROUPS_DN;
+  return "seeAlso=cn=$cn,$GROUPS_DN";
+}
+
+function getUserGroups($uid) {
+    $groups = getGroupsFromGroupsDn(array(member_filter($uid)));
+
+    global $PEOPLE_DN;
+    $attrs = identiqueMap(array("supannEntiteAffectation", "eduPersonOrgUnitDN"));
+    $attrs["eduPersonAffiliation"] = "MULTI";
+    $user = getFirstLdapInfo($PEOPLE_DN, "(uid=$uid)", $attrs);
+    if (!$user) return $groups;
+
+    if (isset($user["supannEntiteAffectation"])) {
+	$key = $user["supannEntiteAffectation"];
+	$groups_ = getGroupsFromStructuresDn(array("(supannCodeEntite=$key)"), 1);
+	$groups = array_merge($groups, $groups_);
+    }
+    if (isset($user["eduPersonOrgUnitDN"])) {
+      $key = $user["eduPersonOrgUnitDN"];
+      $groups_ = getGroupsFromDiplomaDn(array("(entryDN=$key)"), 1);
+      $groups = array_merge($groups, $groups_);
+    }
+    if (isset($user["eduPersonAffiliation"])) {
+      global $AFFILIATION2TEXT;
+      foreach ($user["eduPersonAffiliation"] as $affiliation) {
+	if (isset($AFFILIATION2TEXT[$affiliation])) {
+	  $name = "Tous les " . $AFFILIATION2TEXT[$affiliation];
+	  $groups[] = array("key" => "affiliation-" . $affiliation, 
+			    "name" => $name, "description" => $name);
+	}
+      }
+    }
+
+    return $groups;
+}
+
+function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
+  global $GROUPS_DN, $GROUPS_ATTRS;
+  $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit);
+  foreach ($r as &$map) {
+      $map["rawKey"] = $map["key"];
+      $map["key"] = "groups-" . $map["key"];
+  }
+  return $r;
+}
+
+function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
+    global $STRUCTURES_DN, $STRUCTURES_ATTRS;
+    $r = getLdapInfoMultiFilters($STRUCTURES_DN, $filters, $STRUCTURES_ATTRS, "key", $sizelimit);
+    foreach ($r as &$map) {
+      $map["rawKey"] = $map["key"];
+      $map["key"] = "structures-" . $map["key"];
+    }
+    return $r;
+}
+
+function getGroupsFromDiplomaDn($filters, $sizelimit = 0) {
+    global $DIPLOMA_DN, $DIPLOMA_ATTRS;
+    $r = getLdapInfoMultiFilters($DIPLOMA_DN, $filters, $DIPLOMA_ATTRS, "key", $sizelimit);
+    foreach ($r as &$map) {
+	$map["rawKey"] = $map["key"];
+	$map["name"] = removePrefix($map["description"], $map["rawKey"] . " - ");
+	$map["key"] = "diploma-" . $map["key"];
+    }
+    return $r;
+}
+
+function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField, $sizelimit = 0) {
+  $rr = array();
+  foreach ($filters as $filter) {
+    $rr[] = getLdapInfo($base, $filter, $attributes_map, $sizelimit);
+  }
+  return mergeArraysNoDuplicateKeys($rr, $uniqueField);
+}
+
+function getFirstLdapInfo($base, $filter, $attributes_map) {
+  $r = getLdapInfo($base, $filter, $attributes_map, 1);
+  return $r ? $r[0] : NULL;
+}
+
+function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0) {
+  global $DEBUG;
+
+  $before = microtime(true);
+
+  $ds = global_ldap_open();
+
+  if ($DEBUG) error_log("searching $base for $filter");
+  $search_result = @ldap_search($ds, $base, $filter, array_keys($attributes_map), 0, $sizelimit);
+  $all_entries = ldap_get_entries($ds, $search_result);
+  if ($DEBUG) error_log("found " . $all_entries['count'] . " results");
+
+  unset($all_entries["count"]);
+  $r = array();  
+  foreach ($all_entries as $entry) {
+    $map = array();
+    foreach ($attributes_map as $ldap_attr => $attr) {
+      $ldap_attr_ = strtolower($ldap_attr);
+      if (isset($entry[$ldap_attr_])) {
+	$vals = $entry[$ldap_attr_];
+	if ($attr == "MULTI") {
+	  // no remapping, but is multi-valued attr
+	  unset($vals["count"]);
+	  $map[$ldap_attr] = $vals;
+	} else {
+	  $map[$attr] = $vals["0"];
+	}
+      }
+    }
+    $r[] = $map;
+  }
+
+  //echo sprintf("// Elapsed %f\t%3d answers for $filter on $base\n", $before - microtime(true), count($r));
+
+  return $r;
+}
+
+function global_ldap_open() {
+    global $ldapDS;
+    if (!$ldapDS) {
+	global $LDAP_HOST, $LDAP_BIND_DN, $LDAP_BIND_PASSWORD;
+	$ldapDS = ldap_connect($LDAP_HOST);
+	if (!$ldapDS) exit("error: connection to $LDAP_HOST failed");
+
+	if (!ldap_bind($ldapDS,$LDAP_BIND_DN,$LDAP_BIND_PASSWORD)) exit("error: failed to bind using $LDAP_BIND_DN");
+    }
+    return $ldapDS;
+}
+
+function ensure_ldap_close() {
+    global $ldapDS;
+    if ($ldapDS) {
+      ldap_close($ldapDS);
+      $ldapDS = NULL;
+    }
+}
+
+function echoJson($array) {
+  ensure_ldap_close();
+  header('Content-type: application/json; charset=UTF-8');
+  if (isset($_GET["callback"]))
+    echo $_GET["callback"] . "(" . json_encode($array) . ");";
+  else
+    echo json_encode($array);  
+}
+
+function identiqueMap($list) {
+    $map = array();
+    foreach ($list as $e) $map[$e] = $e;
+    return $map;
+}
+
+function mergeArraysNoDuplicateKeys($rr, $uniqueField) {
+    $keys = array();
+    $r = array();
+    foreach ($rr as $one_array) {
+	foreach ($one_array as $e) {
+	    $key = $e[$uniqueField];
+	    if (isset($keys[$key])) continue;
+	    $keys[$key] = 1;
+	    $r[] = $e;
+	}
+    }
+    return $r;
+}
+
+function exact_match_first($r, $token) {
+    $exact = array();
+    $i = 0;
+    while ($i < count($r)) {
+	$e = $r[$i];
+	if (in_array($token, array_values($e))) {
+	    $exact[] = $e;
+	    array_splice($r, $i, 1);
+	} else {
+	    $i++;
+	}
+    }
+    return array_merge($exact, $r);
+}
+
+// after exact_match_first, rawKey can be safely removed: it is used for search token=matiXXXXX, "key" will contain groups-matiXXXXXX and won't match. "rawKey" will match!
+function remove_rawKey(&$r) {
+    foreach ($r as &$e) {
+	unset($e["rawKey"]);
+    }
+}
+
+function startsWith($hay, $needle) {
+  return substr($hay, 0, strlen($needle)) === $needle;
+}
+
+function removePrefix($s, $prefix) {
+    return startsWith($s, $prefix) ? substr($s, strlen($prefix)) : $s;
+}
+function removePrefixOrNULL($s, $prefix) {
+    return startsWith($s, $prefix) ? substr($s, strlen($prefix)) : NULL;
+}
+
+function error($msg) {
+   header("HTTP/1.0 400 $msg");
+   echo("// $msg\n");
+}
+
+// taken more mantisbt
+function ldap_escape_string( $p_string ) {
+  $t_find = array( '\\', '*', '(', ')', '/', "\x00" );
+  $t_replace = array( '\5c', '\2a', '\28', '\29', '\2f', '\00' );
+
+  $t_string = str_replace( $t_find, $t_replace, $p_string );
+
+  return $t_string;
+}
+
+function mayRemap($map, $k) {
+  return isset($map[$k]) ? $map[$k] : $k;
+}
+
+?>

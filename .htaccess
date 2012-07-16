@@ -1,0 +1,15 @@
+<FilesMatch "^(searchUser|searchUserCAS)$">
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+<FilesMatch "\.inc\.php$">
+    Order allow,deny
+</FilesMatch>
+
+<FilesMatch "^(searchUserCAS)$">
+    Order allow,deny
+    Allow from all
+    AuthType CAS
+    require valid-user
+</FilesMatch>
+
