@@ -1,0 +1,25 @@
+<?php // -*-PHP-*-
+require ('./common.inc.php');
+
+$key = GET_ldapFilterSafe("key");
+
+$all_groups = array();
+if ($cn = removePrefixOrNULL($key, "groups-")) {
+  $all_groups = getGroupsFromGroupsDn(array(seeAlso_filter($cn)));
+} else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+  $ou = "ou=$supannCodeEntite," . $ALT_STRUCTURES_DN;
+  $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
+  $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
+  $all_groups = array_merge($diploma, $groups);
+} else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
+  $ou = "ou=$diploma," . $DIPLOMA_DN;
+  $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
+  $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
+  $all_groups = array_merge($diploma, $groups);
+} else {
+  error("invalid group key $key");
+}
+remove_rawKey($all_groups);
+echoJson($all_groups);
+
+?>

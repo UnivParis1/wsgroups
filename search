@@ -1,0 +1,19 @@
+<?php // -*-PHP-*-
+
+require ('./common.inc.php');
+
+$token = GET_ldapFilterSafe("token");
+$maxRows = min(GET_or_NULL("maxRows"), 10);
+
+$users = getLdapInfoMultiFilters($PEOPLE_DN, people_filters($token), $PEOPLE_ATTRS, "uid", $maxRows);
+$groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
+$structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows);
+$diploma = getGroupsFromDiplomaDn(diploma_filters($token), $maxRows);
+$all_groups = array_merge($groups, $structures, $diploma);
+
+$all_groups = exact_match_first($all_groups, $token);
+remove_rawKey($all_groups);
+
+echoJson(array("users" => $users, "groups" => $all_groups));
+
+?>

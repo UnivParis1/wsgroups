@@ -1,0 +1,10 @@
+<?php
+
+require ('./common.inc.php');
+
+$uid = GET_ldapFilterSafe("uid");
+
+$groups = getUserGroups($uid);
+echoJson($groups);
+
+?>

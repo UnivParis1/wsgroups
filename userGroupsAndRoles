@@ -1,0 +1,18 @@
+<?php
+
+require ('./common.inc.php');
+
+$uid = GET_ldapFilterSafe("uid");
+
+$groups = getUserGroups($uid);
+foreach ($groups as &$g) {
+  $g["role"] = "";
+}
+$groups2 = getGroupsFromGroupsDn(array(responsable_filter($uid)));
+remove_rawKey($groups2);
+foreach ($groups2 as &$g) {
+  $g["role"] = "Responsable";
+}
+echoJson(array_merge($groups, $groups2));
+
+?>

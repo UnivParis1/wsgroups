@@ -1,0 +1,38 @@
+<?php // -*-PHP-*-
+
+require ('./common.inc.php');
+
+$structures = getLdapInfoMultiFilters($STRUCTURES_DN, array("(supannCodeEntite=*)"), $STRUCTURES_ATTRS, "key");
+
+$roles = getLdapInfoMultiFilters($ROLE_GENERIQUE_DN, array("(supannRoleGenerique=*)"), $ROLE_GENERIQUE_ATTRS, "key");
+
+$etablissements = getLdapInfoMultiFilters($ETABLISSEMENT_TABLE_DN, array("(supannEtablissement=*)"), $ETABLISSEMENT_TABLE_ATTRS, "key");
+
+gen(array('structureKeyToShortname' => $structures,
+	  'roleGeneriqueKeyToShortname' => $roles,
+	  'etablissementKeyToShortname' => $etablissements));
+
+function list2map($r) {
+  $map = array();
+  foreach ($r as $e) {
+    if (isset($e["name"]))
+      $map[$e["key"]] = $e["name"];
+  }
+  return $map;
+}
+
+function gen($l) {
+
+  echo "<?php\n\n";
+
+  foreach ($l as $name => $list) {
+    echo '$' . $name . ' = ';
+    var_export(list2map($list));
+    echo ";\n\n";
+  }
+
+echo "?>\n"; 
+
+}
+
+?>
