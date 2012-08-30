@@ -53,25 +53,19 @@ function getUserGroups($uid) {
     $user = getFirstLdapInfo($PEOPLE_DN, "(uid=$uid)", $attrs);
     if (!$user) return $groups;
 
-    if (isset($user["supannEntiteAffectation"])) {
-	$key = $user["supannEntiteAffectation"];
-	$groups_ = getGroupsFromStructuresDn(array("(supannCodeEntite=$key)"), 1);
-	$groups = array_merge($groups, $groups_);
-    }
     if (isset($user["eduPersonOrgUnitDN"])) {
       $key = $user["eduPersonOrgUnitDN"];
       $groups_ = getGroupsFromDiplomaDn(array("(entryDN=$key)"), 1);
       $groups = array_merge($groups, $groups_);
     }
+    if (isset($user["supannEntiteAffectation"])) {
+	$key = $user["supannEntiteAffectation"];
+	$groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntite=$key)"), 1);
+	$groups = array_merge($groups, $groupsStructures);
+    }
     if (isset($user["eduPersonAffiliation"])) {
-      global $AFFILIATION2TEXT;
-      foreach ($user["eduPersonAffiliation"] as $affiliation) {
-	if (isset($AFFILIATION2TEXT[$affiliation])) {
-	  $name = "Tous les " . $AFFILIATION2TEXT[$affiliation];
-	  $groups[] = array("key" => "affiliation-" . $affiliation, 
-			    "name" => $name, "description" => $name);
-	}
-      }
+      $groups_ = getGroupsFromAffiliations($user["eduPersonAffiliation"], $groupsStructures);
+      $groups = array_merge($groups, $groups_);
     }
 
     return $groups;
@@ -106,6 +100,37 @@ function getGroupsFromDiplomaDn($filters, $sizelimit = 0) {
 	$map["key"] = "diploma-" . $map["key"];
     }
     return $r;
+}
+
+function getGroupsFromAffiliations($affiliations, $groupsStructures) {
+  $r = array();
+  foreach ($affiliations as $affiliation) {
+    global $AFFILIATION2TEXT;
+    if (isset($AFFILIATION2TEXT[$affiliation])) {
+      $r = array_merge($r, getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures));
+
+      $text = $AFFILIATION2TEXT[$affiliation];
+      $name = "Tous les " . $text;
+      $r[] = array("key" => "affiliation-" . $affiliation, 
+		   "name" => $name, "description" => $name);
+    }
+  }
+  return $r;
+}
+
+function getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures) {
+  $r = array();
+  if ($groupsStructures && ($affiliation == "student" || $affiliation == "faculty")) {
+    global $AFFILIATION2TEXT;
+    $text = $AFFILIATION2TEXT[$affiliation];
+    $suffix = " (" . $text . ")";
+    foreach ($groupsStructures as $group) {
+      $r[] = array("key" => $group["key"] . "-affiliation-" . $affiliation, 
+		   "name" => $group["name"] . $suffix, 
+		   "description" => $group["description"] . $suffix);
+    }
+  }
+  return $r;
 }
 
 function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField, $sizelimit = 0) {
