@@ -7,6 +7,10 @@ $all_groups = array();
 if ($cn = removePrefixOrNULL($key, "groups-")) {
   $all_groups = getGroupsFromGroupsDn(array(seeAlso_filter($cn)));
 } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+
+  // handle key like structures-U05-affiliation-student:
+  $supannCodeEntite = preg_replace("/-affiliation-.*/", "", $supannCodeEntite);
+
   $ou = "ou=$supannCodeEntite," . $ALT_STRUCTURES_DN;
   $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
   $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
@@ -16,6 +20,9 @@ if ($cn = removePrefixOrNULL($key, "groups-")) {
   $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
   $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
   $all_groups = array_merge($diploma, $groups);
+} else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
+  $groupsStructures = getGroupsFromStructuresDn(array("(businessCategory=pedagogy)"));
+  $all_groups = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
 } else {
   error("invalid group key $key");
 }
