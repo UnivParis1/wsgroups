@@ -6,8 +6,10 @@
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.21/themes/base/jquery-ui.css" type="text/css" media="all" />
   <link rel="stylesheet" href="http://static.jquery.com/ui/css/demo-docs-theme/ui.theme.css" type="text/css" media="all" />
 
+
   <script src="jquery-1.7.2.min.js"></script>
   <script src="jquery-ui-1.8.21.custom.min.js"></script>
+
   <script src="test-user-autocomplete.js"></script>
 	
   <style>
@@ -43,8 +45,8 @@
         width: 20px;
         //height: 41px;
     }
-    li { display: block;  float: none !important; }
-        .ui-autocomplete { left: 20px !important; }
+    .ui-menu li { display: block;  float: none !important; }
+    .ui-autocomplete { left: 20px !important; }
 
 
     @media (max-width:600px)  {
@@ -69,10 +71,21 @@
 <p>FOO <p>FOO <p>FOO <p>FOO <p>FOO <p>FOO 
 
 
+<form method="get" action="/foo">
   <div class="ui-widget">
     <label for="foo">Cherchez une personne</label>
-    <input id="foo" />
+    <span class="token-autocomplete">
+      <input name="token"  />
+    </span>
+
+    <span class="uid-autocomplete">
+      <input name="uid"  />
+    </span>
+
+    <button></button>
+
   </div>
+</form>
 </body>
 </html>
 

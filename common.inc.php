@@ -1,7 +1,5 @@
 <?php
 
-$DEBUG = 0;
-
 require ('./config.inc.php');
 
 function GET_ldapFilterSafe($name) {
