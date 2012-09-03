@@ -6,7 +6,14 @@ $structures = getLdapInfoMultiFilters($STRUCTURES_DN, array("(supannCodeEntite=*
 
 $roles = getLdapInfoMultiFilters($ROLE_GENERIQUE_DN, array("(supannRoleGenerique=*)"), $ROLE_GENERIQUE_ATTRS, "key");
 
-$etablissements = getLdapInfoMultiFilters($ETABLISSEMENT_TABLE_DN, array("(supannEtablissement=*)"), $ETABLISSEMENT_TABLE_ATTRS, "key");
+$etablissementsAll = getLdapInfoMultiFilters($ETABLISSEMENT_TABLE_DN, array("(supannEtablissement=*)"), $ETABLISSEMENT_TABLE_ATTRS, "key");
+
+// a little cleanup...
+$etablissements = array();
+foreach ($etablissementsAll as $e) { 
+  if (!preg_match("/^ECOLE (MATERNELLE|ELEMENTAIRE|PRIMAIRE) |^COLLEGE$/", $e["name"]))
+    $etablissements[] = $e;
+}
 
 gen(array('structureKeyToShortname' => $structures,
 	  'roleGeneriqueKeyToShortname' => $roles,

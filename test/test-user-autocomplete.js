@@ -1,11 +1,8 @@
 
-function inspect(o) {
-   s = ""
-   for (prop in o) s += prop + "=>" + o[prop] + " "
-   return s
-}
-
 $(function() {
+    var minLength = 4;
+    var searchUserURL = "http://ticetest.univ-paris1.fr/web-service-groups/searchUser";
+
     var highlightMatched = function (text, tokenL) {
 	var textL = text.toLowerCase();
 	var pos = textL.search(tokenL);
@@ -24,30 +21,28 @@ $(function() {
 	return r;
     }
 
-    var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", member: "Divers" };
+    var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, member: 7 };
+    var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", member: "Divers", "": "Divers" };
 
-    $( "#foo" ).autocomplete({
+    $( ".token-autocomplete input" ).autocomplete({
 	source: function( request, response ) {
 	    $.ajax({
-		url: "http://ticetest.univ-paris1.fr/web-service-groups/searchUser",
+		url: searchUserURL,
 		dataType: "jsonp",
 		data: { maxRows: 10, token: request.term, attrs: "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation,supannRoleGenerique,supannEtablissement" },
-		open: function () {
-		    //$('html, body').stop().animate({ scrollLeft: $("#foo").offset().left }, 1000);
-		},
 		success: function( data ) {
 		    var affiliation;
 		    var odd_even;
 		    var displayNameOccurences = countOccurences(data.map(function (item) { return item.displayName }));
 		    response(
-			$.map(data.sort(function(a,b) { return a.eduPersonPrimaryAffiliation < b.eduPersonPrimaryAffiliation }),
+			$.map(data.sort(function(a,b) { return (affiliation2order[a.eduPersonPrimaryAffiliation] || 99) > (affiliation2order[b.eduPersonPrimaryAffiliation] || 99) }),
 			      function( item ) {
 				  item.label = item.displayName;
 				  item.value = item.uid;
 				  item.token = request.term;
-				  if (item.eduPersonPrimaryAffiliation && affiliation != item.eduPersonPrimaryAffiliation) {
+				  if (affiliation != item.eduPersonPrimaryAffiliation) {
 				      affiliation = item.eduPersonPrimaryAffiliation;
-				      item.pre = affiliation2text[affiliation];
+				      item.pre = affiliation2text[affiliation || ""];
 				  }
 				  if (displayNameOccurences[item.displayName] > 1)
 				      item.duplicateDisplayName = true;
@@ -58,7 +53,29 @@ $(function() {
 		}
 	    });
 	},
-	minLength: 4
+	open: function () {
+	    //alert("foo");
+	    $('html,body').scrollTop($(this).offset().top);
+	    //$('html, body').stop().animate({ scrollTop: $(this).offset().top }, 1000);
+	    //$('html, body').stop().animate({ scrollLeft: $(".token-autocomplete input").offset().left }, 1000);
+	},
+
+	focus : function () {
+	    // prevent update of <input>
+	    return false;
+	},
+	select: function (event, ui) {
+	    // NB: this event is called before the selected value is set in the <input>
+
+	    var form = $(this).closest("form");
+
+	    form.find(".uid-autocomplete input").val(ui.item.value); 
+
+	    form.find("button").click();
+	    return false;
+	},
+
+	minLength: minLength
     }).data("autocomplete")._renderItem = function(ul, item) {
 	var uid = item.uid;
 	var displayName = item.displayName;
@@ -103,7 +120,6 @@ $(function() {
 	    .append("<a>" + content + "</a>")
 	    .appendTo(ul);
 
-	//$('html,body').animate({scrollTop:$("#foo").offset().top}, 500);
 	return li;
     };
 });
