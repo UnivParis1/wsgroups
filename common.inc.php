@@ -46,15 +46,17 @@ function getUserGroups($uid) {
     $groups = getGroupsFromGroupsDn(array(member_filter($uid)));
 
     global $PEOPLE_DN;
-    $attrs = identiqueMap(array("supannEntiteAffectation", "eduPersonOrgUnitDN"));
+    $attrs = identiqueMap(array("supannEntiteAffectation"));
     $attrs["eduPersonAffiliation"] = "MULTI";
+    $attrs["eduPersonOrgUnitDN"] = "MULTI";
     $user = getFirstLdapInfo($PEOPLE_DN, "(uid=$uid)", $attrs);
     if (!$user) return $groups;
 
     if (isset($user["eduPersonOrgUnitDN"])) {
-      $key = $user["eduPersonOrgUnitDN"];
-      $groups_ = getGroupsFromDiplomaDn(array("(entryDN=$key)"), 1);
-      $groups = array_merge($groups, $groups_);
+      foreach ($user["eduPersonOrgUnitDN"] as $key) {
+        $groups_ = getGroupsFromDiplomaDn(array("(entryDN=$key)"), 1);
+        $groups = array_merge($groups, $groups_);
+      }
     }
     if (isset($user["supannEntiteAffectation"])) {
 	$key = $user["supannEntiteAffectation"];
