@@ -96,7 +96,7 @@ function getGroupsFromDiplomaDn($filters, $sizelimit = 0) {
     $r = getLdapInfoMultiFilters($DIPLOMA_DN, $filters, $DIPLOMA_ATTRS, "key", $sizelimit);
     foreach ($r as &$map) {
 	$map["rawKey"] = $map["key"];
-	$map["name"] = removePrefix($map["description"], $map["rawKey"] . " - ");
+	$map["name"] = $map["description"]; // removePrefix($map["description"], $map["rawKey"] . " - ");
 	$map["key"] = "diploma-" . $map["key"];
     }
     return $r;
