@@ -31,7 +31,8 @@ if (!isset($wanted_attrs[$KEY_FIELD]))
   $wanted_attrs[$KEY_FIELD] = $KEY_FIELD;
 
 // employeeType is only allowed on some eduPersonPrimaryAffiliation
-if (isset($wanted_attrs['employeeType']))
+// departmentNumber is only useful for some eduPersonPrimaryAffiliation
+if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumber']))
   $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
 
 
@@ -50,9 +51,11 @@ function structureShortnames($keys) {
 }
 
 foreach ($users as &$user) {
-  if (isset($user['employeeType']))
-    if (!in_array($user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher')))
-      unset($user['employeeType']); // employeeType is not public for staff & student
+  if (isset($user['employeeType']) || isset($user['departmentNumber']))
+    if (!in_array($user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) {
+      unset($user['employeeType']); // employeeType is private for staff & student
+      unset($user['departmentNumber']); // departmentNumber is not interesting for staff & student
+    }
   if (isset($user['supannEntiteAffectation'])) {
     $user['supannEntiteAffectation'] = structureShortnames($user['supannEntiteAffectation']);
   }
