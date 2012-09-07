@@ -7,7 +7,7 @@ $DEBUG = 0;
 $BASE_DN = "dc=univ-paris1,dc=fr";
 
 // specific Paris1:
-$ANNEE = 2011;
+$ANNEE = 2012;
 $ALT_STRUCTURES_DN = "ou=structures,o=Paris1,".$BASE_DN;
 $DIPLOMA_DN = "ou=$ANNEE,ou=diploma,o=Paris1,".$BASE_DN;
 $DIPLOMA_ATTRS = array("ou" => "key", "description" => "description");
