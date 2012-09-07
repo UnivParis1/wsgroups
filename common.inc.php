@@ -52,11 +52,9 @@ function getUserGroups($uid) {
     $user = getFirstLdapInfo($PEOPLE_DN, "(uid=$uid)", $attrs);
     if (!$user) return $groups;
 
-    if (isset($user["eduPersonOrgUnitDN"])) {
-      foreach ($user["eduPersonOrgUnitDN"] as $key) {
-        $groups_ = getGroupsFromDiplomaDn(array("(entryDN=$key)"), 1);
-        $groups = array_merge($groups, $groups_);
-      }
+    if (isset($user["eduPersonOrgUnitDN"])) {	
+	$groups_ = getGroupsFromEduPersonOrgUnitDN($user["eduPersonOrgUnitDN"]);
+	$groups = array_merge($groups, $groups_);
     }
     if (isset($user["supannEntiteAffectation"])) {
 	$key = $user["supannEntiteAffectation"];
@@ -91,13 +89,37 @@ function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
     return $r;
 }
 
+function getGroupsFromEduPersonOrgUnitDN($eduPersonOrgUnitDNs) {
+    global $DIPLOMA_DN, $DIPLOMA_PREV_DN;
+    $r = array();
+    foreach ($eduPersonOrgUnitDNs as $key) {
+	  if (contains($key, $DIPLOMA_DN))
+	      $is_prev = false;
+	  else if (contains($key, $DIPLOMA_PREV_DN))
+	      $is_prev = true;
+	  else
+	      continue;
+
+	  $groups_ = getGroupsFromDiplomaDnOrPrev(array("(entryDN=$key)"), $is_prev, 1);
+	  $r = array_merge($r, $groups_);
+    }
+    return $r;
+}
+
 function getGroupsFromDiplomaDn($filters, $sizelimit = 0) {
-    global $DIPLOMA_DN, $DIPLOMA_ATTRS;
-    $r = getLdapInfoMultiFilters($DIPLOMA_DN, $filters, $DIPLOMA_ATTRS, "key", $sizelimit);
+    return getGroupsFromDiplomaDnOrPrev($filters, false, $sizelimit);
+}
+
+function getGroupsFromDiplomaDnOrPrev($filters, $want_prev, $sizelimit) {
+    global $ANNEE_PREV, $DIPLOMA_DN, $DIPLOMA_PREV_DN, $DIPLOMA_ATTRS;
+    $dn = $want_prev ? $DIPLOMA_PREV_DN : $DIPLOMA_DN;
+    $r = getLdapInfoMultiFilters($dn, $filters, $DIPLOMA_ATTRS, "key", $sizelimit);
     foreach ($r as &$map) {
 	$map["rawKey"] = $map["key"];
+	$map["key"] = ($want_prev ? "diplomaPrev" : "diploma") . "-" . $map["key"];
+
+	if ($want_prev) $map["description"] = '[' . $ANNEE_PREV . '] ' . $map["description"];
 	$map["name"] = $map["description"]; // removePrefix($map["description"], $map["rawKey"] . " - ");
-	$map["key"] = "diploma-" . $map["key"];
     }
     return $r;
 }
@@ -252,6 +274,10 @@ function remove_rawKey(&$r) {
     foreach ($r as &$e) {
 	unset($e["rawKey"]);
     }
+}
+
+function contains($hay, $needle) {
+    return strpos($hay, $needle) !== false;
 }
 
 function startsWith($hay, $needle) {
