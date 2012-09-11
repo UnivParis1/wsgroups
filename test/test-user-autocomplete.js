@@ -1,9 +1,7 @@
 
-$(function() {
-    var minLength = 4;
-    var searchUserURL = "http://ticetest.univ-paris1.fr/web-service-groups/searchUser";
+(function ($) {
 
-    var highlightMatched = function (text, tokenL) {
+  var highlightMatched = function (text, tokenL) {
 	var textL = text.toLowerCase();
 	var pos = textL.search(tokenL);
 	if (pos < 0) 
@@ -12,24 +10,32 @@ $(function() {
 	    var endPos = pos + tokenL.length;
 	    return text.substring(0, pos) + "<span class='match'>" + text.substring(pos, endPos) + "</span>" + text.substring(endPos);
 	}
-    };
-    var countOccurences = function (list) {
+  };
+  var countOccurences = function (list) {
 	var r = {};
 	$.each(list, function (i, e) {
 	    r[e] = (r[e] || 0) + 1;
 	});
 	return r;
-    }
+  }
 
-    var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, member: 7 };
-    var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", member: "Divers", "": "Divers" };
+  var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, member: 7 };
+  var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", member: "Divers", "": "Divers" };
 
-    $( ".token-autocomplete input" ).autocomplete({
-	source: function( request, response ) {
+    $.fn.autocompleteUser = function (searchUserURL, options) {
+      if (!searchUserURL) throw "missing param searchUserURL";
+
+      var settings = $.extend( 
+	  { 'minLength'     : 4,
+	    'maxRows'       : 10 }, options);
+
+      var source = function( request, response ) {
 	    $.ajax({
 		url: searchUserURL,
 		dataType: "jsonp",
-		data: { maxRows: 10, token: request.term, attrs: "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation,supannRoleGenerique,supannEtablissement" },
+		data: { maxRows: settings.maxRows, 
+			attrs: "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation,supannRoleGenerique,supannEtablissement",
+			token: request.term  },
 		success: function( data ) {
 		    var affiliation;
 		    var odd_even;
@@ -52,31 +58,29 @@ $(function() {
 		    );
 		}
 	    });
-	},
-	open: function () {
+      };
+
+      var autocompleteParams = {
+	  minLength: settings.minLength,
+	  source: source,
+	  open: function () {
 	    //alert("foo");
 	    $('html,body').scrollTop($(this).offset().top);
 	    //$('html, body').stop().animate({ scrollTop: $(this).offset().top }, 1000);
 	    //$('html, body').stop().animate({ scrollLeft: $(".token-autocomplete input").offset().left }, 1000);
-	},
+	  },
+      };
 
-	focus : function () {
+      if (settings.select) {
+	  autocompleteParams.select = settings.select;
+	  autocompleteParams.focus = function () {
 	    // prevent update of <input>
 	    return false;
-	},
-	select: function (event, ui) {
-	    // NB: this event is called before the selected value is set in the <input>
+	  };
+      }
+      this.autocomplete(autocompleteParams);
 
-	    var form = $(this).closest("form");
-
-	    form.find(".uid-autocomplete input").val(ui.item.value); 
-
-	    form.find("button").click();
-	    return false;
-	},
-
-	minLength: minLength
-    }).data("autocomplete")._renderItem = function(ul, item) {
+      this.data("autocomplete")._renderItem = function(ul, item) {
 	var uid = item.uid;
 	var displayName = item.displayName;
 	var tokenL = item.token.toLowerCase()
@@ -122,4 +126,11 @@ $(function() {
 
 	return li;
     };
-});
+
+    // below is useful when going back on the search values
+    this.click(function () {
+      	    $(this).autocomplete("search");
+    });
+  };
+
+})(jQuery);
