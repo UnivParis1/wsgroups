@@ -36,14 +36,16 @@
 	    return textL;
 	else {
 	    var endPos = pos + searchedTokenL.length;
-	    return text.substring(0, pos) + "<span class='match'>" + text.substring(pos, endPos) + "</span>" + text.substring(endPos);
+	    return text.substring(0, pos) + 
+		"<span class='match'>" + text.substring(pos, endPos) + "</span>" +
+		text.substring(endPos);
 	}
   };
 
   var getNiceDisplayName = function (item) {
       var uid = item.uid;
       var displayName = item.displayName;
-      var searchedTokenL = item.searchedToken.toLowerCase()
+      var searchedTokenL = item.searchedTokenL;
       var display_uid = item.duplicateDisplayName;
       if (uid === searchedTokenL) {
 	  display_uid = true;
@@ -78,26 +80,32 @@
 	return r;
   };
 
-  var sortAndTransformItems = function (data, wantedAttr) {
-      var dataSorted = data.sort(function(a,b) { return (affiliation2order[a.eduPersonPrimaryAffiliation] || 99) > (affiliation2order[b.eduPersonPrimaryAffiliation] || 99) });
+  var sortByAffiliation = function (items) {
+      return items.sort(function(a,b) { 
+	  return (affiliation2order[a.eduPersonPrimaryAffiliation] || 99) > (affiliation2order[b.eduPersonPrimaryAffiliation] || 99);
+      });
+  }
 
+  var transformItems = function (items, wantedAttr, searchedToken) {
+      var searchedTokenL = searchedToken.toLowerCase();
       var affiliation;
       var odd_even;
-      var displayNameOccurences = countOccurences(data.map(function (item) { return item.displayName }));
-      var items = $.map(dataSorted,
-			function( item ) {
-			    item.label = item.displayName;
-			    item.value = item[wantedAttr];
-			    if (affiliation != item.eduPersonPrimaryAffiliation) {
-				affiliation = item.eduPersonPrimaryAffiliation;
-				item.pre = affiliation2text[affiliation || ""];
-			    }
-			    if (displayNameOccurences[item.displayName] > 1)
-				item.duplicateDisplayName = true;
-			    item.odd_even = odd_even = !odd_even;
-			    return item;
-			});
-      return items;
+      var displayNameOccurences = countOccurences(items.map(function (item) { return item.displayName }));
+      $.each(items, function ( i, item ) {
+	    item.label = item.displayName;
+	    item.value = item[wantedAttr];
+	    item.searchedTokenL = searchedTokenL;
+
+	    if (affiliation != item.eduPersonPrimaryAffiliation) {
+		affiliation = item.eduPersonPrimaryAffiliation;
+		item.pre = affiliation2text[affiliation || ""];
+	    }
+
+	    if (displayNameOccurences[item.displayName] > 1)
+		item.duplicateDisplayName = true;
+
+	    item.odd_even = odd_even = !odd_even;
+	});
   };
 
   $.fn.autocompleteUser = function (searchUserURL, options) {
@@ -116,11 +124,10 @@
 		dataType: "jsonp",
 		data: { maxRows: settings.maxRows, 
 			attrs: settings.attrs,
-			token: request.term  },
+			token: request.term },
 		success: function (data) {
-		    var items = sortAndTransformItems(data, settings.wantedAttr);
-		    $.each(items, function (i, item) { item.searchedToken = request.term; });
-		    response(items);
+		    transformItems(data, settings.wantedAttr, request.term);
+		    response(sortByAffiliation(data));
 		}
 	    });
       };
