@@ -86,7 +86,7 @@
 
   var sortByAffiliation = function (items) {
       return items.sort(function(a,b) { 
-	  return (affiliation2order[a.eduPersonPrimaryAffiliation] || 99) > (affiliation2order[b.eduPersonPrimaryAffiliation] || 99);
+	  return (affiliation2order[a.eduPersonPrimaryAffiliation] || 99) - (affiliation2order[b.eduPersonPrimaryAffiliation] || 99);
       });
   }
 
