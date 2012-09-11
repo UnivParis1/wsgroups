@@ -5,18 +5,10 @@
 
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.21/themes/base/jquery-ui.css" type="text/css" media="all" />
   <link rel="stylesheet" href="http://static.jquery.com/ui/css/demo-docs-theme/ui.theme.css" type="text/css" media="all" />
-  <link rel="stylesheet" href="user-autocomplete.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="autocompleteUser.css" type="text/css" media="all" />
   <script src="jquery-1.7.2.min.js"></script>
   <script src="jquery-ui-1.8.21.custom.min.js"></script>
-  <script src="user-autocomplete.js"></script>
-
-  <script>
-
-    $(function () {
-       $( ".token-autocomplete input" ).autocompleteUser('../searchUser');
-    });
-
-  </script>
+  <script src="autocompleteUser.js"></script>
 	
 </head>
 <body>
@@ -27,7 +19,7 @@
   <div class="ui-widget">
     <label for="foo">Cherchez une personne</label>
     <span class="token-autocomplete">
-      <input name="token"  />
+      <input name="token" placeholder="Nom et/ou prenom" />
     </span>
 
     <span class="uid-autocomplete">
@@ -37,6 +29,15 @@
     <span class="onsubmit-msg" />
 
     <button></button>
+
+
+  <script>
+
+       $( ".token-autocomplete input" ).autocompleteUser('../searchUser');
+       $( ".token-autocomplete input" ).handlePlaceholderOnIE();
+
+  </script>
+
 
   </div>
 </form>

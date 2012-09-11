@@ -1,136 +1,181 @@
-
 (function ($) {
+  var attrs = "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation,supannRoleGenerique,supannEtablissement";
+  var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, member: 7 };
+  var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", member: "Divers", "": "Divers" };
 
-  var highlightMatched = function (text, tokenL) {
+  var getDetails = function (item) {
+      var details = [];
+
+      if (item.duplicateDisplayName) {
+	  details.push(item.mail);
+      }
+      if (item.employeeType)
+	  details.push(item.employeeType);
+      if (item.supannRoleGenerique)
+	  details.push(item.supannRoleGenerique);
+      if (item.supannEntiteAffectation) {
+	  var prev = details.pop();
+	  details.push((prev ? prev + " - " : '') + item.supannEntiteAffectation.join(" - "));
+      }
+      if (item.departmentNumber) {
+	  details.push((item.departmentNumber.count >= 2 ? "Disciplines : " : "Discipline : ") + item.departmentNumber.join(' - '));
+      }
+      if (item.supannEtablissement)
+	  details.push(item.supannEtablissement);
+
+      if (details.length) 
+	  return "<div class='details'>" + details.join("<br>") + "</div>"
+      else
+	  return "";
+  };
+
+  var highlightMatched = function (text, searchedTokenL) {
 	var textL = text.toLowerCase();
-	var pos = textL.search(tokenL);
+	var pos = textL.search(searchedTokenL);
 	if (pos < 0) 
 	    return textL;
 	else {
-	    var endPos = pos + tokenL.length;
+	    var endPos = pos + searchedTokenL.length;
 	    return text.substring(0, pos) + "<span class='match'>" + text.substring(pos, endPos) + "</span>" + text.substring(endPos);
 	}
   };
+
+  var getNiceDisplayName = function (item) {
+      var uid = item.uid;
+      var displayName = item.displayName;
+      var searchedTokenL = item.searchedToken.toLowerCase()
+      var display_uid = item.duplicateDisplayName;
+      if (uid === searchedTokenL) {
+	  display_uid = true;
+	  uid = "<span class='match'>" + uid + "</span>";
+      } else if (item.cn.toLowerCase().indexOf(searchedTokenL) == 0)
+	  displayName = highlightMatched(item.cn, searchedTokenL);
+      else
+	  displayName = highlightMatched(displayName, searchedTokenL);
+
+      if (display_uid)
+	  displayName += " (" + uid + ")";
+
+      return displayName;
+  };
+
+  var myRenderItem = function(ul, item) {
+	if (item.pre)
+	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
+
+	var content = getNiceDisplayName(item) + getDetails(item);
+	$("<li></li>").addClass(item.odd_even ? "odd" : "even")
+	    .data("item.autocomplete", item)
+	    .append("<a>" + content + "</a>")
+	    .appendTo(ul);
+  };
+
   var countOccurences = function (list) {
 	var r = {};
 	$.each(list, function (i, e) {
 	    r[e] = (r[e] || 0) + 1;
 	});
 	return r;
-  }
+  };
 
-  var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, member: 7 };
-  var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", member: "Divers", "": "Divers" };
+  var sortAndTransformItems = function (data, wantedAttr) {
+      var dataSorted = data.sort(function(a,b) { return (affiliation2order[a.eduPersonPrimaryAffiliation] || 99) > (affiliation2order[b.eduPersonPrimaryAffiliation] || 99) });
 
-    $.fn.autocompleteUser = function (searchUserURL, options) {
+      var affiliation;
+      var odd_even;
+      var displayNameOccurences = countOccurences(data.map(function (item) { return item.displayName }));
+      var items = $.map(dataSorted,
+			function( item ) {
+			    item.label = item.displayName;
+			    item.value = item[wantedAttr];
+			    if (affiliation != item.eduPersonPrimaryAffiliation) {
+				affiliation = item.eduPersonPrimaryAffiliation;
+				item.pre = affiliation2text[affiliation || ""];
+			    }
+			    if (displayNameOccurences[item.displayName] > 1)
+				item.duplicateDisplayName = true;
+			    item.odd_even = odd_even = !odd_even;
+			    return item;
+			});
+      return items;
+  };
+
+  $.fn.autocompleteUser = function (searchUserURL, options) {
       if (!searchUserURL) throw "missing param searchUserURL";
 
       var settings = $.extend( 
-	  { 'minLength'     : 4,
-	    'maxRows'       : 10 }, options);
+	  { 'minLength' : 4,
+	    'maxRows' : 10,
+	    'wantedAttr' : 'uid',
+	    'attrs' : attrs
+	  }, options);
 
       var source = function( request, response ) {
 	    $.ajax({
 		url: searchUserURL,
 		dataType: "jsonp",
 		data: { maxRows: settings.maxRows, 
-			attrs: "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation,supannRoleGenerique,supannEtablissement",
+			attrs: settings.attrs,
 			token: request.term  },
-		success: function( data ) {
-		    var affiliation;
-		    var odd_even;
-		    var displayNameOccurences = countOccurences(data.map(function (item) { return item.displayName }));
-		    response(
-			$.map(data.sort(function(a,b) { return (affiliation2order[a.eduPersonPrimaryAffiliation] || 99) > (affiliation2order[b.eduPersonPrimaryAffiliation] || 99) }),
-			      function( item ) {
-				  item.label = item.displayName;
-				  item.value = item.uid;
-				  item.token = request.term;
-				  if (affiliation != item.eduPersonPrimaryAffiliation) {
-				      affiliation = item.eduPersonPrimaryAffiliation;
-				      item.pre = affiliation2text[affiliation || ""];
-				  }
-				  if (displayNameOccurences[item.displayName] > 1)
-				      item.duplicateDisplayName = true;
-				  item.odd_even = odd_even = !odd_even;
-				  return item;
-			})
-		    );
+		success: function (data) {
+		    var items = sortAndTransformItems(data, settings.wantedAttr);
+		    $.each(items, function (i, item) { item.searchedToken = request.term; });
+		    response(items);
 		}
 	    });
       };
 
-      var autocompleteParams = {
+      var params = {
 	  minLength: settings.minLength,
 	  source: source,
 	  open: function () {
-	    //alert("foo");
 	    $('html,body').scrollTop($(this).offset().top);
-	    //$('html, body').stop().animate({ scrollTop: $(this).offset().top }, 1000);
-	    //$('html, body').stop().animate({ scrollLeft: $(".token-autocomplete input").offset().left }, 1000);
 	  },
       };
 
       if (settings.select) {
-	  autocompleteParams.select = settings.select;
-	  autocompleteParams.focus = function () {
+	  params.select = settings.select;
+	  params.focus = function () {
 	    // prevent update of <input>
 	    return false;
 	  };
       }
-      this.autocomplete(autocompleteParams);
+      this.autocomplete(params);
 
-      this.data("autocomplete")._renderItem = function(ul, item) {
-	var uid = item.uid;
-	var displayName = item.displayName;
-	var tokenL = item.token.toLowerCase()
-	var display_uid = item.duplicateDisplayName;
-	if (uid === tokenL) {
-	    display_uid = true;
-	    uid = "<span class='match'>" + uid + "</span>";
-	} else if (item.cn.toLowerCase().indexOf(tokenL) == 0)
-	    displayName = highlightMatched(item.cn, tokenL);
-	else
-	    displayName = highlightMatched(displayName, tokenL);
+      this.data("autocomplete")._renderItem = myRenderItem;
 
-	var details = [];
+      // below is useful when going back on the search values
+      this.click(function () {
+      	  $(this).autocomplete("search");
+      });
+  };
 
-	if (display_uid)
-	    displayName += " (" + uid + ")";
-	if (item.duplicateDisplayName) {
-	    details.push(item.mail);
-	}
-	if (item.employeeType)
-	    details.push(item.employeeType);
-	if (item.supannRoleGenerique)
-	    details.push(item.supannRoleGenerique);
-	if (item.supannEntiteAffectation) {
-	    var prev = details.pop();
-	    details.push((prev ? prev + " - " : '') + item.supannEntiteAffectation.join(" - "));
-	}
-	if (item.departmentNumber) {
-	    details.push((item.departmentNumber.count >= 2 ? "Disciplines : " : "Discipline : ") + item.departmentNumber.join(' - '));
-	}
-	if (item.supannEtablissement)
-	    details.push(item.supannEtablissement);
 
-	var content = displayName;
-	if (details.length) content += "<div class='details'>" + details.join("<br>") + "</div>";
-	if (item.pre)
-	    $("<li class='kind strikethrough'><span>" + item.pre + "</span></li>").appendTo(ul);
 
-	var li = $("<li></li>").addClass(item.odd_even ? "odd" : "even")
-	    .data("item.autocomplete", item)
-	    .append("<a>" + content + "</a>")
-	    .appendTo(ul);
+  $.fn.handlePlaceholderOnIE = function () {
 
-	return li;
-    };
+      var handlePlaceholder = 'placeholder' in document.createElement('input');
+      if (handlePlaceholder) return; // cool, the browser handle it, nothing to do
 
-    // below is useful when going back on the search values
-    this.click(function () {
-      	    $(this).autocomplete("search");
-    });
+      this.each(function(){
+	  var o = $(this);
+	  if (o.attr("placeholder") =="") return;
+
+          var prevColor;
+          var displayPlaceholder = function(){
+	      if(o.val()!="") return;
+              o.val(o.attr("placeholder"));
+              prevColor = o.css("color");
+              o.css("color", "#808080");
+	  };
+	  o.focus(function(){
+              o.css("color", prevColor);
+	      if(o.val()==o.attr("placeholder")) o.val("");
+	  });
+	  o.blur(displayPlaceholder);
+          displayPlaceholder();
+      });
+
   };
 
 })(jQuery);
