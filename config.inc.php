@@ -8,8 +8,10 @@ $BASE_DN = "dc=univ-paris1,dc=fr";
 
 // specific Paris1:
 $ANNEE = 2012;
+$ANNEE_PREV = 2011;
 $ALT_STRUCTURES_DN = "ou=structures,o=Paris1,".$BASE_DN;
 $DIPLOMA_DN = "ou=$ANNEE,ou=diploma,o=Paris1,".$BASE_DN;
+$DIPLOMA_PREV_DN = "ou=$ANNEE_PREV,ou=diploma,o=Paris1,".$BASE_DN;
 $DIPLOMA_ATTRS = array("ou" => "key", "description" => "description");
 
 
