@@ -70,6 +70,10 @@
 	    .data("item.autocomplete", item)
 	    .append("<a>" + content + "</a>")
 	    .appendTo(ul);
+
+      if (item.partialResults)
+	  $("<li></li>").addClass("warning").append("La recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.").appendTo(ul);
+
   };
 
   var countOccurences = function (list) {
@@ -128,6 +132,9 @@
 		success: function (data) {
 		    data = sortByAffiliation(data);
 		    transformItems(data, settings.wantedAttr, request.term);
+		    if (data.length >= settings.maxRows) {
+			data[data.length-1].partialResults = settings.maxRows;
+		    }
 		    response(data);
 		}
 	    });

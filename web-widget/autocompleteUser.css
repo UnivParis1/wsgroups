@@ -26,6 +26,14 @@
 .ui-menu .match {
     font-weight: bold;
 }
+.ui-menu .warning {
+    color: #2E5693; 
+    font-size: 80%;
+    font-weight: bold;
+    padding-top: 0.1em; 
+    border-top: dotted 1px;
+    list-style: none;
+}
 .ui-menu .kind { 
     color: #2E5693; 
     font-variant: small-caps;
