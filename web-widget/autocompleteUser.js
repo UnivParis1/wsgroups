@@ -126,8 +126,9 @@
 			attrs: settings.attrs,
 			token: request.term },
 		success: function (data) {
+		    data = sortByAffiliation(data);
 		    transformItems(data, settings.wantedAttr, request.term);
-		    response(sortByAffiliation(data));
+		    response(data);
 		}
 	    });
       };
