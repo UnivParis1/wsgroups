@@ -18,29 +18,15 @@
 <form method="get" action="/foo">
   <div class="ui-widget">
     <label for="foo">Cherchez une personne</label>
-    <span class="token-autocomplete">
-      <input name="token" placeholder="Nom et/ou prenom" />
-    </span>
-
-    <span class="uid-autocomplete">
-      <input name="uid"  />
-    </span>
-
-    <span class="onsubmit-msg" />
-
-    <button></button>
-
-
-  <script>
-
-       $( ".token-autocomplete input" ).autocompleteUser('../searchUser');
-       $( ".token-autocomplete input" ).handlePlaceholderOnIE();
-
-  </script>
-
-
+    <input name="uid" placeholder="Nom et/ou prenom" />
   </div>
 </form>
+
+<script>
+   $( "input" ).autocompleteUser('../searchUser');
+   $( "input" ).handlePlaceholderOnIE();
+</script>
+
 </body>
 </html>
 
