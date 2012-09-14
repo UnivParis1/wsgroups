@@ -1,0 +1,32 @@
+<html>
+<head>	
+
+  <meta name="viewport" content="initial-scale=1.0">
+
+  <link rel="stylesheet" href="jquery-ui.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="ui.theme.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="autocompleteUser.css" type="text/css" media="all" />
+  <script src="jquery-1.7.2.min.js"></script>
+  <script src="jquery-ui-1.8.21.custom.min.js"></script>
+  <script src="autocompleteUser.js"></script>
+	
+</head>
+<body>
+<p>FOO <p>FOO <p>FOO <p>FOO <p>FOO <p>FOO 
+
+
+<form method="get" action="/foo">
+  <div class="ui-widget">
+    <label for="foo">Cherchez une personne</label>
+    <input name="uid" placeholder="Nom et/ou prenom" />
+  </div>
+</form>
+
+<script>
+   $( "input" ).autocompleteUser('../searchUserCAS');
+   $( "input" ).handlePlaceholderOnIE();
+</script>
+
+</body>
+</html>
+
