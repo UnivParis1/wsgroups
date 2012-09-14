@@ -7,6 +7,13 @@ $token = GET_ldapFilterSafe("token");
 $attrs = GET_or_NULL("attrs");
 $maxRows = min(GET_or_NULL("maxRows"), 10);
 
+$filters = array();
+$filters_not = array();
+foreach (array("eduPersonAffiliation") as $attr) {
+  $filters[$attr] = GET_ldapFilterSafe_or_NULL("filter_$attr");
+  $filters_not[$attr] = GET_ldapFilterSafe_or_NULL("filter_not_$attr");
+}
+
 $KEY_FIELD = 'uid';
 $ALLOWED_MONO_ATTRS = array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 'employeeType', 'postalAddress', 'supannRoleGenerique', 'supannEtablissement');
 $ALLOWED_MULTI_ATTRS = array('supannEntiteAffectation', 'eduPersonAffiliation', 'departmentNumber');
@@ -31,9 +38,26 @@ if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumbe
   $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
 
 $allowListeRouge = GET_uid() && isStaffOrFaculty(GET_uid());
-$users = getLdapInfoMultiFilters($PEOPLE_DN, people_filters($token, $allowListeRouge), 
+$restriction = computeFilter($filters, false) . computeFilter($filters_not, true);
+$users = getLdapInfoMultiFilters($PEOPLE_DN, people_filters($token, $allowListeRouge, $restriction), 
 				 $wanted_attrs, $KEY_FIELD, $maxRows);
 
+function computeOneFilter($attr, $valsS) {
+    $vals = explode('|', $valsS);
+    $orFilter = '';
+    foreach ($vals as $val)
+      $orFilter .= "($attr=$val)";
+    return sizeof($vals) > 1 ? "(|$orFilter)" : $orFilter;
+}
+function computeFilter($filters, $not) {
+   $r = '';
+  foreach ($filters as $attr => $vals) {
+    if (!$vals) continue;
+    $one = computeOneFilter($attr, $vals);
+    $r .= $not ? "(!$one)" : $one;
+  }
+  return $r;
+}
 
 function structureShortnames($keys) {
     GLOBAL $structureKeyToShortname;

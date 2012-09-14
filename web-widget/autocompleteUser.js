@@ -124,13 +124,17 @@
 	    'attrs' : attrs
 	  }, options);
 
+      var wsParams = $.extend({ 
+	  maxRows: settings.maxRows, 
+	  attrs: settings.attrs
+      }, settings.wsParams);
+
       var source = function( request, response ) {
+	  wsParams.token = request.term;
 	    $.ajax({
 		url: searchUserURL,
 		dataType: "jsonp",
-		data: { maxRows: settings.maxRows, 
-			attrs: settings.attrs,
-			token: request.term },
+		data: wsParams,
 		success: function (data) {
 		    data = sortByAffiliation(data);
 		    transformItems(data, settings.wantedAttr, request.term);

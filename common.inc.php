@@ -5,6 +5,9 @@ require ('./config.inc.php');
 function GET_ldapFilterSafe($name) {
     return ldap_escape_string($_GET[$name]);
 }
+function GET_ldapFilterSafe_or_NULL($name) {
+    return isset($_GET[$name]) ? ldap_escape_string($_GET[$name]) : NULL;
+}
 function GET_or_NULL($name) {
   return isset($_GET[$name]) ? $_GET[$name] : NULL;
 }
@@ -13,8 +16,8 @@ function GET_uid() {
   return isset($_SERVER["HTTP_CAS_USER"]) ? $_SERVER["HTTP_CAS_USER"] : ''; // CAS-User
 }
 
-function people_filters($token, $allowListeRouge = false) {
-    $restriction = $allowListeRouge ? '' : '(!(supannListeRouge=TRUE))';
+function people_filters($token, $allowListeRouge = false, $restriction = '') {
+    if (!$allowListeRouge) $restriction = $restriction . '(!(supannListeRouge=TRUE))';
     $r = array("(&(uid=$token)$restriction)");
     if (strlen($token) > 3) 
 	// too short strings are useless

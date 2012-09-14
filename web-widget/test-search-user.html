@@ -23,7 +23,7 @@
 </form>
 
 <script>
-   $( "input" ).autocompleteUser('../searchUser');
+   $( "input" ).autocompleteUser('../searchUser', { wsParams: { filter_not_eduPersonAffiliation: "student" } });
    $( "input" ).handlePlaceholderOnIE();
 </script>
 
