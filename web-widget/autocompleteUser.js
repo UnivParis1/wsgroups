@@ -94,6 +94,8 @@
       var searchedTokenL = searchedToken.toLowerCase();
       var affiliation;
       var odd_even;
+      // nb: "cn" is easer to compare since there is no accents. Two "displayName"s could be equal after removing accents.
+      var cnOccurences = countOccurences(items.map(function (item) { return item.cn }));
       var displayNameOccurences = countOccurences(items.map(function (item) { return item.displayName }));
       $.each(items, function ( i, item ) {
 	    item.label = item.displayName;
@@ -105,7 +107,7 @@
 		item.pre = affiliation2text[affiliation || ""];
 	    }
 
-	    if (displayNameOccurences[item.displayName] > 1)
+	    if (displayNameOccurences[item.displayName] > 1 || cnOccurences[item.cn] > 1)
 		item.duplicateDisplayName = true;
 
 	    item.odd_even = odd_even = !odd_even;
