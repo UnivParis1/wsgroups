@@ -1,5 +1,20 @@
 <?php // -*-PHP-*-
 
+function workaround_mod_auth_cas_1_0_8() {
+  // workaround bug in mod-auth-cas 1.0.8 (https://issues.jasig.org/browse/MAS-35)
+  $allParams = '';
+  foreach ($_GET as $k => $v) {
+    if ($allParams || $v !== '') return;
+    $allParams = $k;
+  }
+  foreach (explode('&', $allParams) as $param) {
+    list($k, $v) = explode('=', $param, 2);
+    $_GET[$k] = $v;
+  }
+}
+
+if (!isset($_GET["token"])) workaround_mod_auth_cas_1_0_8();
+
 require ('./searchUser.inc.php');
 
 ?>
