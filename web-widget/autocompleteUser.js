@@ -134,6 +134,7 @@
 	    $.ajax({
 		url: searchUserURL,
 		dataType: "jsonp",
+		crossDomain: true, // esp. needed if searchUserURL is CAS-ified
 		data: wsParams,
 		success: function (data) {
 		    data = sortByAffiliation(data);
