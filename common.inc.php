@@ -191,6 +191,7 @@ function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0) {
 
   if ($DEBUG) error_log("searching $base for $filter");
   $search_result = @ldap_search($ds, $base, $filter, array_keys($attributes_map), 0, $sizelimit);
+  if (!$search_result) return array();
   $all_entries = ldap_get_entries($ds, $search_result);
   if ($DEBUG) error_log("found " . $all_entries['count'] . " results");
 
