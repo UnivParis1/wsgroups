@@ -3,11 +3,6 @@
 require ('./common.inc.php');
 require ('./tables.inc.php');
 
-if (GET_uid()) {
-  echo GET_uid() . "\n";
-  return;
-}
-
 $token = GET_ldapFilterSafe("token");
 $attrs = GET_or_NULL("attrs");
 $maxRows = min(GET_or_NULL("maxRows"), 10);
@@ -35,8 +30,8 @@ if (!isset($wanted_attrs[$KEY_FIELD]))
 if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumber']))
   $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
 
-
-$users = getLdapInfoMultiFilters($PEOPLE_DN, people_filters($token), 
+$allowListeRouge = GET_uid() && isStaffOrFaculty(GET_uid());
+$users = getLdapInfoMultiFilters($PEOPLE_DN, people_filters($token, $allowListeRouge), 
 				 $wanted_attrs, $KEY_FIELD, $maxRows);
 
 

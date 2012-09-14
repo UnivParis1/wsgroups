@@ -13,11 +13,12 @@ function GET_uid() {
   return isset($_SERVER["HTTP_CAS_USER"]) ? $_SERVER["HTTP_CAS_USER"] : ''; // CAS-User
 }
 
-function people_filters($token) {
-    $r = array("(&(uid=$token)(!(supannListeRouge=TRUE)))");
+function people_filters($token, $allowListeRouge = false) {
+    $restriction = $allowListeRouge ? '' : '(!(supannListeRouge=TRUE))';
+    $r = array("(&(uid=$token)$restriction)");
     if (strlen($token) > 3) 
 	// too short strings are useless
-	$r[] = "(&(eduPersonAffiliation=*)(|(displayName=*$token*)(cn=*$token*))(!(supannListeRouge=TRUE)))";
+	$r[] = "(&(eduPersonAffiliation=*)(|(displayName=*$token*)(cn=*$token*))$restriction)";
     return $r;
 }
 function groups_filters($token) {
@@ -40,6 +41,14 @@ function responsable_filter($uid) {
 function seeAlso_filter($cn) {
   global $GROUPS_DN;
   return "seeAlso=cn=$cn,$GROUPS_DN";
+}
+function staffFaculty_filter() {
+    return "(|(eduPersonAffiliation=staff)(eduPersonAffiliation=faculty))";
+}
+
+function isStaffOrFaculty($uid) {
+    global $PEOPLE_DN;
+    return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . staffFaculty_filter() . ")");
 }
 
 function getUserGroups($uid) {
@@ -166,6 +175,11 @@ function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField,
 function getFirstLdapInfo($base, $filter, $attributes_map) {
   $r = getLdapInfo($base, $filter, $attributes_map, 1);
   return $r ? $r[0] : NULL;
+}
+
+function existsLdap($base, $filter) {
+  $r = getLdapInfo($base, $filter, array(), 1);
+  return (bool) $r;
 }
 
 function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0) {
