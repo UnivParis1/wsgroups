@@ -5,7 +5,7 @@ require ('./common.inc.php');
 $token = GET_ldapFilterSafe("token");
 $maxRows = min(GET_or_NULL("maxRows"), 10);
 
-$users = getLdapInfoMultiFilters($PEOPLE_DN, people_filters($token), $PEOPLE_ATTRS, "uid", $maxRows);
+$users = searchPeople(people_filters($token), false, $PEOPLE_ATTRS, "uid", $maxRows);
 $groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
 $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows);
 $diploma = getGroupsFromDiplomaDn(diploma_filters($token), $maxRows);
