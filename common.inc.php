@@ -18,7 +18,7 @@ function GET_uid() {
 
 function people_filters($token, $allowListeRouge = false, $restriction = '') {
     if (!$allowListeRouge) $restriction = $restriction . '(!(supannListeRouge=TRUE))';
-    $r = array("(&(uid=$token)$restriction)");
+    $r = array("(&(uid=$token)(eduPersonAffiliation=*)$restriction)");
     if (strlen($token) > 3) 
 	// too short strings are useless
 	$r[] = "(&(eduPersonAffiliation=*)(|(displayName=*$token*)(cn=*$token*))$restriction)";
