@@ -16,8 +16,7 @@ function GET_uid() {
   return isset($_SERVER["HTTP_CAS_USER"]) ? $_SERVER["HTTP_CAS_USER"] : ''; // CAS-User
 }
 
-function people_filters($token, $allowListeRouge = false, $restriction = '') {
-    if (!$allowListeRouge) $restriction = $restriction . '(!(supannListeRouge=TRUE))';
+function people_filters($token, $restriction = '') {
     $r = array("(&(uid=$token)(eduPersonAffiliation=*)$restriction)");
     if (strlen($token) > 3) 
 	// too short strings are useless
@@ -52,6 +51,36 @@ function staffFaculty_filter() {
 function isStaffOrFaculty($uid) {
     global $PEOPLE_DN;
     return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . staffFaculty_filter() . ")");
+}
+
+function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
+    global $PEOPLE_DN;
+    if (!$allowListeRouge) {
+	// we need the attr to anonymize people having supannListeRouge=TRUE
+	$wanted_attrs['supannListeRouge'] = 'supannListeRouge';
+    }
+    $r = getLdapInfoMultiFilters($PEOPLE_DN, $filter, $wanted_attrs, $KEY_FIELD, $maxRows);    
+    foreach ($r as &$e) {
+	$supannListeRouge = $e["supannListeRouge"];
+	unset($e["supannListeRouge"]);
+	if ($supannListeRouge == "TRUE") anonymizeUser($e, $wanted_attrs);
+    }
+    return $r;
+}
+
+function anonymizeUser(&$e, $attributes_map) {
+    global $PEOPLE_LISTEROUGE_NON_ANONYMIZED_ATTRS;
+    $allowed = array();
+    foreach ($PEOPLE_LISTEROUGE_NON_ANONYMIZED_ATTRS as $attr) {
+	if (isset($attributes_map[$attr])) 
+	    $allowed[$attributes_map[$attr] == "MULTI" ? $attr : $attributes_map[$attr]] = 1;
+    }
+
+    foreach ($e as $k => $v) {
+	if (!isset($allowed[$k])) {
+	    $e[$k] = $attributes_map[$k] == "MULTI" ? array() : 'supannListeRouge';
+	}
+    }
 }
 
 function getUserGroups($uid) {

@@ -71,6 +71,13 @@
 	    .append("<a>" + content + "</a>")
 	    .appendTo(ul);
 
+      if (item.nbListeRouge)
+	  $("<li></li>").addClass("warning").append(
+	      item.nbListeRouge > 1 ?
+		  "NB : des r&eacute;sultats ont &eacute;t&eacute; cach&eacute;s<br>&agrave; la demande des personnes." :
+		  "NB : un r&eacute;sultat a &eacute;t&eacute; cach&eacute;<br>&agrave; la demande de la personne."
+	  ).appendTo(ul);
+
       if (item.partialResults)
 	  $("<li></li>").addClass("warning").append("La recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.").appendTo(ul);
 
@@ -136,12 +143,19 @@
 		dataType: "jsonp",
 		crossDomain: true, // esp. needed if searchUserURL is CAS-ified
 		data: wsParams,
-		success: function (data) {
+		success: function (dataAll) {
+		    data = $.grep(dataAll, function (item, i) { 
+			return item.displayName !== "supannListeRouge"; 
+		    });
+		    nbListeRouge = dataAll.length - data.length;
+
 		    data = sortByAffiliation(data);
 		    transformItems(data, settings.wantedAttr, request.term);
 		    if (data.length >= settings.maxRows) {
 			data[data.length-1].partialResults = settings.maxRows;
 		    }
+		    data[data.length-1].nbListeRouge = nbListeRouge;
+
 		    response(data);
 		}
 	    });

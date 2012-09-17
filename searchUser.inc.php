@@ -39,8 +39,7 @@ if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumbe
 
 $allowListeRouge = GET_uid() && isStaffOrFaculty(GET_uid());
 $restriction = computeFilter($filters, false) . computeFilter($filters_not, true);
-$users = getLdapInfoMultiFilters($PEOPLE_DN, people_filters($token, $allowListeRouge, $restriction), 
-				 $wanted_attrs, $KEY_FIELD, $maxRows);
+$users = searchPeople(people_filters($token, $restriction), $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows);
 
 function computeOneFilter($attr, $valsS) {
     $vals = explode('|', $valsS);

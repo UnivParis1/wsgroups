@@ -28,6 +28,9 @@ $STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "descript
 $ROLE_GENERIQUE_ATTRS = array("supannRoleGenerique" => "key", "displayName" => "name");
 $ETABLISSEMENT_TABLE_ATTRS = array("supannEtablissement" => "key", "displayName" => "name");
 
+// someone having supannListeRouge=TRUE will be returned with all attrs anonymized except the following
+$PEOPLE_LISTEROUGE_NON_ANONYMIZED_ATTRS = array('eduPersonAffiliation', 'eduPersonPrimaryAffiliation');
+
 $AFFILIATION2TEXT = array("faculty" => "enseignants", 
 			  "student" => "étudiants", 
 			  "staff" => "Biatss", 
