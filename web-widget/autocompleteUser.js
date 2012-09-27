@@ -154,8 +154,9 @@
 		    if (data.length >= settings.maxRows) {
 			data[data.length-1].partialResults = settings.maxRows;
 		    }
-		    data[data.length-1].nbListeRouge = nbListeRouge;
-
+		    if (data.length > 0) {
+			data[data.length-1].nbListeRouge = nbListeRouge;
+		    }
 		    response(data);
 		}
 	    });
