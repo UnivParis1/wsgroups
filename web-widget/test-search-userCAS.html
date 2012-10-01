@@ -17,13 +17,22 @@
 
 <form method="get" action="/foo">
   <div class="ui-widget">
-    <label for="foo">Cherchez une personne</label>
-    <input name="uid" placeholder="Nom et/ou prenom" />
+    <label for="all">Cherchez une personne</label>
+    <input id="all" name="all" placeholder="Nom et/ou prenom" />
+    <br>
+    <label for="student">Cherchez un etudiant</label>
+    <input id="student" name="student" placeholder="Nom et/ou prenom" />
+    <br>
+    <label for="other">Cherchez un non-etudiant</label>
+    <input id="other" name="other" placeholder="Nom et/ou prenom" />
   </div>
 </form>
 
 <script>
-   $( "input" ).autocompleteUser('../searchUserCAS');
+   var url = '../searchUserCAS';
+   $( "#all" ).autocompleteUser(url);
+   $( "#student" ).autocompleteUser(url, { wsParams: { filter_eduPersonAffiliation: "student" } });
+   $( "#other" ).autocompleteUser(url, { wsParams: { filter_not_eduPersonAffiliation: "student" } });
    $( "input" ).handlePlaceholderOnIE();
 </script>
 
