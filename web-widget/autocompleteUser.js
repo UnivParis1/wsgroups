@@ -141,8 +141,13 @@
 	    $.ajax({
 		url: searchUserURL,
 		dataType: "jsonp",
-		crossDomain: true, // esp. needed if searchUserURL is CAS-ified
+		crossDomain: true, // needed if searchUserURL is CAS-ified or on a different host than application using autocompleteUser
 		data: wsParams,
+		error: function () {
+		    // we should display on error. but we do not have a nice error to display
+		    // the least we can do is to show the user the request is finished!
+		    response([]);
+		},
 		success: function (dataAll) {
 		    data = $.grep(dataAll, function (item, i) { 
 			return item.displayName !== "supannListeRouge"; 
