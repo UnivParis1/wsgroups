@@ -6,6 +6,7 @@ require ('./tables.inc.php');
 $token = GET_ldapFilterSafe("token");
 $attrs = GET_or_NULL("attrs");
 $maxRows = min(GET_or_NULL("maxRows"), 10);
+$showErrors = GET_or_NULL("showErrors");
 
 $filters = array();
 $filters_not = array();
@@ -59,11 +60,13 @@ function computeFilter($filters, $not) {
 }
 
 function structureShortnames($keys) {
-    GLOBAL $structureKeyToShortname;
+    GLOBAL $structureKeyToShortname, $showErrors;
     $shortnames = array();
     foreach ($keys as &$key) {
       if (isset($structureKeyToShortname[$key]))
 	$shortnames[] = $structureKeyToShortname[$key];
+      else if ($showErrors)
+	$shortnames[] = "invalid structure $key";
     }
     return empty($shortnames) ? NULL : $shortnames;
 }

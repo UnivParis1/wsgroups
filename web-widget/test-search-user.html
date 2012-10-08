@@ -30,9 +30,9 @@
 
 <script>
    var url = '../searchUser';
-   $( "#all" ).autocompleteUser(url);
-   $( "#student" ).autocompleteUser(url, { wsParams: { filter_eduPersonAffiliation: "student" } });
-   $( "#other" ).autocompleteUser(url, { wsParams: { filter_not_eduPersonAffiliation: "student" } });
+   $( "#all" ).autocompleteUser(url, { wsParams: { showErrors: 1 } } );
+   $( "#student" ).autocompleteUser(url, { wsParams: { showErrors: 1, filter_eduPersonAffiliation: "student" } });
+   $( "#other" ).autocompleteUser(url, { wsParams: { showErrors: 1, filter_not_eduPersonAffiliation: "student" } });
    $( "input" ).handlePlaceholderOnIE();
 </script>
 
