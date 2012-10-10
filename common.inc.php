@@ -111,9 +111,14 @@ function getUserGroups($uid) {
     return $groups;
 }
 
+function groupsNotCreatedByGrouper($map) {
+    return !startsWith($map["key"], "structures:");
+}
+
 function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
   $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit);
+  $r = array_filter($r, 'groupsNotCreatedByGrouper');
   foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "groups-" . $map["key"];
