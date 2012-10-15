@@ -56,7 +56,7 @@
       if (uid === searchedTokenL) {
 	  display_uid = true;
 	  uid = highlight(uid);
-      } else if (item.cn.toLowerCase().indexOf(searchedTokenL) == 0)
+      } else if (item.cn.toLowerCase().indexOf(searchedTokenL) === 0)
 	  displayName = highlightMatched(item.cn, searchedTokenL);
       else
 	  displayName = highlightMatched(displayName, searchedTokenL);
