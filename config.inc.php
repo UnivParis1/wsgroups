@@ -3,6 +3,7 @@
 require ('./config-auth.inc.php');
 
 $DEBUG = 0;
+$SEARCH_TIMELIMIT = 5; // seconds
 
 $BASE_DN = "dc=univ-paris1,dc=fr";
 

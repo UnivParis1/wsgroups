@@ -59,12 +59,12 @@ function isStaffOrFaculty($uid) {
 }
 
 function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
-    global $PEOPLE_DN;
+    global $PEOPLE_DN, $SEARCH_TIMELIMIT;
     if (!$allowListeRouge) {
 	// we need the attr to anonymize people having supannListeRouge=TRUE
 	$wanted_attrs['supannListeRouge'] = 'supannListeRouge';
     }
-    $r = getLdapInfoMultiFilters($PEOPLE_DN, $filter, $wanted_attrs, $KEY_FIELD, $maxRows);    
+    $r = getLdapInfoMultiFilters($PEOPLE_DN, $filter, $wanted_attrs, $KEY_FIELD, $maxRows, $SEARCH_TIMELIMIT);
     foreach ($r as &$e) {
 	if (!isset($e["supannListeRouge"])) continue;
 	$supannListeRouge = $e["supannListeRouge"];
@@ -208,10 +208,10 @@ function getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures) 
   return $r;
 }
 
-function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField, $sizelimit = 0) {
+function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField, $sizelimit = 0, $timelimit = 0) {
   $rr = array();
   foreach ($filters as $filter) {
-    $rr[] = getLdapInfo($base, $filter, $attributes_map, $sizelimit);
+    $rr[] = getLdapInfo($base, $filter, $attributes_map, $sizelimit, $timelimit);
   }
   $r = mergeArraysNoDuplicateKeys($rr, $uniqueField);
   if ($sizelimit > 0)
@@ -229,7 +229,7 @@ function existsLdap($base, $filter) {
   return (bool) $r;
 }
 
-function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0) {
+function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0, $timelimit = 0) {
   global $DEBUG;
 
   $before = microtime(true);
@@ -237,7 +237,7 @@ function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0) {
   $ds = global_ldap_open();
 
   if ($DEBUG) error_log("searching $base for $filter");
-  $search_result = @ldap_search($ds, $base, $filter, array_keys($attributes_map), 0, $sizelimit);
+  $search_result = @ldap_search($ds, $base, $filter, array_keys($attributes_map), 0, $sizelimit, $timelimit);
   if (!$search_result) return array();
   $all_entries = ldap_get_entries($ds, $search_result);
   if ($DEBUG) error_log("found " . $all_entries['count'] . " results");
