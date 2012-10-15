@@ -17,7 +17,8 @@ function GET_uid() {
 }
 
 function people_filters($token, $restriction = '') {
-    $r = array("(&(uid=$token)(eduPersonAffiliation=*)$restriction)");
+    $exactOr = "(uid=$token)(sn=$token)";
+    $r = array("(&(|$exactOr)(eduPersonAffiliation=*)$restriction)");
     if (strlen($token) > 3) 
 	// too short strings are useless
 	$r[] = "(&(eduPersonAffiliation=*)(|(displayName=*$token*)(cn=*$token*))$restriction)";
@@ -208,7 +209,10 @@ function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField,
   foreach ($filters as $filter) {
     $rr[] = getLdapInfo($base, $filter, $attributes_map, $sizelimit);
   }
-  return mergeArraysNoDuplicateKeys($rr, $uniqueField);
+  $r = mergeArraysNoDuplicateKeys($rr, $uniqueField);
+  if ($sizelimit > 0)
+      $r = array_splice($r, 0, $sizelimit);
+  return $r;
 }
 
 function getFirstLdapInfo($base, $filter, $attributes_map) {

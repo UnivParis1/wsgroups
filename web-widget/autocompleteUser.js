@@ -80,6 +80,8 @@
 
       if (item.partialResults)
 	  $("<li></li>").addClass("warning").append("La recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.").appendTo(ul);
+      if (item.partialResultsNoFullSearch)
+	  $("<li></li>").addClass("warning").append("La recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.").appendTo(ul);
 
   };
 
@@ -125,7 +127,8 @@
       if (!searchUserURL) throw "missing param searchUserURL";
 
       var settings = $.extend( 
-	  { 'minLength' : 4,
+	  { 'minLength' : 2,
+	    'minLengthFullSearch' : 4,
 	    'maxRows' : 10,
 	    'wantedAttr' : 'uid',
 	    'attrs' : attrs
@@ -156,10 +159,12 @@
 
 		    data = sortByAffiliation(data);
 		    transformItems(data, settings.wantedAttr, request.term);
-		    if (data.length >= settings.maxRows) {
-			data[data.length-1].partialResults = settings.maxRows;
-		    }
 		    if (data.length > 0) {
+			if (data.length >= settings.maxRows) {
+			    data[data.length-1].partialResults = settings.maxRows;
+			} else if (request.term.length < settings.minLengthFullSearch) {
+			    data[data.length-1].partialResultsNoFullSearch = 1;
+			}
 			data[data.length-1].nbListeRouge = nbListeRouge;
 		    }
 		    response(data);
