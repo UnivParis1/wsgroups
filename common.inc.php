@@ -107,6 +107,8 @@ function getUserGroups($uid) {
 	$key = $user["supannEntiteAffectation"];
 	$groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntite=$key)"), 1);
 	$groups = array_merge($groups, remove_businessCategory($groupsStructures));
+    } else {
+        $groupsStructures = array();
     }
     if (isset($user["eduPersonAffiliation"])) {
       $groups_ = getGroupsFromAffiliations($user["eduPersonAffiliation"], $groupsStructures);
