@@ -10,7 +10,9 @@
   var getDetails = function (item) {
       var details = [];
 
-      if (item.duplicateDisplayName) {
+      if (item.searchedTokenL === item.mail.toLowerCase()) {
+	  details.push(highlight(item.mail));
+      } else if (item.duplicateDisplayName) {
 	  details.push(item.mail);
       }
       if (item.employeeType)
