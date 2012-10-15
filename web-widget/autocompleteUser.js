@@ -102,8 +102,8 @@
       var affiliation;
       var odd_even;
       // nb: "cn" is easer to compare since there is no accents. Two "displayName"s could be equal after removing accents.
-      var cnOccurences = countOccurences(items.map(function (item) { return item.cn }));
-      var displayNameOccurences = countOccurences(items.map(function (item) { return item.displayName }));
+      var cnOccurences = countOccurences($.map(items, function (item) { return item.cn }));
+      var displayNameOccurences = countOccurences($.map(items, function (item) { return item.displayName }));
       $.each(items, function ( i, item ) {
 	    item.label = item.displayName;
 	    item.value = item[wantedAttr];
@@ -172,7 +172,7 @@
 	  source: source,
 	  open: function () {
 	    $('html,body').scrollTop($(this).offset().top);
-	  },
+	  }
       };
 
       if (settings.select) {
