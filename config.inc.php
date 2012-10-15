@@ -24,7 +24,7 @@ $ETABLISSEMENT_TABLE_DN = "ou=supannEtablissement,ou=tables,".$BASE_DN;
 
 $PEOPLE_ATTRS = array("uid" => "uid", "displayName" => "displayName");
 $GROUPS_ATTRS = array("cn" => "key", "ou" => "name", "description" => "description");
-$STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description");
+$STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description", "businessCategory" => "businessCategory");
 $ROLE_GENERIQUE_ATTRS = array("supannRoleGenerique" => "key", "displayName" => "name");
 $ETABLISSEMENT_TABLE_ATTRS = array("supannEtablissement" => "key", "displayName" => "name");
 

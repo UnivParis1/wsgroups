@@ -101,7 +101,7 @@ function getUserGroups($uid) {
     if (isset($user["supannEntiteAffectation"])) {
 	$key = $user["supannEntiteAffectation"];
 	$groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntite=$key)"), 1);
-	$groups = array_merge($groups, $groupsStructures);
+	$groups = array_merge($groups, remove_businessCategory($groupsStructures));
     }
     if (isset($user["eduPersonAffiliation"])) {
       $groups_ = getGroupsFromAffiliations($user["eduPersonAffiliation"], $groupsStructures);
@@ -157,7 +157,7 @@ function getGroupsFromDiplomaDn($filters, $sizelimit = 0) {
     return getGroupsFromDiplomaDnOrPrev($filters, false, $sizelimit);
 }
 
-function getGroupsFromDiplomaDnOrPrev($filters, $want_prev, $sizelimit) {
+function getGroupsFromDiplomaDnOrPrev($filters, $want_prev, $sizelimit = 0) {
     global $ANNEE_PREV, $DIPLOMA_DN, $DIPLOMA_PREV_DN, $DIPLOMA_ATTRS;
     $dn = $want_prev ? $DIPLOMA_PREV_DN : $DIPLOMA_DN;
     $r = getLdapInfoMultiFilters($dn, $filters, $DIPLOMA_ATTRS, "key", $sizelimit);
@@ -194,9 +194,10 @@ function getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures) 
     $text = $AFFILIATION2TEXT[$affiliation];
     $suffix = " (" . $text . ")";
     foreach ($groupsStructures as $group) {
-      $r[] = array("key" => $group["key"] . "-affiliation-" . $affiliation, 
-		   "name" => $group["name"] . $suffix, 
-		   "description" => $group["description"] . $suffix);
+	if ($group["businessCategory"] == "pedagogy")
+	    $r[] = array("key" => $group["key"] . "-affiliation-" . $affiliation, 
+			 "name" => $group["name"] . $suffix, 
+			 "description" => $group["description"] . $suffix);
     }
   }
   return $r;
@@ -320,6 +321,13 @@ function exact_match_first($r, $token) {
 	}
     }
     return array_merge($exact, $r);
+}
+
+function remove_businessCategory($r) {
+    foreach ($r as &$e) {
+	unset($e["businessCategory"]);
+    }
+    return $r;
 }
 
 // after exact_match_first, rawKey can be safely removed: it is used for search token=matiXXXXX, "key" will contain groups-matiXXXXXX and won't match. "rawKey" will match!
