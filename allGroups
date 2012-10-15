@@ -1,0 +1,21 @@
+<?php // -*-PHP-*-
+require ('./common.inc.php');
+
+$groups = array();
+
+$groups[] = getGroupsFromGroupsDn(array("(cn=*)"));
+
+foreach (array(false, true) as $is_prev) {
+  $groups[] = getGroupsFromDiplomaDnOrPrev(array("(description=*)"), $is_prev);
+}
+
+$groupsStructures = getGroupsFromStructuresDn(array("(&(supannCodeEntite=*)(ou=*))"));
+$groups[] = remove_businessCategory($groupsStructures);
+
+$groups[] = getGroupsFromAffiliations(array_keys($AFFILIATION2TEXT), $groupsStructures);
+
+$all_groups = call_user_func_array('array_merge', $groups); // flatten non recursively
+remove_rawKey($all_groups);
+echoJson($all_groups);
+
+?>
