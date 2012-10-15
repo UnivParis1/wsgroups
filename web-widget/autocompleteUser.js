@@ -3,6 +3,10 @@
   var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, member: 7 };
   var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", member: "Divers", "": "Divers" };
 
+  var highlight = function (text) {
+      return "<span class='match'>" + text + "</span>";
+  };
+
   var getDetails = function (item) {
       var details = [];
 
@@ -37,7 +41,7 @@
 	else {
 	    var endPos = pos + searchedTokenL.length;
 	    return text.substring(0, pos) + 
-		"<span class='match'>" + text.substring(pos, endPos) + "</span>" +
+		highlight(text.substring(pos, endPos)) +
 		text.substring(endPos);
 	}
   };
@@ -49,7 +53,7 @@
       var display_uid = item.duplicateDisplayName;
       if (uid === searchedTokenL) {
 	  display_uid = true;
-	  uid = "<span class='match'>" + uid + "</span>";
+	  uid = highlight(uid);
       } else if (item.cn.toLowerCase().indexOf(searchedTokenL) == 0)
 	  displayName = highlightMatched(item.cn, searchedTokenL);
       else
