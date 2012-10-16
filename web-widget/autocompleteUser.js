@@ -83,6 +83,9 @@
 	  renderOneWarning(ul, "La recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
       if (item.partialResultsNoFullSearch)
 	  renderOneWarning(ul, "La recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+
+      if (item.wsError)
+	  renderOneWarning(ul, "Erreur web service");
   };
   var myRenderItem = function(ul, item) {
 	if (item.warning) 
@@ -163,7 +166,7 @@
 		error: function () {
 		    // we should display on error. but we do not have a nice error to display
 		    // the least we can do is to show the user the request is finished!
-		    response([]);
+		    response([ { warning: true, wsError: true } ]);
 		},
 		success: function (dataAll) {
 		    data = $.grep(dataAll, function (item, i) { 
