@@ -67,7 +67,27 @@
       return displayName;
   };
 
+  var renderOneWarning = function(ul, msg) {
+      $("<li></li>").addClass("warning").append(msg).appendTo(ul);
+  };
+
+  var renderWarningItem = function(ul, item) {
+      if (item.nbListeRouge)
+	  renderOneWarning(ul, 
+	      item.nbListeRouge > 1 ?
+		  "NB : des r&eacute;sultats ont &eacute;t&eacute; cach&eacute;s<br>&agrave; la demande des personnes." :
+		  "NB : un r&eacute;sultat a &eacute;t&eacute; cach&eacute;<br>&agrave; la demande de la personne."
+	  );
+
+      if (item.partialResults)
+	  renderOneWarning(ul, "La recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+      if (item.partialResultsNoFullSearch)
+	  renderOneWarning(ul, "La recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+  };
   var myRenderItem = function(ul, item) {
+	if (item.warning) 
+	    return renderWarningItem(ul, item);
+
 	if (item.pre)
 	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
 
@@ -76,18 +96,6 @@
 	    .data("item.autocomplete", item)
 	    .append("<a>" + content + "</a>")
 	    .appendTo(ul);
-
-      if (item.nbListeRouge)
-	  $("<li></li>").addClass("warning").append(
-	      item.nbListeRouge > 1 ?
-		  "NB : des r&eacute;sultats ont &eacute;t&eacute; cach&eacute;s<br>&agrave; la demande des personnes." :
-		  "NB : un r&eacute;sultat a &eacute;t&eacute; cach&eacute;<br>&agrave; la demande de la personne."
-	  ).appendTo(ul);
-
-      if (item.partialResults)
-	  $("<li></li>").addClass("warning").append("La recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.").appendTo(ul);
-      if (item.partialResultsNoFullSearch)
-	  $("<li></li>").addClass("warning").append("La recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.").appendTo(ul);
 
   };
 
@@ -165,14 +173,16 @@
 
 		    data = sortByAffiliation(data);
 		    transformItems(data, settings.wantedAttr, request.term);
-		    if (data.length > 0) {
-			if (data.length >= settings.maxRows) {
-			    data[data.length-1].partialResults = settings.maxRows;
-			} else if (request.term.length < settings.minLengthFullSearch) {
-			    data[data.length-1].partialResultsNoFullSearch = 1;
-			}
-			data[data.length-1].nbListeRouge = nbListeRouge;
+
+		    warning = { warning: true }
+		    data.push(warning);
+		    if (data.length >= settings.maxRows) {
+			warning.partialResults = settings.maxRows;;
+		    } else if (request.term.length < settings.minLengthFullSearch) {
+			warning.partialResultsNoFullSearch = 1;
 		    }
+		    warning.nbListeRouge = nbListeRouge;
+
 		    response(data);
 		}
 	    });
