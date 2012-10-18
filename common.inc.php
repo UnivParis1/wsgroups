@@ -129,6 +129,7 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
   foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "groups-" . $map["key"];
+      if (!isset($map["name"])) $map["name"] = $map["rawKey"];
   }
   return $r;
 }
