@@ -299,6 +299,12 @@ function echoJson($array) {
     echo json_encode($array);  
 }
 
+function echoJsonSimpleGroups($groups) {
+    remove_rawKey($groups);
+    remove_modifyTimestamp($groups);
+    echoJson($groups);
+}
+
 function identiqueMap($list) {
     $map = array();
     foreach ($list as $e) $map[$e] = $e;
@@ -345,6 +351,12 @@ function remove_businessCategory($r) {
 function remove_rawKey(&$r) {
     foreach ($r as &$e) {
 	unset($e["rawKey"]);
+    }
+}
+// modifyTimestamp is only used by allGroups
+function remove_modifyTimestamp(&$r) {
+    foreach ($r as &$e) {
+	unset($e["modifyTimestamp"]);
     }
 }
 

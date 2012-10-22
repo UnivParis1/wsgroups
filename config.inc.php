@@ -13,7 +13,7 @@ $ANNEE_PREV = 2011;
 $ALT_STRUCTURES_DN = "ou=structures,o=Paris1,".$BASE_DN;
 $DIPLOMA_DN = "ou=$ANNEE,ou=diploma,o=Paris1,".$BASE_DN;
 $DIPLOMA_PREV_DN = "ou=$ANNEE_PREV,ou=diploma,o=Paris1,".$BASE_DN;
-$DIPLOMA_ATTRS = array("ou" => "key", "description" => "description");
+$DIPLOMA_ATTRS = array("ou" => "key", "description" => "description", "modifyTimestamp" => "modifyTimestamp");
 
 
 // supann:
@@ -24,8 +24,8 @@ $ROLE_GENERIQUE_DN = "ou=supannRoleGenerique,ou=tables,".$BASE_DN;
 $ETABLISSEMENT_TABLE_DN = "ou=supannEtablissement,ou=tables,".$BASE_DN;
 
 $PEOPLE_ATTRS = array("uid" => "uid", "displayName" => "displayName");
-$GROUPS_ATTRS = array("cn" => "key", "ou" => "name", "description" => "description");
-$STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description", "businessCategory" => "businessCategory");
+$GROUPS_ATTRS = array("cn" => "key", "ou" => "name", "description" => "description", "modifyTimestamp" => "modifyTimestamp");
+$STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description", "businessCategory" => "businessCategory", "modifyTimestamp" => "modifyTimestamp");
 $ROLE_GENERIQUE_ATTRS = array("supannRoleGenerique" => "key", "displayName" => "name");
 $ETABLISSEMENT_TABLE_ATTRS = array("supannEtablissement" => "key", "displayName" => "name");
 
