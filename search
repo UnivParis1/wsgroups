@@ -3,7 +3,7 @@
 require ('./common.inc.php');
 
 $token = GET_ldapFilterSafe("token");
-$maxRows = min(GET_or_NULL("maxRows"), 10);
+$maxRows = min(max(1, GET_or_NULL("maxRows")), 10);
 
 $users = searchPeople(people_filters($token), false, $PEOPLE_ATTRS, "uid", $maxRows);
 $groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
