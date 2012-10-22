@@ -14,6 +14,7 @@ $all_groups = array_merge($groups, $structures, $diploma);
 
 $all_groups = exact_match_first($all_groups, $token);
 remove_rawKey($all_groups);
+remove_modifyTimestamp($all_groups);
 
 echoJson(array("users" => $users, "groups" => $all_groups));
 

@@ -13,6 +13,6 @@ remove_rawKey($groups2);
 foreach ($groups2 as &$g) {
   $g["role"] = "Responsable";
 }
-echoJson(array_merge($groups, $groups2));
+echoJsonSimpleGroups(array_merge($groups, $groups2));
 
 ?>

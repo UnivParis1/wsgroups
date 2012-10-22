@@ -31,7 +31,6 @@ if ($cn = removePrefixOrNULL($key, "groups-")) {
 } else {
   error("invalid group key $key");
 }
-remove_rawKey($all_groups);
-echoJson($all_groups);
+echoJsonSimpleGroups($all_groups);
 
 ?>
