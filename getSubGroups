@@ -20,6 +20,11 @@ if ($cn = removePrefixOrNULL($key, "groups-")) {
   $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
   $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
   $all_groups = array_merge($diploma, $groups);
+} else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
+  $ou = "ou=$diploma," . $DIPLOMA_PREV_DN;
+  $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
+  $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
+  $all_groups = array_merge($diploma, $groups);
 } else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
   $groupsStructures = getGroupsFromStructuresDn(array("(businessCategory=pedagogy)"));
   $all_groups = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
