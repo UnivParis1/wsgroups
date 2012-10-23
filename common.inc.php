@@ -394,4 +394,8 @@ function mayRemap($map, $k) {
   return isset($map[$k]) ? $map[$k] : $k;
 }
 
+function array_flatten_non_rec($r) {
+    return sizeof($r) > 0 ? call_user_func_array('array_merge', $r) : array();
+}
+
 ?>
