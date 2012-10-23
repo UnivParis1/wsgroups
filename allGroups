@@ -14,7 +14,7 @@ $groups[] = remove_businessCategory($groupsStructures);
 
 $groups[] = getGroupsFromAffiliations(array_keys($AFFILIATION2TEXT), $groupsStructures);
 
-$all_groups = call_user_func_array('array_merge', $groups); // flatten non recursively
+$all_groups = array_flatten_non_rec($groups);
 remove_rawKey($all_groups);
 echoJson($all_groups);
 
