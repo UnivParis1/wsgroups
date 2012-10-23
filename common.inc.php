@@ -100,7 +100,7 @@ function getUserGroups($uid) {
     if (!$user) return $groups;
 
     if (isset($user["eduPersonOrgUnitDN"])) {	
-	$groups_ = getGroupsFromEduPersonOrgUnitDN($user["eduPersonOrgUnitDN"]);
+	$groups_ = getGroupsFromDiplomaEntryDn($user["eduPersonOrgUnitDN"]);
 	$groups = array_merge($groups, $groups_);
     }
     if (isset($user["supannEntiteAffectation"])) {
@@ -144,7 +144,7 @@ function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
     return $r;
 }
 
-function getGroupsFromEduPersonOrgUnitDN($eduPersonOrgUnitDNs) {
+function getGroupsFromDiplomaEntryDn($eduPersonOrgUnitDNs) {
     global $DIPLOMA_DN, $DIPLOMA_PREV_DN;
     $r = array();
     foreach ($eduPersonOrgUnitDNs as $key) {
