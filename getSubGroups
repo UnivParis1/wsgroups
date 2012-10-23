@@ -12,19 +12,13 @@ if ($cn = removePrefixOrNULL($key, "groups-")) {
   $supannCodeEntite = preg_replace("/-affiliation-.*/", "", $supannCodeEntite);
 
   $ou = "ou=$supannCodeEntite," . $ALT_STRUCTURES_DN;
-  $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
-  $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
-  $all_groups = array_merge($diploma, $groups);
+  $all_groups = getGroupsFromSeeAlso($ou);
 } else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
   $ou = "ou=$diploma," . $DIPLOMA_DN;
-  $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
-  $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
-  $all_groups = array_merge($diploma, $groups);
+  $all_groups = getGroupsFromSeeAlso($ou);
 } else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
   $ou = "ou=$diploma," . $DIPLOMA_PREV_DN;
-  $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$ou)"));
-  $groups = getGroupsFromGroupsDn(array("(seeAlso=$ou)"));
-  $all_groups = array_merge($diploma, $groups);
+  $all_groups = getGroupsFromSeeAlso($ou);
 } else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
   $groupsStructures = getGroupsFromStructuresDn(array("(businessCategory=pedagogy)"));
   $all_groups = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
