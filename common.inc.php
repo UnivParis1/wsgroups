@@ -179,6 +179,12 @@ function getGroupsFromDiplomaDnOrPrev($filters, $want_prev, $sizelimit = 0) {
     return $r;
 }
 
+function getGroupsFromSeeAlso($seeAlso) {
+    $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$seeAlso)"));
+    $groups = getGroupsFromGroupsDn(array("(seeAlso=$seeAlso)"));
+    return array_merge($diploma, $groups);
+}
+
 function getGroupsFromAffiliations($affiliations, $groupsStructures) {
   $r = array();
   foreach ($affiliations as $affiliation) {
