@@ -233,6 +233,24 @@ function getGroupsFromSeeAlso($seeAlso) {
     return array_merge($diploma, $groups);
 }
 
+function groupKeyToCategory($key) {
+    if (preg_match('/^(structures|affiliation|diploma)-/', $key, $matches) ||
+	preg_match('/^groups-(gpelp|gpetp)\./', $key, $matches))
+	return $matches[1];
+    else if (startsWith($key, 'groups-mati'))
+	return 'elp';
+    else if (startsWith($key, 'groups-'))
+	return 'local';
+    else
+	return null;
+}
+
+function add_group_category(&$groups) {
+    foreach ($groups as &$g) {
+	$g["category"] = groupKeyToCategory($g["key"]);
+    }
+}
+
 function getGroupsFromAffiliations($affiliations, $groupsStructures) {
   $r = array();
   foreach ($affiliations as $affiliation) {
