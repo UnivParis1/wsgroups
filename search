@@ -4,8 +4,9 @@ require ('./common.inc.php');
 
 $token = GET_ldapFilterSafe("token");
 $maxRows = min(max(1, GET_or_NULL("maxRows")), 10);
+$restriction = GET_extra_people_filter_from_params();
 
-$users = searchPeople(people_filters($token), false, $PEOPLE_ATTRS, "uid", $maxRows);
+$users = searchPeople(people_filters($token, $restriction), false, $PEOPLE_ATTRS, "uid", $maxRows);
 $groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
 $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows);
 $structures = remove_businessCategory($structures);
