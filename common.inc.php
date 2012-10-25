@@ -170,7 +170,7 @@ function groupsNotCreatedByGrouper($map) {
     return !startsWith($map["key"], "structures:");
 }
 
-function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
+function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
   $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit);
   $r = array_filter($r, 'groupsNotCreatedByGrouper');
@@ -180,6 +180,11 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
       if (!isset($map["name"])) $map["name"] = $map["rawKey"];
   }
   return $r;
+}
+function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
+    $r = getGroupsFromGroupsDnRaw($filters, $sizelimit);
+    computeDescriptionsFromSeeAlso($r);
+    return $r;
 }
 
 function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
@@ -232,6 +237,51 @@ function getGroupsFromSeeAlso($seeAlso) {
     $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$seeAlso)"));
     $groups = getGroupsFromGroupsDn(array("(seeAlso=$seeAlso)"));
     return array_merge($diploma, $groups);
+}
+
+function normalizeSeeAlso($seeAlso) {
+    global $ALT_STRUCTURES_DN, $STRUCTURES_DN;
+    return preg_replace("/ou=(.*)," . preg_quote($ALT_STRUCTURES_DN) . "/", 
+			"supannCodeEntite=$1,$STRUCTURES_DN", $seeAlso);
+}
+function getNameFromSeeAlso($seeAlso) {
+    global $GROUPS_DN, $STRUCTURES_DN;
+
+    $seeAlso = normalizeSeeAlso($seeAlso);
+
+    if (contains($seeAlso, $GROUPS_DN))
+	$groups = getGroupsFromGroupsDnRaw(array("(entryDN=$seeAlso)"), 1);
+    else if (contains($seeAlso, $STRUCTURES_DN)) {
+	$groups = getGroupsFromStructuresDn(array("(entryDN=$seeAlso)"), 1);
+    } else
+	$groups = getGroupsFromDiplomaEntryDn(array($seeAlso));
+
+    if ($groups && $groups[0])
+    	return $groups[0]["name"];
+    else
+	return '';
+}
+
+function computeDescriptionsFromSeeAlso(&$groups) {
+    $seeAlsos = array();
+    foreach ($groups as $g) 
+	if (isset($g["seeAlso"])) $seeAlsos[] = $g["seeAlso"];
+    $seeAlsos = array_unique(array_flatten_non_rec($seeAlsos));
+
+    $names = array();
+    foreach ($seeAlsos as $seeAlso)
+	$names[$seeAlso] = getNameFromSeeAlso($seeAlso);
+
+    foreach ($groups as &$g) {
+	$l = array();
+	if (!isset($g["seeAlso"])) continue;
+
+	foreach ($g["seeAlso"] as $seeAlso)
+	    $l[] = $names[$seeAlso];
+	sort($l);
+	$g["description"] = join("<br>\n", $l);
+	unset($g["seeAlso"]);
+    }
 }
 
 function normalizeNameGroupFromStructuresDn(&$map) {
