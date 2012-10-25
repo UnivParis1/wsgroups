@@ -11,7 +11,7 @@ $(function() {
 			    return { label: item.displayName, value: item.uid }
 			}),
 			$.map( data.groups, function( item ) {
-			    return { label: item.description, value: item.key }
+			    return { label: item.name, value: item.key }
 			})
 		    ));
 		}
