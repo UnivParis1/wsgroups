@@ -23,7 +23,7 @@ $STRUCTURES_DN = "ou=structures,".$BASE_DN;
 $ROLE_GENERIQUE_DN = "ou=supannRoleGenerique,ou=tables,".$BASE_DN;
 $ETABLISSEMENT_TABLE_DN = "ou=supannEtablissement,ou=tables,".$BASE_DN;
 
-$PEOPLE_ATTRS = array("uid" => "uid", "displayName" => "displayName");
+$PEOPLE_ATTRS = array("uid" => "uid", "displayName" => "displayName", "supannEntiteAffectation" => "MULTI");
 $GROUPS_ATTRS = array("cn" => "key", "ou" => "name", "description" => "description", "modifyTimestamp" => "modifyTimestamp");
 $STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description", "businessCategory" => "businessCategory", "modifyTimestamp" => "modifyTimestamp");
 $ROLE_GENERIQUE_ATTRS = array("supannRoleGenerique" => "key", "displayName" => "name");

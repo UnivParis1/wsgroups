@@ -1,7 +1,6 @@
 <?php // -*-PHP-*-
 
 require ('./common.inc.php');
-require ('./tables.inc.php');
 
 $token = GET_ldapFilterSafe("token");
 $attrs = GET_or_NULL("attrs");
@@ -57,39 +56,6 @@ function computeFilter($filters, $not) {
     $r .= $not ? "(!$one)" : $one;
   }
   return $r;
-}
-
-function structureShortnames($keys) {
-    GLOBAL $structureKeyToShortname, $showErrors;
-    $shortnames = array();
-    foreach ($keys as &$key) {
-      if (isset($structureKeyToShortname[$key]))
-	$shortnames[] = $structureKeyToShortname[$key];
-      else if ($showErrors)
-	$shortnames[] = "invalid structure $key";
-    }
-    return empty($shortnames) ? NULL : $shortnames;
-}
-
-foreach ($users as &$user) {
-  if (isset($user['employeeType']) || isset($user['departmentNumber']))
-    if (!in_array($user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) {
-      unset($user['employeeType']); // employeeType is private for staff & student
-      unset($user['departmentNumber']); // departmentNumber is not interesting for staff & student
-    }
-  if (isset($user['supannEntiteAffectation'])) {
-    $user['supannEntiteAffectation'] = structureShortnames($user['supannEntiteAffectation']);
-  }
-  if (isset($user['supannRoleGenerique'])) {
-    $user['supannRoleGenerique'] = $roleGeneriqueKeyToShortname[$user['supannRoleGenerique']];
-  }
-  if (isset($user['supannEtablissement'])) {
-    if (in_array($user['supannEtablissement'], array('{UAI}0751717J', "{autre}"))) {
-      unset($user['supannEtablissement']); // only return interesting supannEtablissement (ie not Paris1)
-    } else {
-      $user['supannEtablissement'] = mayRemap($etablissementKeyToShortname, $user['supannEtablissement']);
-    }
-  }
 }
 
 echoJson($users);

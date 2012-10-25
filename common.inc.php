@@ -1,6 +1,7 @@
 <?php
 
 require ('./config.inc.php');
+require ('./tables.inc.php');
 
 function GET_ldapFilterSafe($name) {
     return ldap_escape_string($_GET[$name]);
@@ -58,7 +59,7 @@ function isStaffOrFaculty($uid) {
     return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . staffFaculty_filter() . ")");
 }
 
-function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
+function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
     global $PEOPLE_DN, $SEARCH_TIMELIMIT;
     if (!$allowListeRouge) {
 	// we need the attr to anonymize people having supannListeRouge=TRUE
@@ -70,6 +71,15 @@ function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $max
 	$supannListeRouge = $e["supannListeRouge"];
 	unset($e["supannListeRouge"]);
 	if ($supannListeRouge == "TRUE") anonymizeUser($e, $wanted_attrs);
+    }
+    return $r;
+}
+
+function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
+    $r = searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows);
+    foreach ($r as &$user) {
+      userHandleSpecialAttributePrivacy($user);
+      userAttributesKeyToText($user);
     }
     return $r;
 }
@@ -87,6 +97,44 @@ function anonymizeUser(&$e, $attributes_map) {
 	    $e[$k] = $attributes_map[$k] == "MULTI" ? array() : 'supannListeRouge';
 	}
     }
+}
+
+function structureShortnames($keys) {
+    GLOBAL $structureKeyToShortname, $showErrors;
+    $shortnames = array();
+    foreach ($keys as &$key) {
+      if (isset($structureKeyToShortname[$key]))
+	$shortnames[] = $structureKeyToShortname[$key];
+      else if ($showErrors)
+	$shortnames[] = "invalid structure $key";
+    }
+    return empty($shortnames) ? NULL : $shortnames;
+}
+
+function userHandleSpecialAttributePrivacy(&$user) {
+  if (isset($user['employeeType']) || isset($user['departmentNumber']))
+    if (!in_array($user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) {
+      unset($user['employeeType']); // employeeType is private for staff & student
+      unset($user['departmentNumber']); // departmentNumber is not interesting for staff & student
+    }
+}
+
+function userAttributesKeyToText(&$user) {
+  if (isset($user['supannEntiteAffectation'])) {
+    $user['supannEntiteAffectation'] = structureShortnames($user['supannEntiteAffectation']);
+  }
+  if (isset($user['supannRoleGenerique'])) {
+    global $roleGeneriqueKeyToShortname;
+    $user['supannRoleGenerique'] = $roleGeneriqueKeyToShortname[$user['supannRoleGenerique']];
+  }
+  if (isset($user['supannEtablissement'])) {
+    if (in_array($user['supannEtablissement'], array('{UAI}0751717J', "{autre}"))) {
+      unset($user['supannEtablissement']); // only return interesting supannEtablissement (ie not Paris1)
+    } else {
+      global $etablissementKeyToShortname;
+      $user['supannEtablissement'] = mayRemap($etablissementKeyToShortname, $user['supannEtablissement']);
+    }
+  }
 }
 
 function getUserGroups($uid) {
