@@ -7,12 +7,7 @@ $attrs = GET_or_NULL("attrs");
 $maxRows = min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");
 
-$filters = array();
-$filters_not = array();
-foreach (array("eduPersonAffiliation") as $attr) {
-  $filters[$attr] = GET_ldapFilterSafe_or_NULL("filter_$attr");
-  $filters_not[$attr] = GET_ldapFilterSafe_or_NULL("filter_not_$attr");
-}
+$restriction = GET_extra_people_filter_from_params();
 
 $KEY_FIELD = 'uid';
 $ALLOWED_MONO_ATTRS = array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 'employeeType', 'postalAddress', 'supannRoleGenerique', 'supannEtablissement');
@@ -38,25 +33,7 @@ if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumbe
   $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
 
 $allowListeRouge = GET_uid() && isStaffOrFaculty(GET_uid());
-$restriction = computeFilter($filters, false) . computeFilter($filters_not, true);
 $users = searchPeople(people_filters($token, $restriction), $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows);
-
-function computeOneFilter($attr, $valsS) {
-    $vals = explode('|', $valsS);
-    $orFilter = '';
-    foreach ($vals as $val)
-      $orFilter .= "($attr=$val)";
-    return sizeof($vals) > 1 ? "(|$orFilter)" : $orFilter;
-}
-function computeFilter($filters, $not) {
-   $r = '';
-  foreach ($filters as $attr => $vals) {
-    if (!$vals) continue;
-    $one = computeOneFilter($attr, $vals);
-    $r .= $not ? "(!$one)" : $one;
-  }
-  return $r;
-}
 
 echoJson($users);
 

@@ -54,6 +54,33 @@ function staffFaculty_filter() {
     return "(|(eduPersonAffiliation=staff)(eduPersonAffiliation=faculty))";
 }
 
+
+function computeOneFilter($attr, $valsS) {
+    $vals = explode('|', $valsS);
+    $orFilter = '';
+    foreach ($vals as $val)
+      $orFilter .= "($attr=$val)";
+    return sizeof($vals) > 1 ? "(|$orFilter)" : $orFilter;
+}
+function computeFilter($filters, $not) {
+   $r = '';
+  foreach ($filters as $attr => $vals) {
+    if (!$vals) continue;
+    $one = computeOneFilter($attr, $vals);
+    $r .= $not ? "(!$one)" : $one;
+  }
+  return $r;
+}
+function GET_extra_people_filter_from_params() {
+  $filters = array();
+  $filters_not = array();
+  foreach (array("eduPersonAffiliation") as $attr) {
+    $filters[$attr] = GET_ldapFilterSafe_or_NULL("filter_$attr");
+    $filters_not[$attr] = GET_ldapFilterSafe_or_NULL("filter_not_$attr");
+  }
+  return computeFilter($filters, false) . computeFilter($filters_not, true);
+}
+
 function isStaffOrFaculty($uid) {
     global $PEOPLE_DN;
     return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . staffFaculty_filter() . ")");
