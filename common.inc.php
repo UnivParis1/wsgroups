@@ -188,6 +188,7 @@ function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
     foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
+      normalizeNameGroupFromStructuresDn($map);
     }
     return $r;
 }
@@ -231,6 +232,31 @@ function getGroupsFromSeeAlso($seeAlso) {
     $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$seeAlso)"));
     $groups = getGroupsFromGroupsDn(array("(seeAlso=$seeAlso)"));
     return array_merge($diploma, $groups);
+}
+
+function normalizeNameGroupFromStructuresDn(&$map) {
+    $shortName = $map["name"];
+    $name = $map["description"];
+
+    $name = preg_replace("/^UFR(\d+)/", "UFR $1", $name); // normalize UFRXX into "UFR XX"
+
+    if ($shortName && $shortName != $name && !preg_match("/^[^:]*" . preg_quote($shortName) . "\s*:/", $name)) {
+	//echo "adding $shortName to $name\n";
+	$name = "$shortName : $name";
+    }
+
+    //if ($shortName !== groupNameToShortname($name))
+    //  echo "// different shortnames for $name: " . $shortName . " vs " . groupNameToShortname($name) . "\n";
+
+    $map["name"] = $name;
+    $map["description"] = '';
+}
+
+function groupNameToShortname($name) {
+    if (preg_match('/(.*?)\s*:/', $name, $matches))
+      return $matches[1];
+    else
+      return $name;
 }
 
 function groupKeyToCategory($key) {
