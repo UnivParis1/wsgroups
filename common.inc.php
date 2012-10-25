@@ -29,7 +29,7 @@ function people_filters($token, $restriction = '') {
     return $r;
 }
 function groups_filters($token) {
-  return array("(cn=$token)", "(|(description=*$token*)(ou=*$token*))");
+  return array("(cn=$token)", "(&(|(description=*$token*)(ou=*$token*))(cn=*))");
 }
 function structures_filters($token) {
   return array("(supannCodeEntite=$token)", "(&(|(description=*$token*)(ou=*$token*))(supannCodeEntite=*))");
