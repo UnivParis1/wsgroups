@@ -1,6 +1,7 @@
 <?php // -*-PHP-*-
 
-require ('./common.inc.php');
+require ('./groups.inc.php');
+require ('./supannPerson.inc.php');
 
 $token = GET_ldapFilterSafe("token");
 $maxRows = min(max(1, GET_or_NULL("maxRows")), 10);

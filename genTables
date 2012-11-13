@@ -1,6 +1,7 @@
 <?php // -*-PHP-*-
 
-require ('./common.inc.php');
+require_once ('./common.inc.php');
+require_once ('./config-groups.inc.php');
 
 $structures = getLdapInfoMultiFilters($STRUCTURES_DN, array("(supannCodeEntite=*)"), $STRUCTURES_ATTRS, "key");
 
