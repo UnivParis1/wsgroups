@@ -195,7 +195,14 @@
 	  minLength: settings.minLength,
 	  source: source,
 	  open: function () {
-	    $('html,body').scrollTop($(this).offset().top);
+	      var menu = $(this).data("autocomplete").menu.element;
+	      var menu_bottom = menu.position().top + menu.outerHeight();
+	      var window_bottom = $(window).scrollTop() + $(window).height();
+	      if (window_bottom < menu_bottom) {
+		  var best_offset = $(window).scrollTop() + menu_bottom - window_bottom;
+		  var needed_offset = $(this).offset().top
+		  $('html,body').scrollTop(Math.min(needed_offset, best_offset));
+	      }
 	  }
       };
 
