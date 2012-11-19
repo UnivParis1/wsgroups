@@ -22,7 +22,7 @@ function staffFaculty_filter() {
 function GET_extra_people_filter_from_params() {
   $filters = array();
   $filters_not = array();
-  foreach (array("eduPersonAffiliation") as $attr) {
+  foreach (array("eduPersonAffiliation", "supannEntiteAffectation") as $attr) {
     $filters[$attr] = GET_ldapFilterSafe_or_NULL("filter_$attr");
     $filters_not[$attr] = GET_ldapFilterSafe_or_NULL("filter_not_$attr");
   }
