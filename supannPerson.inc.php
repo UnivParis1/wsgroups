@@ -26,6 +26,13 @@ function GET_extra_people_filter_from_params() {
     $filters[$attr] = GET_ldapFilterSafe_or_NULL("filter_$attr");
     $filters_not[$attr] = GET_ldapFilterSafe_or_NULL("filter_not_$attr");
   }
+  foreach (array("student") as $attr) {
+    $val = GET_ldapFilterSafe_or_NULL("filter_$attr");
+    if ($val === null) continue;
+    else if ($val === "no") $filters_not["eduPersonAffiliation"] = $attr;
+    else if ($val === "only") $filters["eduPersonAffiliation"] = $attr;
+    else exit("invalid filter_$attr value $val");
+  }  
   return computeFilter($filters, false) . computeFilter($filters_not, true);
 }
 
