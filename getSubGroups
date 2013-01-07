@@ -10,10 +10,20 @@ function getSubGroups($key) {
   } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
 
     // handle key like structures-U05-affiliation-student:
-    $supannCodeEntite = preg_replace("/-affiliation-.*/", "", $supannCodeEntite);
+    if (preg_match('/(.*)-affiliation-(.*)/', $supannCodeEntite, $matches)) {
+      $supannCodeEntite = $matches[1];
+      $affiliation = $matches[2];
+    } else {
+      $affiliation = null;
+    }
+
+    $groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntiteParent=$supannCodeEntite)"));
+    if ($affiliation)
+      $groupsStructures = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
 
     $ou = "ou=$supannCodeEntite," . $ALT_STRUCTURES_DN;
-    $all_groups = getGroupsFromSeeAlso($ou);
+    $groups = getGroupsFromSeeAlso($ou);
+    $all_groups = array_merge($groupsStructures, $groups);
   } else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
     $ou = "ou=$diploma," . $DIPLOMA_DN;
     $all_groups = getGroupsFromSeeAlso($ou);
