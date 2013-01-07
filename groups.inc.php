@@ -247,9 +247,13 @@ function getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures) 
   return $r;
 }
 
+function remove_rawKey_and_modifyTimestamp(&$r) {
+    remove_rawKey($r);
+    remove_modifyTimestamp($r);
+}
+
 function echoJsonSimpleGroups($groups) {
-    remove_rawKey($groups);
-    remove_modifyTimestamp($groups);
+    remove_rawKey_and_modifyTimestamp($groups);
     echoJson($groups);
 }
 
