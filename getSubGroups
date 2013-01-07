@@ -1,30 +1,36 @@
 <?php // -*-PHP-*-
 require ('./groups.inc.php');
 
-$key = GET_ldapFilterSafe("key");
+function getSubGroups($key) {
+  global $ALT_STRUCTURES_DN, $DIPLOMA_DN, $DIPLOMA_PREV_DN;
 
-$all_groups = array();
-if ($cn = removePrefixOrNULL($key, "groups-")) {
-  $all_groups = getGroupsFromGroupsDn(array(seeAlso_filter($cn)));
-} else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+  $all_groups = array();
+  if ($cn = removePrefixOrNULL($key, "groups-")) {
+    $all_groups = getGroupsFromGroupsDn(array(seeAlso_filter($cn)));
+  } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
 
-  // handle key like structures-U05-affiliation-student:
-  $supannCodeEntite = preg_replace("/-affiliation-.*/", "", $supannCodeEntite);
+    // handle key like structures-U05-affiliation-student:
+    $supannCodeEntite = preg_replace("/-affiliation-.*/", "", $supannCodeEntite);
 
-  $ou = "ou=$supannCodeEntite," . $ALT_STRUCTURES_DN;
-  $all_groups = getGroupsFromSeeAlso($ou);
-} else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
-  $ou = "ou=$diploma," . $DIPLOMA_DN;
-  $all_groups = getGroupsFromSeeAlso($ou);
-} else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
-  $ou = "ou=$diploma," . $DIPLOMA_PREV_DN;
-  $all_groups = getGroupsFromSeeAlso($ou);
-} else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
-  $groupsStructures = getGroupsFromStructuresDn(array("(businessCategory=pedagogy)"));
-  $all_groups = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
-} else {
-  error("invalid group key $key");
+    $ou = "ou=$supannCodeEntite," . $ALT_STRUCTURES_DN;
+    $all_groups = getGroupsFromSeeAlso($ou);
+  } else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
+    $ou = "ou=$diploma," . $DIPLOMA_DN;
+    $all_groups = getGroupsFromSeeAlso($ou);
+  } else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
+    $ou = "ou=$diploma," . $DIPLOMA_PREV_DN;
+    $all_groups = getGroupsFromSeeAlso($ou);
+  } else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
+    $groupsStructures = getGroupsFromStructuresDn(array("(businessCategory=pedagogy)"));
+    $all_groups = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
+  } else {
+    error("invalid group key $key");
+  }
+  return $all_groups;
 }
+
+$key = GET_ldapFilterSafe("key");
+$all_groups = getSubGroups($key);
 echoJsonSimpleGroups($all_groups);
 
 ?>
