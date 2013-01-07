@@ -216,4 +216,14 @@ function array_flatten_non_rec($r) {
     return sizeof($r) > 0 ? call_user_func_array('array_merge', $r) : array();
 }
 
+function getAndUnset(&$a, $prop) {
+  if (isset($a[$prop])) {
+    $v = $a[$prop];
+    unset($a[$prop]);
+    return $v;
+  } else {
+    return null;
+  }
+}
+
 ?>

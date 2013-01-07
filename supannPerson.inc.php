@@ -50,11 +50,21 @@ function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $
     return $r;
 }
 
+function wanted_attrs_raw($wanted_attrs) {
+    $r = array();
+    foreach ($wanted_attrs as $attr => $v) {
+	$attr_raw = preg_replace('/-.*/', '', $attr);
+	$r[$attr_raw] = $v;
+    }
+    return $r;
+}
+
 function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
-    $r = searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows);
+    $wanted_attrs_raw = wanted_attrs_raw($wanted_attrs);
+    $r = searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs_raw, $KEY_FIELD, $maxRows);
     foreach ($r as &$user) {
       userHandleSpecialAttributePrivacy($user);
-      userAttributesKeyToText($user);
+      userAttributesKeyToText($user, $wanted_attrs);
     }
     return $r;
 }
@@ -95,9 +105,14 @@ function userHandleSpecialAttributePrivacy(&$user) {
     }
 }
 
-function userAttributesKeyToText(&$user) {
-  if (isset($user['supannEntiteAffectation'])) {
-    $user['supannEntiteAffectation'] = structureShortnames($user['supannEntiteAffectation']);
+function userAttributesKeyToText(&$user, $wanted_attrs) {
+  $supannEntiteAffectation = getAndUnset($user, 'supannEntiteAffectation');
+  if ($supannEntiteAffectation) {
+      if (isset($wanted_attrs['supannEntiteAffectation']))
+	  // deprecated
+	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
+      if (isset($wanted_attrs['supannEntiteAffectation-ou']))
+	  $user['supannEntiteAffectation-ou'] = structureShortnames($supannEntiteAffectation);
   }
   if (isset($user['supannRoleGenerique'])) {
     global $roleGeneriqueKeyToShortname;
