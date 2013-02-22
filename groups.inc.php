@@ -257,4 +257,9 @@ function echoJsonSimpleGroups($groups) {
     echoJson($groups);
 }
 
+function ipTrusted() {
+    global $TRUSTED_IPS;
+    return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
+}
+
 ?>

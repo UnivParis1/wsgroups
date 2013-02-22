@@ -27,4 +27,9 @@ $AFFILIATION2TEXT = array("faculty" => "enseignants",
 			  "affiliate" => "invités", 
 			  );
 
+$TRUSTED_IPS = array(
+     // example:
+     // '192.168.1.11',
+);
+
 ?>
