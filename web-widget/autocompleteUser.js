@@ -154,7 +154,7 @@
 
       var wsParams = $.extend({ 
 	  maxRows: settings.maxRows, 
-	  attrs: settings.attrs
+	  attrs: settings.attrs + "," + settings.wantedAttr
       }, settings.wsParams);
 
       var input = this;
