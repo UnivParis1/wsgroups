@@ -156,6 +156,8 @@
 	  attrs: settings.attrs
       }, settings.wsParams);
 
+      var input = this;
+
       var source = function( request, response ) {
 	  wsParams.token = request.term;
 	    $.ajax({
@@ -213,13 +215,14 @@
 	    return false;
 	  };
       }
-      this.autocomplete(params);
 
-      this.data("autocomplete")._renderItem = myRenderItem;
+      input.autocomplete(params);
+
+      input.data("autocomplete")._renderItem = myRenderItem;
 
       // below is useful when going back on the search values
-      this.click(function () {
-      	  $(this).autocomplete("search");
+      input.click(function () {
+      	  input.autocomplete("search");
       });
   };
 
