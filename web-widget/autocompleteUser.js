@@ -148,6 +148,7 @@
 	    'minLengthFullSearch' : 4,
 	    'maxRows' : 10,
 	    'wantedAttr' : 'uid',
+	    'disableEnterKey': false,
 	    'attrs' : attrs
 	  }, options);
 
@@ -214,6 +215,18 @@
 	    // prevent update of <input>
 	    return false;
 	  };
+      }
+
+      if (settings.disableEnterKey) {
+	  input.keypress(function(event){
+	      var keyCode = $.ui.keyCode;
+      	      switch( event.keyCode ) {
+      	      case keyCode.ENTER:
+	      case keyCode.NUMPAD_ENTER:
+		  event.preventDefault();
+		  event.stopPropagation();    
+	      }
+	  });
       }
 
       input.autocomplete(params);
