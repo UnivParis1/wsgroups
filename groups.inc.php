@@ -54,8 +54,8 @@ function getUserGroups($uid) {
     return $groups;
 }
 
-function groupsNotCreatedByGrouper($map) {
-    return !startsWith($map["key"], "structures:");
+function groupsNotCreatedByGrouper($map) {  
+  return !preg_match("/^(structures:|employees:|employees\.)/", $map["key"]);
 }
 
 function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0) {
