@@ -32,4 +32,6 @@ $TRUSTED_IPS = array(
      // '192.168.1.11',
 );
 
+$MAX_PARENTS_IN_DESCRIPTION = 4;
+
 ?>

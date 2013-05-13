@@ -167,6 +167,12 @@ function computeDescriptionsFromSeeAlso(&$groups) {
 	foreach ($g["seeAlso"] as $seeAlso)
 	    $l[] = $names[$seeAlso];
 	sort($l);
+
+	global $MAX_PARENTS_IN_DESCRIPTION;
+	if (count($l) > $MAX_PARENTS_IN_DESCRIPTION) {
+	  $l = array_slice($l, 0, $MAX_PARENTS_IN_DESCRIPTION);
+	  $l[] = "Ce groupe est rattaché à un plus grand nombre de groupes non listés ici.";
+	}
 	$g["description"] = join("<br>\n", $l);
 	unset($g["seeAlso"]);
     }
