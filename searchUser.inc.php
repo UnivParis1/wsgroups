@@ -10,7 +10,7 @@ $showErrors = GET_or_NULL("showErrors");
 $restriction = GET_extra_people_filter_from_params();
 
 $KEY_FIELD = 'uid';
-$ALLOWED_MONO_ATTRS = array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 'employeeType', 'postalAddress', 'supannRoleGenerique', 'supannEtablissement');
+$ALLOWED_MONO_ATTRS = array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 'employeeType', 'postalAddress', 'supannRoleGenerique', 'supannEtablissement', 'eduPersonPrincipalName');
 $ALLOWED_MULTI_ATTRS = array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info');
 
 $wanted_attrs = array();
