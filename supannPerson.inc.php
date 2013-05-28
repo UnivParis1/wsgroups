@@ -113,13 +113,13 @@ function userHandleSpecialAttributePrivacy(&$user) {
 }
 
 function userAttributesKeyToText(&$user, $wanted_attrs) {
-  $supannEntiteAffectation = getAndUnset($user, 'supannEntiteAffectation');
+  $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
-      if (isset($wanted_attrs['supannEntiteAffectation']))
-	  // deprecated
-	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
       if (isset($wanted_attrs['supannEntiteAffectation-ou']))
 	  $user['supannEntiteAffectation-ou'] = structureShortnames($supannEntiteAffectation);
+      else if (isset($wanted_attrs['supannEntiteAffectation']))
+	  // deprecated
+	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
   }
   if (isset($user['supannRoleGenerique'])) {
     global $roleGeneriqueKeyToShortname;
