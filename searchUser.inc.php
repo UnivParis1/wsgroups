@@ -18,6 +18,7 @@ $ALLOWED_MULTI_ATTRS =
 	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info',
 	'supannEtablissement', 'supannActivite', 'supannParrainDN', 'supannParrainDN-ou',
 	'supannRoleGenerique');
+if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 
 $wanted_attrs = array();
 foreach (explode(',', $attrs) as $attr) {

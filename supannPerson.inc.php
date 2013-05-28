@@ -78,6 +78,7 @@ function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $max
       userHandleSpecialAttributePrivacy($user);
       userAttributesKeyToText($user, $wanted_attrs);
       userHandle_postalAddress($user);
+      if (@$wanted_attrs['up1Roles']) get_up1Roles($user);
     }
     return $r;
 }
@@ -180,6 +181,26 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
       }
     }
   }
+}
+
+function get_up1Roles(&$user) {
+  $roles = get_up1Roles_raw($user);
+  if ($roles) $user['up1Roles'] = $roles;
+}
+
+function get_up1Roles_raw($user) {
+  global $UP1_ROLES_DN, $PEOPLE_DN;
+  
+  $roles = array();
+  $rdn = "uid=" . $user['uid'] . ",$PEOPLE_DN";
+  foreach (array('manager', 'roleOccupant', 'secretary') as $role) {
+    $filter = "(&(objectClass=up1Role)($role=$rdn))";
+    foreach (getLdapInfo($UP1_ROLES_DN, $filter, array("mail" => "mail")) as $e) {
+      $e['role'] = $role;
+      $roles[] = $e;
+    }
+  }
+  return $roles;
 }
 
 ?>
