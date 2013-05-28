@@ -108,6 +108,18 @@ function structureShortnames($keys) {
     return empty($shortnames) ? NULL : $shortnames;
 }
 
+function rdnToSupannCodeEntites($l) {
+  $codes = array();
+  foreach ($l as $rdn) {
+    if (preg_match('/^supannCodeEntite=(.*?),ou=structures/', $rdn, $match)) {
+      $codes[] = $match[1];
+    } else if (preg_match('/^ou=(.*?),ou=structures/', $rdn, $match)) {
+      $codes[] = $match[1]; // for local branch
+    }
+  }
+  return $codes;
+}
+
 function userHandleSpecialAttributePrivacy(&$user) {
   if (isset($user['employeeType']) || isset($user['departmentNumber']))
     if (!in_array($user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) {
@@ -124,6 +136,12 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
       else if (isset($wanted_attrs['supannEntiteAffectation']))
 	  // deprecated
 	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
+  }
+  if (isset($user['supannParrainDN'])) {
+      if (isset($wanted_attrs['supannParrainDN-ou']))
+	$user['supannParrainDN-ou'] = structureShortnames(rdnToSupannCodeEntites($user['supannParrainDN']));
+      if (!isset($wanted_attrs['supannParrainDN']))
+	  unset($user['supannParrainDN']);
   }
   if (isset($user['supannRoleGenerique'])) {
     global $roleGeneriqueKeyToShortname;

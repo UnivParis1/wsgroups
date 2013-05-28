@@ -11,7 +11,7 @@ $restriction = GET_extra_people_filter_from_params();
 
 $KEY_FIELD = 'uid';
 $ALLOWED_MONO_ATTRS = array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 'employeeType', 'postalAddress', 'supannRoleGenerique', 'eduPersonPrincipalName');
-$ALLOWED_MULTI_ATTRS = array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info', 'supannEtablissement', 'supannActivite');
+$ALLOWED_MULTI_ATTRS = array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info', 'supannEtablissement', 'supannActivite', 'supannParrainDN', 'supannParrainDN-ou');
 
 $wanted_attrs = array();
 foreach (explode(',', $attrs) as $attr) {
