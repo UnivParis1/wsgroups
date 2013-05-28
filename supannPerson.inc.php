@@ -36,9 +36,13 @@ function GET_extra_people_filter_from_params() {
   return computeFilter($filters, false) . computeFilter($filters_not, true);
 }
 
-function isStaffOrFaculty($uid) {
+function isPersonMatchingFilter($uid, $filter) {
     global $PEOPLE_DN;
-    return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . staffFaculty_filter() . ")");
+    return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . $filter . ")");
+}
+
+function isStaffOrFaculty($uid) {
+    return isPersonMatchingFilter($uid, staffFaculty_filter());
 }
 
 function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
