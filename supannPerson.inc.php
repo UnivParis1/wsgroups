@@ -54,8 +54,7 @@ function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $
     $r = getLdapInfoMultiFilters($PEOPLE_DN, $filter, $wanted_attrs, $KEY_FIELD, $maxRows, $SEARCH_TIMELIMIT);
     foreach ($r as &$e) {
 	if (!isset($e["supannListeRouge"])) continue;
-	$supannListeRouge = $e["supannListeRouge"];
-	unset($e["supannListeRouge"]);
+	$supannListeRouge = getAndUnset($e, "supannListeRouge");
 	if ($supannListeRouge == "TRUE") anonymizeUser($e, $wanted_attrs);
     }
     return $r;
