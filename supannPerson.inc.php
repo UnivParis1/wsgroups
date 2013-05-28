@@ -52,10 +52,12 @@ function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $
 	$wanted_attrs['supannListeRouge'] = 'supannListeRouge';
     }
     $r = getLdapInfoMultiFilters($PEOPLE_DN, $filter, $wanted_attrs, $KEY_FIELD, $maxRows, $SEARCH_TIMELIMIT);
-    foreach ($r as &$e) {
+    if (!$allowListeRouge) {
+      foreach ($r as &$e) {
 	if (!isset($e["supannListeRouge"])) continue;
 	$supannListeRouge = getAndUnset($e, "supannListeRouge");
 	if ($supannListeRouge == "TRUE") anonymizeUser($e, $wanted_attrs);
+      }
     }
     return $r;
 }
