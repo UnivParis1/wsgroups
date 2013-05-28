@@ -126,11 +126,17 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
     $user['supannRoleGenerique'] = $roleGeneriqueKeyToShortname[$user['supannRoleGenerique']];
   }
   if (isset($user['supannEtablissement'])) {
-    if (in_array($user['supannEtablissement'], array('{UAI}0751717J', "{autre}"))) {
-      unset($user['supannEtablissement']); // only return interesting supannEtablissement (ie not Paris1)
+    // only return interesting supannEtablissement (ie not Paris1)
+    $user['supannEtablissement'] = array_values(array_diff($user['supannEtablissement'], array('{UAI}0751717J', "{autre}")));
+    if (!$user['supannEtablissement']) {
+      unset($user['supannEtablissement']);
     } else {
       global $etablissementKeyToShortname;
-      $user['supannEtablissement'] = mayRemap($etablissementKeyToShortname, $user['supannEtablissement']);
+      foreach ($user['supannEtablissement'] as &$e) {
+	$usefulKey = removePrefixOrNULL($e, "{AUTRE}");
+	$name = @$etablissementKeyToShortname[$e];
+	if ($name) $e = $usefulKey ? "$name [$usefulKey]" : $name;
+      }
     }
   }
 }
