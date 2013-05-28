@@ -125,6 +125,14 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
     global $roleGeneriqueKeyToShortname;
     $user['supannRoleGenerique'] = $roleGeneriqueKeyToShortname[$user['supannRoleGenerique']];
   }
+  if (isset($user['supannActivite'])) {
+    global $activiteKeyToShortname;
+    foreach ($user['supannActivite'] as &$e) {
+      $codeCNU = removePrefixOrNULL($e, '{CNU}');
+      $e = @$activiteKeyToShortname[$e];
+      if ($codeCNU) $e = "Section CNU $codeCNU - $e";
+    }
+  }
   if (isset($user['supannEtablissement'])) {
     // only return interesting supannEtablissement (ie not Paris1)
     $user['supannEtablissement'] = array_values(array_diff($user['supannEtablissement'], array('{UAI}0751717J', "{autre}")));
