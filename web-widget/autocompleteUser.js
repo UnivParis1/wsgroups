@@ -16,7 +16,7 @@
 	  details.push(item.mail);
       }
       if (item.employeeType)
-	  details.push(item.employeeType);
+	  details.push(item.employeeType.join(" - "));
       if (item.supannRoleGenerique)
 	  details.push(item.supannRoleGenerique);
       if (item.supannEntiteAffectation) {
