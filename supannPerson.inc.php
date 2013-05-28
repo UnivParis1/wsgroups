@@ -77,8 +77,16 @@ function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $max
     foreach ($r as &$user) {
       userHandleSpecialAttributePrivacy($user);
       userAttributesKeyToText($user, $wanted_attrs);
+      userHandle_postalAddress($user);
     }
     return $r;
+}
+
+function userHandle_postalAddress(&$e) {
+    if (@$e['postalAddress']) {
+	$e['postalAddress'] =
+	    str_replace("\\\n", '\$', str_replace('$', "\n", $e['postalAddress']));
+    }
 }
 
 function anonymizeUser(&$e, $attributes_map) {
