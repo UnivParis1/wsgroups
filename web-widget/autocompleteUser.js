@@ -218,7 +218,7 @@
       }
 
       if (settings.disableEnterKey) {
-	  input.keypress(function(event){
+	  input.keydown(function(event){
 	      var keyCode = $.ui.keyCode;
       	      switch( event.keyCode ) {
       	      case keyCode.ENTER:
