@@ -12,11 +12,12 @@ $restriction = GET_extra_people_filter_from_params();
 $KEY_FIELD = 'uid';
 $ALLOWED_MONO_ATTRS = 
   array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
-	'postalAddress', 'supannRoleGenerique', 'eduPersonPrincipalName');
+	'postalAddress', 'eduPersonPrincipalName');
 $ALLOWED_MULTI_ATTRS = 
   array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 
 	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info',
-	'supannEtablissement', 'supannActivite', 'supannParrainDN', 'supannParrainDN-ou');
+	'supannEtablissement', 'supannActivite', 'supannParrainDN', 'supannParrainDN-ou',
+	'supannRoleGenerique');
 
 $wanted_attrs = array();
 foreach (explode(',', $attrs) as $attr) {

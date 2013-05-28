@@ -145,7 +145,9 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
   }
   if (isset($user['supannRoleGenerique'])) {
     global $roleGeneriqueKeyToShortname;
-    $user['supannRoleGenerique'] = $roleGeneriqueKeyToShortname[$user['supannRoleGenerique']];
+    foreach ($user['supannRoleGenerique'] as &$e) {
+      $e = $roleGeneriqueKeyToShortname[$e];
+    }
   }
   if (isset($user['supannActivite'])) {
     global $activiteKeyToShortname;

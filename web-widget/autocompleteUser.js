@@ -18,7 +18,7 @@
       if (item.employeeType)
 	  details.push(item.employeeType.join(" - "));
       if (item.supannRoleGenerique)
-	  details.push(item.supannRoleGenerique);
+	  details.push(item.supannRoleGenerique.join(" - "));
       if (item.supannEntiteAffectation) {
 	  var prev = details.pop();
 	  details.push((prev ? prev + " - " : '') + item.supannEntiteAffectation.join(" - "));
