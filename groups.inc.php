@@ -268,4 +268,21 @@ function ipTrusted() {
     return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
 }
 
+function searchGroups($token, $maxRows) {
+  $groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
+
+  $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows);
+  $structures = remove_businessCategory($structures);
+
+  $diploma = getGroupsFromDiplomaDn(diploma_filters($token), $maxRows);
+
+  $all_groups = array_merge($groups, $structures, $diploma);
+
+  $all_groups = exact_match_first($all_groups, $token);
+  add_group_category($all_groups);
+  remove_rawKey_and_modifyTimestamp($all_groups);
+  
+  return $all_groups;
+}
+
 ?>
