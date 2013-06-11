@@ -1,0 +1,13 @@
+<?php // -*-PHP-*-
+
+require ('./groups.inc.php');
+
+$token = GET_ldapFilterSafe("token");
+$maxRows = min(max(1, GET_or_NULL("maxRows")), 40);
+$restriction = GET_extra_group_filter_from_params();
+
+$all_groups = searchGroups($token, $maxRows, $restriction);
+
+echoJson($all_groups);
+
+?>

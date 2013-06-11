@@ -1,0 +1,25 @@
+<html>
+<head>	
+  <link rel="stylesheet" href="jquery-ui.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="ui.theme.css" type="text/css" media="all" />
+  <link rel="stylesheet" href="autocompleteUser.css" type="text/css" media="all" />
+</head>
+<body>
+  <div class="ui-widget">
+    <label for="foo">Cherchez un groupe</label>
+    <input id="foo" placeholder="xxx" />
+  </div>
+
+  <script src="jquery-1.7.2.min.js"></script>
+  <script src="jquery-ui-1.8.21.custom.min.js"></script>
+  <script src="autocompleteUser.js"></script>
+
+<script>
+    $( "#foo" ).autocompleteGroup("http://ticetest.univ-paris1.fr/wsgroups/searchGroup", {
+    wantedAttr: 'name',
+       wsParams: { filter_category: 'diploma' }
+    }); 
+</script>
+</body>
+</html>
+
