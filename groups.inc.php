@@ -28,6 +28,22 @@ function seeAlso_filter($cn) {
   return "seeAlso=cn=$cn,$GROUPS_DN";
 }
 
+function GET_extra_group_filter_from_params() {
+  $r = array();
+  foreach (array("category") as $attr) {
+    $in = GET_or_NULL("filter_$attr");
+    $out = GET_or_NULL("filter_not_$attr");
+    $r[$attr] = computeFilterRegex($in, $out);
+  }
+  return $r;
+}
+
+function computeFilterRegex($in, $out) {
+  $inQ = implode('|', array_map('preg_quote', explode('|', $in)));
+  $outQ = implode('|', array_map('preg_quote', explode('|', $out)));
+  return '/^' . ($outQ ? "(?!$outQ)" : '') . ($inQ ? "($inQ)$" : '')  . '/';
+}
+
 function getUserGroups($uid) {
     $groups = getGroupsFromGroupsDn(array(member_filter($uid)));
 
@@ -271,14 +287,23 @@ function ipTrusted() {
     return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
 }
 
-function searchGroups($token, $maxRows) {
-  $groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
 
-  $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows);
-  $structures = remove_businessCategory($structures);
+function searchGroups($token, $maxRows, $restriction) {
+  $category_filter = $restriction['category'];
 
-  $diploma = getGroupsFromDiplomaDn(diploma_filters($token), $maxRows);
-
+  $groups = array();
+  if (preg_match($category_filter, 'groups')) {
+    $groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
+  }
+  $structures = array();
+  if (preg_match($category_filter, 'structures')) {
+    $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows);
+    $structures = remove_businessCategory($structures);
+  }
+  $diploma = array();
+  if (preg_match($category_filter, 'diploma')) {
+    $diploma = getGroupsFromDiplomaDn(diploma_filters($token), $maxRows);
+  }
   $all_groups = array_merge($groups, $structures, $diploma);
 
   $all_groups = exact_match_first($all_groups, $token);

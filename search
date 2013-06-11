@@ -6,10 +6,11 @@ require ('./supannPerson.inc.php');
 $token = GET_ldapFilterSafe("token");
 $maxRows = min(max(1, GET_or_NULL("maxRows")), 10);
 $restriction = GET_extra_people_filter_from_params();
+$groupRestriction = GET_extra_group_filter_from_params();
 
 $users = searchPeople(people_filters($token, $restriction), array(), $PEOPLE_ATTRS, "uid", $maxRows);
 
-$all_groups = searchGroups($token, $maxRows);
+$all_groups = searchGroups($token, $maxRows, $groupRestriction);
 
 echoJson(array("users" => $users, "groups" => $all_groups));
 
