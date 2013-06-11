@@ -87,19 +87,24 @@
       if (item.wsError)
 	  renderOneWarning(ul, "Erreur web service");
   };
-  var myRenderItem = function(ul, item) {
+  var myRenderItemRaw = function(ul, item, moreClass, renderItemContent) {
 	if (item.warning) 
 	    return renderWarningItem(ul, item);
 
 	if (item.pre)
 	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
 
-	var content = getNiceDisplayName(item) + getDetails(item);
-	$("<li></li>").addClass(item.odd_even ? "odd" : "even")
+	var content = renderItemContent(item);
+      $("<li></li>").addClass(item.odd_even ? "odd" : "even").addClass(moreClass)
 	    .data("item.autocomplete", item)
 	    .append("<a>" + content + "</a>")
 	    .appendTo(ul);
 
+  };
+  var myRenderUserItem = function (ul, item) {
+      return myRenderItemRaw(ul, item, 'userItem', function (item) {
+	  return getNiceDisplayName(item) + getDetails(item);
+      });
   };
 
   var countOccurences = function (list) {
@@ -140,6 +145,29 @@
 	});
   };
 
+  function disableEnterKey(input) {
+      input.keydown(function(event){
+	      var keyCode = $.ui.keyCode;
+      	      switch( event.keyCode ) {
+      	      case keyCode.ENTER:
+	      case keyCode.NUMPAD_ENTER:
+		  event.preventDefault();
+		  event.stopPropagation();    
+	      }
+      });
+  }
+
+  var myOpen = function () {
+      var menu = $(this).data("autocomplete").menu.element;
+      var menu_bottom = menu.position().top + menu.outerHeight();
+      var window_bottom = $(window).scrollTop() + $(window).height();
+      if (window_bottom < menu_bottom) {
+	  var best_offset = $(window).scrollTop() + menu_bottom - window_bottom;
+	  var needed_offset = $(this).offset().top
+	  $('html,body').scrollTop(Math.min(needed_offset, best_offset));
+      }
+  };
+    
   $.fn.autocompleteUser = function (searchUserURL, options) {
       if (!searchUserURL) throw "missing param searchUserURL";
 
@@ -197,16 +225,7 @@
       var params = {
 	  minLength: settings.minLength,
 	  source: source,
-	  open: function () {
-	      var menu = $(this).data("autocomplete").menu.element;
-	      var menu_bottom = menu.position().top + menu.outerHeight();
-	      var window_bottom = $(window).scrollTop() + $(window).height();
-	      if (window_bottom < menu_bottom) {
-		  var best_offset = $(window).scrollTop() + menu_bottom - window_bottom;
-		  var needed_offset = $(this).offset().top
-		  $('html,body').scrollTop(Math.min(needed_offset, best_offset));
-	      }
-	  }
+	  open: myOpen
       };
 
       if (settings.select) {
@@ -217,21 +236,11 @@
 	  };
       }
 
-      if (settings.disableEnterKey) {
-	  input.keydown(function(event){
-	      var keyCode = $.ui.keyCode;
-      	      switch( event.keyCode ) {
-      	      case keyCode.ENTER:
-	      case keyCode.NUMPAD_ENTER:
-		  event.preventDefault();
-		  event.stopPropagation();    
-	      }
-	  });
-      }
+      if (settings.disableEnterKey) disableEnterKey(input);
 
       input.autocomplete(params);
 
-      input.data("autocomplete")._renderItem = myRenderItem;
+      input.data("autocomplete")._renderItem = myRenderUserItem;
 
       // below is useful when going back on the search values
       input.click(function () {
