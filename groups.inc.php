@@ -4,13 +4,16 @@ require_once ('./common.inc.php');
 require_once ('./config-groups.inc.php');
 
 function groups_filters($token) {
-  return array("(cn=$token)", "(&(|(description=*$token*)(ou=*$token*))(cn=*))");
+  $words_filter = wordsFilter(array('description', 'ou'), $token);
+  return array("(cn=$token)", "(&" . $words_filter . "(cn=*))");
 }
 function structures_filters($token) {
-  return array("(supannCodeEntite=$token)", "(&(|(description=*$token*)(ou=*$token*))(supannCodeEntite=*))");
+  $words_filter = wordsFilter(array('description', 'ou'), $token);
+  return array("(supannCodeEntite=$token)", "(&" . $words_filter . "(supannCodeEntite=*))");
 }
 function diploma_filters($token) {
-  return array("(ou=$token)", "(description=*$token*)");
+  $words_filter = wordsFilter(array('description'), $token);
+  return array("(ou=$token)", $words_filter);
 }
 function member_filter($uid) {
   global $PEOPLE_DN;
