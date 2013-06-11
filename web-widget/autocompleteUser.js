@@ -249,6 +249,90 @@
   };
 
 
+  var transformGroupItems = function (items, wantedAttr, searchedToken) {
+      var searchedTokenL = searchedToken.toLowerCase();
+      var odd_even;
+      $.each(items, function ( i, item ) {
+	    item.label = item.name;
+	    item.value = item[wantedAttr];
+	    item.searchedTokenL = searchedTokenL;
+	    item.odd_even = odd_even = !odd_even;
+	});
+  };
+
+  var myRenderGroupItem = function (ul, item) {
+      return myRenderItemRaw(ul, item, 'groupItem', function (item) {
+	  return item.name;
+      });
+  };
+
+  $.fn.autocompleteGroup = function (searchGroupURL, options) {
+      if (!searchGroupURL) throw "missing param searchGroupURL";
+
+      var settings = $.extend( 
+	  { 'minLength' : 3,
+	    'maxRows' : 20,
+	    'wantedAttr' : 'key',
+	    'disableEnterKey': false
+	  }, options);
+
+      var wsParams = $.extend({ 
+	  maxRows: settings.maxRows
+      }, settings.wsParams);
+
+      var input = this;
+
+      var source = function( request, response ) {
+	  wsParams.token = request.term;
+	    $.ajax({
+		url: searchGroupURL,
+		dataType: "jsonp",
+		crossDomain: true, // needed if searchGroupURL is CAS-ified or on a different host than application using autocompleteUser
+		data: wsParams,
+		error: function () {
+		    // we should display on error. but we do not have a nice error to display
+		    // the least we can do is to show the user the request is finished!
+		    response([ { warning: true, wsError: true } ]);
+		},
+		success: function (data) {
+		    transformGroupItems(data, settings.wantedAttr, request.term);
+
+		    warning = { warning: true }
+		    data.push(warning);
+		    if (data.length >= settings.maxRows) {
+			warning.partialResults = settings.maxRows;;
+		    }
+		    response(data);
+		}
+	    });
+      };
+
+      var params = {
+	  minLength: settings.minLength,
+	  source: source,
+	  open: myOpen
+      };
+
+      if (settings.select) {
+	  params.select = settings.select;
+	  params.focus = function () {
+	    // prevent update of <input>
+	    return false;
+	  };
+      }
+
+      if (settings.disableEnterKey) disableEnterKey(input);
+
+      input.autocomplete(params);
+
+      input.data("autocomplete")._renderItem = myRenderGroupItem;
+
+      // below is useful when going back on the search values
+      input.click(function () {
+      	  input.autocomplete("search");
+      });
+  };
+
 
   $.fn.handlePlaceholderOnIE = function () {
 
