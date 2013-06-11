@@ -35,6 +35,26 @@ function computeFilter($filters, $not) {
   return $r;
 }
 
+function ldapAnd($l) {
+  $r = implode('', $l);
+  return count($l) > 1 ? "(&$r)" : $r;
+}
+function ldapOr($l) {
+  $r = implode('', $l);
+  return count($l) > 1 ? "(|$r)" : $r;
+}
+
+function wordsFilter($searchedAttrs, $token) {
+  $and = array();
+  $words = preg_split("/[\s,]+/", $token, -1, PREG_SPLIT_NO_EMPTY);
+  foreach ($words as $tok) {
+    $or = array();
+    foreach ($searchedAttrs as $attr) $or[] = "($attr=*$tok*)";
+    $and[] = ldapOr($or);
+  }
+  return ldapAnd($and);
+}
+
 function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField, $sizelimit = 0, $timelimit = 0) {
   $rr = array();
   foreach ($filters as $filter) {
