@@ -44,15 +44,22 @@ function ldapOr($l) {
   return count($l) > 1 ? "(|$r)" : $r;
 }
 
-function wordsFilter($searchedAttrs, $token) {
+function wordsFilterRaw($searchedAttrs, $token) {
   $and = array();
   $words = preg_split("/[\s,]+/", $token, -1, PREG_SPLIT_NO_EMPTY);
   foreach ($words as $tok) {
     $or = array();
-    foreach ($searchedAttrs as $attr) $or[] = "($attr=*$tok*)";
+    foreach ($searchedAttrs as $attr => $prefix) $or[] = "($attr=" . ($prefix ? $prefix : '') . "*$tok*)";
     $and[] = ldapOr($or);
   }
   return ldapAnd($and);
+}
+
+
+function wordsFilter($searchedAttrs, $token) {
+  $searchedAttrsRaw = array();
+  foreach ($searchedAttrs as $attr) $searchedAttrsRaw[$attr] = null;
+  return wordsFilterRaw($searchedAttrsRaw, $token);
 }
 
 function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField, $sizelimit = 0, $timelimit = 0) {
