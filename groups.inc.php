@@ -11,9 +11,17 @@ function structures_filters($token) {
   $words_filter = wordsFilter(array('description', 'ou'), $token);
   return array("(supannCodeEntite=$token)", "(&" . $words_filter . "(supannCodeEntite=*))");
 }
-function diploma_filters($token) {
-  $words_filter = wordsFilter(array('description'), $token);
-  return array("(ou=$token)", $words_filter);
+function diploma_filters($token, $filter_attrs) {
+  $r = array();
+  if (in_array('ou', $filter_attrs))
+      $r[] = "(ou=$token)";
+
+  if (in_array('description', $filter_attrs) ||
+      in_array('displayName', $filter_attrs)) {
+      $prefix = in_array('displayName', $filter_attrs) ? '*-' : null;
+      $r[] = wordsFilterRaw(array('description' => $prefix), $token);
+  }
+  return $r;
 }
 function member_filter($uid) {
   global $PEOPLE_DN;
@@ -34,6 +42,12 @@ function GET_extra_group_filter_from_params() {
     $in = GET_or_NULL("filter_$attr");
     $out = GET_or_NULL("filter_not_$attr");
     $r[$attr] = computeFilterRegex($in, $out);
+  }
+  $filter_attrs = GET_or_NULL("group_filter_attrs");
+  if ($filter_attrs) {
+      $r["filter_attrs"] = explode(',', $filter_attrs);
+  } else {
+      $r["filter_attrs"] = array('ou', 'description');
   }
   return $r;
 }
@@ -290,6 +304,7 @@ function ipTrusted() {
 
 function searchGroups($token, $maxRows, $restriction) {
   $category_filter = $restriction['category'];
+  $filter_attrs = $restriction['filter_attrs'];
 
   $groups = array();
   if (preg_match($category_filter, 'groups')) {
@@ -302,7 +317,7 @@ function searchGroups($token, $maxRows, $restriction) {
   }
   $diploma = array();
   if (preg_match($category_filter, 'diploma')) {
-    $diploma = getGroupsFromDiplomaDn(diploma_filters($token), $maxRows);
+    $diploma = getGroupsFromDiplomaDn(diploma_filters($token, $filter_attrs), $maxRows);
   }
   $all_groups = array_merge($groups, $structures, $diploma);
 
