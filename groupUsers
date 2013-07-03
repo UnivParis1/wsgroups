@@ -37,16 +37,16 @@ function group2filter($key) {
 }
 
 $key = GET_ldapFilterSafe("key");
+$attrRestrictions = array();
 if (ipTrusted()) {
   $maxRows = 0;
-  $allowListeRouge = true;
+  $attrRestrictions['allowListeRouge'] = true;
 } else {
   //exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");   
   $maxRows = 5;
-  $allowListeRouge = false;
 }
 $filter = group2filter($key);
-$users = searchPeople(array($filter), $allowListeRouge, array('uid' => 'uid'), 'uid', $maxRows);
+$users = searchPeople(array($filter), $attrRestrictions, array('uid' => 'uid'), 'uid', $maxRows);
 
 echoJson($users);
 
