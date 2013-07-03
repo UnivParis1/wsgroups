@@ -72,7 +72,8 @@ function wanted_attrs_raw($wanted_attrs) {
     return $r;
 }
 
-function searchPeople($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
+function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows) {
+    $allowListeRouge = @$attrRestrictions['allowListeRouge'];
     $wanted_attrs_raw = wanted_attrs_raw($wanted_attrs);
     $r = searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs_raw, $KEY_FIELD, $maxRows);
     foreach ($r as &$user) {

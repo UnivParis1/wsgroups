@@ -65,8 +65,11 @@ if ($allowExtendedInfo >= 1) {
   global_ldap_open('reOpen');
 }
 
-$allowListeRouge = $allowExtendedInfo > 0 || GET_uid() && isStaffOrFaculty(GET_uid());
-$users = searchPeople(people_filters($token, $restriction), $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows);
+$attrRestrictions = 
+  array('allowListeRouge' => $allowExtendedInfo > 0 || GET_uid() && isStaffOrFaculty(GET_uid()),
+	);
+
+$users = searchPeople(people_filters($token, $restriction), $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows);
 
 echoJson($users);
 
