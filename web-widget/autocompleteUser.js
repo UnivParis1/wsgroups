@@ -130,7 +130,7 @@
       var displayNameOccurences = countOccurences($.map(items, function (item) { return item.displayName }));
       $.each(items, function ( i, item ) {
 	    item.label = item.displayName;
-	    item.value = item[wantedAttr];
+	    item.value = item[wantedAttr] || 'unknown';
 	    item.searchedTokenL = searchedTokenL;
 
 	    if (affiliation != item.eduPersonPrimaryAffiliation) {
