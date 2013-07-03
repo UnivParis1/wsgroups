@@ -79,6 +79,8 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
     foreach ($r as &$user) {
       if (!@$attrRestrictions['allowEmployeeType'])
 	  userHandleSpecialAttributePrivacy($user);
+      if (!@$attrRestrictions['allowMailForwardingAddress'])
+	  anonymizeUserMailForwardingAddress($user);
       userAttributesKeyToText($user, $wanted_attrs);
       userHandle_postalAddress($user);
       if (@$wanted_attrs['up1Roles']) get_up1Roles($user);
@@ -108,6 +110,12 @@ function anonymizeUser(&$e, $attributes_map) {
     }
 }
 
+function anonymizeUserMailForwardingAddress(&$e) {
+  if (!isset($e['mailForwardingAddress'])) return;
+  foreach ($e['mailForwardingAddress'] as &$mail) {
+    if (preg_match("/@/", $mail)) $mail = 'supannListeRouge';
+  }
+}
 
 function structureShortnames($keys) {
     $all = structureAll($keys);

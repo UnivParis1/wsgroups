@@ -67,6 +67,7 @@ if ($allowExtendedInfo >= 1) {
 
 $attrRestrictions = 
   array('allowListeRouge' => $allowExtendedInfo > 0 || GET_uid() && isStaffOrFaculty(GET_uid()),
+	'allowMailForwardingAddress' => $allowExtendedInfo > 1,
 	'allowEmployeeType' => $allowExtendedInfo > 1,
 	);
 
