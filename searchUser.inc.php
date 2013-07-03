@@ -19,7 +19,14 @@ $ALLOWED_MULTI_ATTRS =
 	'supannEtablissement', 'supannActivite', 'supannActivite-all',
 	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
 	'supannEtuInscription', 'supannEtuInscription-all',
-	'supannRoleGenerique');
+	'supannRoleGenerique',
+
+	'roomNumber', 'up1FloorNumber',
+
+	'telephoneNumber', 
+	'facsimileTelephoneNumber', 
+	'supannAutreTelephone', 'mobile',
+	);
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 
 $wanted_attrs = array();
