@@ -5,17 +5,19 @@ require_once ('./tables.inc.php');
 require_once ('./config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
 function people_filters($token, $restriction = '') {
+    $restriction = '(eduPersonAffiliation=*)' . $restriction;
+
     $exactOrs = array("(uid=$token)", "(sn=$token)");
     if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
         $exactOrs[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
     }
     $r = array();
     foreach ($exactOrs as $exactOr)
-      $r[] = "(&(eduPersonAffiliation=*)$exactOr$restriction)";
+      $r[] = "(&$exactOr$restriction)";
 
     if (strlen($token) > 3) 
 	// too short strings are useless
-	$r[] = "(&(eduPersonAffiliation=*)(|(displayName=*$token*)(cn=*$token*))$restriction)";
+	$r[] = "(&(|(displayName=*$token*)(cn=*$token*))$restriction)";
     return $r;
 }
 function staffFaculty_filter() {
