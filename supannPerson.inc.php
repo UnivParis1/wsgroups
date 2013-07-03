@@ -10,6 +10,8 @@ function people_filters($token, $restriction = '') {
     $exactOrs = array("(uid=$token)", "(sn=$token)");
     if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
         $exactOrs[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
+    } else if (preg_match('/^\d+$/', $token, $matches)) {
+        $exactOrs[] = "(supannEmpId=$token)";
     }
     $r = array();
     foreach ($exactOrs as $exactOr)
