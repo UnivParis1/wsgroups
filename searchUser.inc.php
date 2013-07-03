@@ -6,6 +6,7 @@ $token = GET_ldapFilterSafe("token");
 $attrs = GET_or_NULL("attrs");
 $maxRows = min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");
+$showExtendedInfo = GET_or_NULL("showExtendedInfo");
 
 $restriction = GET_extra_people_filter_from_params();
 
@@ -48,7 +49,23 @@ if (!isset($wanted_attrs[$KEY_FIELD]))
 if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumber']))
   $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
 
-$allowListeRouge = GET_uid() && isStaffOrFaculty(GET_uid());
+$allowExtendedInfo = 0;
+if (isset($showExtendedInfo) && GET_uid()) {
+  if (isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER)) {
+    if (isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
+      $allowExtendedInfo = 2;
+    } else {
+      $allowExtendedInfo = 1;
+    }
+  }
+}
+
+if ($allowExtendedInfo >= 1) {
+  $LDAP_CONNECT = $allowExtendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
+  global_ldap_open('reOpen');
+}
+
+$allowListeRouge = $allowExtendedInfo > 0 || GET_uid() && isStaffOrFaculty(GET_uid());
 $users = searchPeople(people_filters($token, $restriction), $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows);
 
 echoJson($users);

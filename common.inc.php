@@ -121,9 +121,9 @@ function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0, $timelimit
   return $r;
 }
 
-function global_ldap_open() {
+function global_ldap_open($reOpen = false) {
     global $ldapDS;
-    if (!$ldapDS) {
+    if (!$ldapDS || $reOpen) {
 	global $LDAP_CONNECT;
 	$ldapDS = ldap_connect($LDAP_CONNECT['HOST']);
 	if (!$ldapDS) exit("error: connection to " . $LDAP_CONNECT['HOST'] . " failed");
