@@ -124,11 +124,11 @@ function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0, $timelimit
 function global_ldap_open() {
     global $ldapDS;
     if (!$ldapDS) {
-	global $LDAP_HOST, $LDAP_BIND_DN, $LDAP_BIND_PASSWORD;
-	$ldapDS = ldap_connect($LDAP_HOST);
-	if (!$ldapDS) exit("error: connection to $LDAP_HOST failed");
+	global $LDAP_CONNECT;
+	$ldapDS = ldap_connect($LDAP_CONNECT['HOST']);
+	if (!$ldapDS) exit("error: connection to " . $LDAP_CONNECT['HOST'] . " failed");
 
-	if (!ldap_bind($ldapDS,$LDAP_BIND_DN,$LDAP_BIND_PASSWORD)) exit("error: failed to bind using $LDAP_BIND_DN");
+	if (!ldap_bind($ldapDS,$LDAP_CONNECT['BIND_DN'],$LDAP_CONNECT['BIND_PASSWORD'])) exit("error: failed to bind using " . $LDAP_CONNECT['BIND_DN']);
     }
     return $ldapDS;
 }
