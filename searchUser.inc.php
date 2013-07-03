@@ -14,10 +14,10 @@ $ALLOWED_MONO_ATTRS =
   array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
 	'postalAddress', 'eduPersonPrincipalName');
 $ALLOWED_MULTI_ATTRS = 
-  array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 
+  array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'supannEntiteAffectation-all',
 	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info',
 	'supannEtablissement', 'supannActivite', 'supannActivite-all',
-	'supannParrainDN', 'supannParrainDN-ou',
+	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
 	'supannRoleGenerique');
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 

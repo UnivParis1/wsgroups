@@ -107,15 +107,26 @@ function anonymizeUser(&$e, $attributes_map) {
 
 
 function structureShortnames($keys) {
-    GLOBAL $structureKeyToShortname, $showErrors;
-    $shortnames = array();
-    foreach ($keys as &$key) {
-      if (isset($structureKeyToShortname[$key]))
-	$shortnames[] = $structureKeyToShortname[$key];
-      else if ($showErrors)
-	$shortnames[] = "invalid structure $key";
+    $all = structureAll($keys);
+    $r = array();
+    foreach ($all as $e) {
+      $r[] = @$e['name'];
     }
-    return empty($shortnames) ? NULL : $shortnames;
+    return empty($r) ? NULL : $r;
+}
+function structureAll($keys) {
+    GLOBAL $structureKeyToAll, $showErrors;
+    $r = array();
+    foreach ($keys as $key) {
+      $e = array("key" => $key);
+      if (isset($structureKeyToAll[$key]))
+	$e = array_merge($e, $structureKeyToAll[$key]);
+      else if ($showErrors)
+	$e["name"] = "invalid structure $key";
+
+      $r[] = $e;
+    }
+    return empty($r) ? NULL : $r;
 }
 
 function supannActiviteAll($keys) {
@@ -162,14 +173,18 @@ function userHandleSpecialAttributePrivacy(&$user) {
 function userAttributesKeyToText(&$user, $wanted_attrs) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
-      if (isset($wanted_attrs['supannEntiteAffectation-ou']))
+      if (isset($wanted_attrs['supannEntiteAffectation-all']))
+	  $user['supannEntiteAffectation-all'] = structureAll($supannEntiteAffectation);
+      else if (isset($wanted_attrs['supannEntiteAffectation-ou']))
 	  $user['supannEntiteAffectation-ou'] = structureShortnames($supannEntiteAffectation);
       else if (isset($wanted_attrs['supannEntiteAffectation']))
 	  // deprecated
 	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
   }
   if (isset($user['supannParrainDN'])) {
-      if (isset($wanted_attrs['supannParrainDN-ou']))
+      if (isset($wanted_attrs['supannParrainDN-all']))
+	$user['supannParrainDN-all'] = structureAll(rdnToSupannCodeEntites($user['supannParrainDN']));
+      else if (isset($wanted_attrs['supannParrainDN-ou']))
 	$user['supannParrainDN-ou'] = structureShortnames(rdnToSupannCodeEntites($user['supannParrainDN']));
       if (!isset($wanted_attrs['supannParrainDN']))
 	  unset($user['supannParrainDN']);
