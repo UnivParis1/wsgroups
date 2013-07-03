@@ -77,7 +77,8 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
     $wanted_attrs_raw = wanted_attrs_raw($wanted_attrs);
     $r = searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs_raw, $KEY_FIELD, $maxRows);
     foreach ($r as &$user) {
-      userHandleSpecialAttributePrivacy($user);
+      if (!@$attrRestrictions['allowEmployeeType'])
+	  userHandleSpecialAttributePrivacy($user);
       userAttributesKeyToText($user, $wanted_attrs);
       userHandle_postalAddress($user);
       if (@$wanted_attrs['up1Roles']) get_up1Roles($user);

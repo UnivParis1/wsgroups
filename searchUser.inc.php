@@ -67,6 +67,7 @@ if ($allowExtendedInfo >= 1) {
 
 $attrRestrictions = 
   array('allowListeRouge' => $allowExtendedInfo > 0 || GET_uid() && isStaffOrFaculty(GET_uid()),
+	'allowEmployeeType' => $allowExtendedInfo > 1,
 	);
 
 $users = searchPeople(people_filters($token, $restriction), $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows);
