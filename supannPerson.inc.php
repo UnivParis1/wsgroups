@@ -118,6 +118,27 @@ function structureShortnames($keys) {
     return empty($shortnames) ? NULL : $shortnames;
 }
 
+function supannActiviteAll($keys) {
+  global $activiteKeyToShortname;
+  $r = array();
+  foreach ($keys as $key) {
+    $e = array('key' => $key);
+    $name = @$activiteKeyToShortname[$key];
+    if ($name) $e['name'] = $name;
+    $r[] = $e;
+  }
+  return empty($r) ? NULL : $r;
+}
+
+function supannActiviteShortnames($keys) {
+    $all = supannActiviteAll($keys);
+    $r = array();
+    foreach ($all as $e) {
+      $r[] = @$e['name'];
+    }
+    return empty($r) ? NULL : $r;
+}
+
 function rdnToSupannCodeEntites($l) {
   $codes = array();
   foreach ($l as $rdn) {
@@ -160,12 +181,12 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
     }
   }
   if (isset($user['supannActivite'])) {
-    global $activiteKeyToShortname;
-    foreach ($user['supannActivite'] as &$e) {
-      $codeCNU = removePrefixOrNULL($e, '{CNU}');
-      $e = @$activiteKeyToShortname[$e];
-      if ($codeCNU) $e = "Section CNU $codeCNU - $e";
-    }
+    if (isset($wanted_attrs['supannActivite-all']))
+	$user['supannActivite-all'] = supannActiviteAll($user['supannActivite']);
+    if (isset($wanted_attrs['supannActivite']))
+        $user['supannActivite'] = supannActiviteShortnames($user['supannActivite']);
+    else
+        unset($user['supannActivite']);
   }
   if (isset($user['supannEtablissement'])) {
     // only return interesting supannEtablissement (ie not Paris1)

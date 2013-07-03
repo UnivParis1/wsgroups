@@ -16,7 +16,8 @@ $ALLOWED_MONO_ATTRS =
 $ALLOWED_MULTI_ATTRS = 
   array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 
 	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info',
-	'supannEtablissement', 'supannActivite', 'supannParrainDN', 'supannParrainDN-ou',
+	'supannEtablissement', 'supannActivite', 'supannActivite-all',
+	'supannParrainDN', 'supannParrainDN-ou',
 	'supannRoleGenerique');
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 
