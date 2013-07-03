@@ -2,6 +2,7 @@
 
 require_once ('./common.inc.php');
 require_once ('./tables.inc.php');
+require_once ('./config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
 function people_filters($token, $restriction = '') {
     $exactOr = "(uid=$token)(sn=$token)";
@@ -150,6 +151,70 @@ function supannActiviteShortnames($keys) {
     return empty($r) ? NULL : $r;
 }
 
+function parse_supannEtuInscription($s) {
+  preg_match_all('/\[(.*?)\]/', $s, $m);
+  $r = array();
+  foreach ($m[1] as $e) {
+    list($k,$v) = explode('=', $e, 2);
+    $r[$k] = $v;
+  }
+  return $r;
+}
+
+function supannEtuInscriptionAll($supannEtuInscription) {
+  $r = parse_supannEtuInscription($supannEtuInscription);
+  if (@$r['etape']) {
+    $localEtape = removePrefix($r['etape'], '{UAI:0751717J}');
+    require_once 'groups.inc.php';
+    $diploma = getGroupsFromDiplomaDn(array("(ou=$localEtape)"), 1);
+    if ($diploma) $r['etape'] = $diploma[0]["description"];
+  }
+  if (@$r['etab'] === '{UAI}0751717J') {
+    unset($r['etab']);
+  }
+  if (@$r['cursusann']) {
+    $r['cursusann'] = removePrefix($r['cursusann'], '{SUPANN}');
+  }
+  if (@$r['typedip']) {
+    // http://infocentre.pleiade.education.fr/bcn/workspace/viewTable/n/N_TYPE_DIPLOME_SISE
+    $to_name = array(
+		     '01' => "DIPLOME UNIVERSITE GENERIQUE",
+		     '03' => "HABILITATION A DIRIGER DES RECHERCHES",
+		     '05' => "DIPLOME INTERNATIONAL",
+		     'AC' => "CAPACITE EN DROIT",
+		     'DP' => "LICENCE PROFESSIONNELLE",
+		     'EZ' => "PREPARATION AGREGATION",
+		     'FE' => "MAGISTERE",
+		     'NA' => "AUTRES DIPL. NATIONAUX NIV. FORM. BAC",
+		     'UE' => "DIPLOME UNIV OU ETAB NIVEAU BAC + 4",
+		     'UF' => "DIPLOME UNIV OU ETAB NIVEAU BAC + 5",
+		     'XA' => "LICENCE (LMD)",
+		     'XB' => "MASTER (LMD)",
+		     'YA' => "DOCTORAT D'UNIVERSITE",
+		     'YB' => "DOCTORAT D'UNIVERSITE (GENERIQUE)",
+		     'ZA' => "DIPLOME PREP AUX ETUDES COMPTABLES",
+		     );
+    $r['typedip'] = $to_name[removePrefix($r['typedip'], '{SISE}')];
+  }
+  if (@$r['regimeinsc']) {
+    // http://infocentre.pleiade.education.fr/bcn/workspace/viewTable/n/N_REGIME_INSCRIPTION
+    $to_name = array('10' => 'Formation initiale',
+		     '11' => 'Reprise études',
+		     '12' => 'Formation initiale apprentissage', 
+		     '21' => 'Formation continue');
+    $r['regimeinsc'] = $to_name[removePrefix($r['regimeinsc'], '{SISE}')];
+  }
+  return $r;
+}
+
+function supannEtuInscriptionsAll($l) {
+  $r = array();
+  foreach ($l as $supannEtuInscription) {
+    $r[] = supannEtuInscriptionAll($supannEtuInscription);
+  }
+  return empty($r) ? NULL : $r;
+}
+
 function rdnToSupannCodeEntites($l) {
   $codes = array();
   foreach ($l as $rdn) {
@@ -188,6 +253,12 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
 	$user['supannParrainDN-ou'] = structureShortnames(rdnToSupannCodeEntites($user['supannParrainDN']));
       if (!isset($wanted_attrs['supannParrainDN']))
 	  unset($user['supannParrainDN']);
+  }
+  if (isset($user['supannEtuInscription'])) {
+      if (isset($wanted_attrs['supannEtuInscription-all']))
+	$user['supannEtuInscription-all'] = supannEtuInscriptionsAll($user['supannEtuInscription']);
+      if (!isset($wanted_attrs['supannEtuInscription']))
+	  unset($user['supannEtuInscription']);
   }
   if (isset($user['supannRoleGenerique'])) {
     global $roleGeneriqueKeyToShortname;

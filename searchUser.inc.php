@@ -18,6 +18,7 @@ $ALLOWED_MULTI_ATTRS =
 	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info',
 	'supannEtablissement', 'supannActivite', 'supannActivite-all',
 	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
+	'supannEtuInscription', 'supannEtuInscription-all',
 	'supannRoleGenerique');
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 
