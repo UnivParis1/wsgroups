@@ -7,6 +7,7 @@ $attrs = GET_or_NULL("attrs");
 $maxRows = min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
+$allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
 
 $restriction = GET_extra_people_filter_from_params();
 
@@ -64,6 +65,7 @@ if ($allowExtendedInfo >= 1) {
   $LDAP_CONNECT = $allowExtendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
   global_ldap_open('reOpen');
 }
+if ($allowInvalidAccounts) $allowInvalidAccounts = $allowExtendedInfo >= 1;
 
 $attrRestrictions = 
   array('allowListeRouge' => $allowExtendedInfo > 0 || GET_uid() && isStaffOrFaculty(GET_uid()),
@@ -71,7 +73,7 @@ $attrRestrictions =
 	'allowEmployeeType' => $allowExtendedInfo > 1,
 	);
 
-$users = searchPeople(people_filters($token, $restriction), $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows);
+$users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts), $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows);
 
 echoJson($users);
 

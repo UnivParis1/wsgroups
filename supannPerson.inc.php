@@ -4,8 +4,8 @@ require_once ('./common.inc.php');
 require_once ('./tables.inc.php');
 require_once ('./config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
-function people_filters($token, $restriction = '') {
-    $restriction = '(eduPersonAffiliation=*)' . $restriction;
+function people_filters($token, $restriction = '', $allowInvalidAccounts = false) {
+    if (!$allowInvalidAccounts) $restriction = '(eduPersonAffiliation=*)' . $restriction;
 
     $exactOrs = array("(uid=$token)", "(sn=$token)");
     if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
