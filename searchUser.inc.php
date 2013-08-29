@@ -17,7 +17,7 @@ $ALLOWED_MONO_ATTRS =
 	'postalAddress', 'eduPersonPrincipalName');
 $ALLOWED_MULTI_ATTRS = 
   array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'supannEntiteAffectation-all',
-	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'info',
+	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'description', 'info',
 	'supannEtablissement', 'supannActivite', 'supannActivite-all',
 	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
 	'supannEtuInscription', 'supannEtuInscription-all',
