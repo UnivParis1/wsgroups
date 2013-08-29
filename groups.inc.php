@@ -296,11 +296,6 @@ function echoJsonSimpleGroups($groups) {
     echoJson($groups);
 }
 
-function ipTrusted() {
-    global $TRUSTED_IPS;
-    return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
-}
-
 
 function searchGroups($token, $maxRows, $restriction) {
   $category_filter = $restriction['category'];
