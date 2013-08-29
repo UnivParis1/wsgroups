@@ -6,8 +6,11 @@ require_once ('./config.inc.php');
 function GET_ldapFilterSafe($name) {
     return ldap_escape_string($_GET[$name]);
 }
+function GET_ldapFilterSafe_or($name, $default_value) {
+    return isset($_GET[$name]) ? ldap_escape_string($_GET[$name]) : $default_value;
+}
 function GET_ldapFilterSafe_or_NULL($name) {
-    return isset($_GET[$name]) ? ldap_escape_string($_GET[$name]) : NULL;
+    return GET_ldapFilterSafe_or($name, NULL);
 }
 function GET_or_NULL($name) {
   return isset($_GET[$name]) ? $_GET[$name] : NULL;

@@ -2,7 +2,7 @@
 
 require ('./supannPerson.inc.php');
 
-$token = GET_ldapFilterSafe("token");
+$token = GET_ldapFilterSafe_or("token", '');
 $attrs = GET_or_NULL("attrs");
 $maxRows = min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");

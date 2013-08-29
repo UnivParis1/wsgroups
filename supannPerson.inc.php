@@ -7,7 +7,7 @@ require_once ('./config-groups.inc.php'); // in case groups.inc.php is used (php
 function people_filters($token, $restriction = '', $allowInvalidAccounts = false) {
     if (!$allowInvalidAccounts) $restriction = '(eduPersonAffiliation=*)' . $restriction;
 
-    $exactOrs = array("(uid=$token)", "(sn=$token)");
+    $exactOrs = $token == '' ? array('') : array("(uid=$token)", "(sn=$token)");
     if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
         $exactOrs[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
     } else if (preg_match('/^\d+$/', $token, $matches)) {
