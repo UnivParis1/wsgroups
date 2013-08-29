@@ -9,11 +9,14 @@ function GET_ldapFilterSafe($name) {
 function GET_ldapFilterSafe_or($name, $default_value) {
     return isset($_GET[$name]) ? ldap_escape_string($_GET[$name]) : $default_value;
 }
+function GET_or($name, $default) {
+    return isset($_GET[$name]) ? $_GET[$name] : $default;
+}
 function GET_ldapFilterSafe_or_NULL($name) {
     return GET_ldapFilterSafe_or($name, NULL);
 }
 function GET_or_NULL($name) {
-  return isset($_GET[$name]) ? $_GET[$name] : NULL;
+    return GET_or($name, NULL);
 }
 
 function GET_uid() {
@@ -142,6 +145,11 @@ function ensure_ldap_close() {
       ldap_close($ldapDS);
       $ldapDS = NULL;
     }
+}
+
+function ipTrusted() {
+    global $TRUSTED_IPS;
+    return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
 }
 
 function echoJson($array) {

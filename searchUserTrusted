@@ -1,0 +1,12 @@
+<?php // -*-PHP-*-
+
+require ('./common.inc.php');
+
+if (!ipTrusted())
+  exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");   
+
+$isTrustedIp = true;
+
+require ('./searchUser.inc.php');
+
+?>

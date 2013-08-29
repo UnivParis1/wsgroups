@@ -3,6 +3,11 @@
 $DEBUG = 0;
 $SEARCH_TIMELIMIT = 5; // seconds
 
+$TRUSTED_IPS = array(
+     // example:
+     // '192.168.1.11',
+);
+
 $BASE_DN = "dc=univ-paris1,dc=fr";
 
 // supann:

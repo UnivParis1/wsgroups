@@ -1,6 +1,6 @@
 php_value magic_quotes_gpc Off
 
-<FilesMatch "^(searchUser|searchUserCAS)$">
+<FilesMatch "^(searchUser|searchUserCAS|searchUserTrusted)$">
     SetHandler application/x-httpd-php
 </FilesMatch>
 

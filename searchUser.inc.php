@@ -4,7 +4,7 @@ require ('./supannPerson.inc.php');
 
 $token = GET_ldapFilterSafe_or("token", '');
 $attrs = GET_or_NULL("attrs");
-$maxRows = min(max(GET_or_NULL("maxRows"), 1), 10);
+$maxRows = @$isTrustedIp ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
@@ -68,7 +68,7 @@ if ($allowExtendedInfo >= 1) {
 if ($allowInvalidAccounts) $allowInvalidAccounts = $allowExtendedInfo >= 1;
 
 $attrRestrictions = 
-  array('allowListeRouge' => $allowExtendedInfo > 0 || GET_uid() && isStaffOrFaculty(GET_uid()),
+  array('allowListeRouge' => $allowExtendedInfo > 0 || @$isTrustedIp || GET_uid() && isStaffOrFaculty(GET_uid()),
 	'allowMailForwardingAddress' => $allowExtendedInfo > 1,
 	'allowEmployeeType' => $allowExtendedInfo > 1,
 	);
