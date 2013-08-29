@@ -1,40 +1,6 @@
 <?php // -*-PHP-*-
-require ('./groups.inc.php');
+require ('./config-groups.inc.php');
 require ('./supannPerson.inc.php');
-
-function group2filter($key) {
-  global $GROUPS_DN, $DIPLOMA_DN, $DIPLOMA_PREV_DN;
-
-  if ($cn = removePrefixOrNULL($key, "groups-")) {
-    return "(memberOf=cn=$cn,$GROUPS_DN)";
-  } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
-
-    // handle key like structures-U05-affiliation-student:
-    if (preg_match('/(.*)-affiliation-(.*)/', $supannCodeEntite, $matches)) {
-      $supannCodeEntite = $matches[1];
-      $affiliation = $matches[2];
-    } else {
-      $affiliation = null;
-    }
-
-    $filter = "(supannEntiteAffectation=$supannCodeEntite)";
-    if ($affiliation)
-      $filter = "(&$filter(eduPersonAffiliation=$affiliation))";
-
-    return $filter;
-  } else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
-    $ou = "ou=$diploma," . $DIPLOMA_DN;
-    return "(eduPersonOrgUnitDN=$ou)";
-  } else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
-    $ou = "ou=$diploma," . $DIPLOMA_PREV_DN;
-    return "(eduPersonOrgUnitDN=$ou)";
-  } else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
-    return "(eduPersonAffiliation=$affiliation)";
-  } else {
-    error("invalid group key $key");
-    return null;
-  }
-}
 
 $key = GET_ldapFilterSafe("key");
 $attrRestrictions = array();
@@ -45,7 +11,7 @@ if (ipTrusted()) {
   //exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");   
   $maxRows = 5;
 }
-$filter = group2filter($key);
+$filter = groupKey2filter($key);
 $users = searchPeople(array($filter), $attrRestrictions, array('uid' => 'uid'), 'uid', $maxRows);
 
 echoJson($users);
