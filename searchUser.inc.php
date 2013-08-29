@@ -14,7 +14,34 @@ $restriction = GET_extra_people_filter_from_params();
 $KEY_FIELD = 'uid';
 $ALLOWED_MONO_ATTRS = 
   array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
-	'postalAddress', 'eduPersonPrincipalName');
+	'postalAddress', 'eduPersonPrincipalName',
+	'sn',
+	//'up1AltGivenName',
+
+
+	// below are restricted or internal attributes.
+	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
+	'accountStatus', 'shadowFlag', 'shadowExpire', 'shadowLastChange',
+	'up1KrbPrincipal',
+
+	'supannCivilite', 
+	'supannListeRouge',
+	'supannEmpCorps', 
+
+	'supannAliasLogin',
+	'uidNumber', 'gidNumber',
+	'supannEmpId', 'supannEtuId', 'supannCodeINE',
+	'employeeNumber',
+
+	'homeDirectory', 'gecos',
+	'sambaAcctFlags', 'sambaSID',
+
+	'up1BirthName',
+	'up1BirthDay',
+
+	'homePhone', 'homePostalAddress',
+	'supannMailPerso',
+	);
 $ALLOWED_MULTI_ATTRS = 
   array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'supannEntiteAffectation-all',
 	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'description', 'info',
@@ -28,6 +55,14 @@ $ALLOWED_MULTI_ATTRS =
 	'telephoneNumber', 
 	'facsimileTelephoneNumber', 
 	'supannAutreTelephone', 'mobile',
+
+	'objectClass',
+	'labeledURI',
+
+	// below are restricted or internal attributes.
+	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
+	'mailForwardingAddress',
+	'up1Profile',
 	);
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 
