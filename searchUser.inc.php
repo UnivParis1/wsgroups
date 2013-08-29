@@ -66,6 +66,7 @@ $ALLOWED_MULTI_ATTRS =
 	);
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 
+if (!$attrs) $attrs = implode(',', array_merge($ALLOWED_MONO_ATTRS, $ALLOWED_MULTI_ATTRS));
 $wanted_attrs = array();
 foreach (explode(',', $attrs) as $attr) {
   if (in_array($attr, $ALLOWED_MONO_ATTRS)) {
