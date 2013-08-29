@@ -15,3 +15,10 @@ php_value magic_quotes_gpc Off
 <FilesMatch "^(search|searchGroup|userGroupsId|userGroupsAndRoles|getSubGroups|allGroups|groupUsers)$">
     SetHandler application/x-httpd-php
 </FilesMatch>
+
+<FilesMatch "^(annuaire.html)$">
+    Order allow,deny
+    Allow from all
+    AuthType CAS
+    require valid-user
+</FilesMatch>
