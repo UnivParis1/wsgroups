@@ -40,7 +40,47 @@ function GET_extra_people_filter_from_params() {
     else if ($val === "only") $filters["eduPersonAffiliation"] = $attr;
     else exit("invalid filter_$attr value $val");
   }  
-  return computeFilter($filters, false) . computeFilter($filters_not, true);
+  return computeFilter($filters, false) . computeFilter($filters_not, true) . GET_filter_member_of_group();
+}
+
+function GET_filter_member_of_group() {
+  $keys = GET_or_NULL("filter_member_of_group");
+  if (!$keys) return '';
+
+  return ldapOr(array_map('groupKey2filter', array_map('ldap_escape_string', explode('|', $keys))));
+}
+
+function groupKey2filter($key) {
+  global $GROUPS_DN, $DIPLOMA_DN, $DIPLOMA_PREV_DN;
+
+  if ($cn = removePrefixOrNULL($key, "groups-")) {
+    return "(memberOf=cn=$cn,$GROUPS_DN)";
+  } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+
+    // handle key like structures-U05-affiliation-student:
+    if (preg_match('/(.*)-affiliation-(.*)/', $supannCodeEntite, $matches)) {
+      $supannCodeEntite = $matches[1];
+      $affiliation = $matches[2];
+    } else {
+      $affiliation = null;
+    }
+
+    $filter = "(supannEntiteAffectation=$supannCodeEntite)";
+    if ($affiliation)
+      $filter = "(&$filter(eduPersonAffiliation=$affiliation))";
+
+    return $filter;
+  } else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
+    $ou = "ou=$diploma," . $DIPLOMA_DN;
+    return "(eduPersonOrgUnitDN=$ou)";
+  } else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
+    $ou = "ou=$diploma," . $DIPLOMA_PREV_DN;
+    return "(eduPersonOrgUnitDN=$ou)";
+  } else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
+    return "(eduPersonAffiliation=$affiliation)";
+  } else {
+    exit("invalid group key $key");
+  }
 }
 
 function isPersonMatchingFilter($uid, $filter) {
