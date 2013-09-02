@@ -1,5 +1,6 @@
 <?php // -*-PHP-*-
-require ('./config-groups.inc.php');
+require_once ('./common.inc.php');
+require_once ('./config-groups.inc.php');
 require ('./supannPerson.inc.php');
 
 $key = GET_ldapFilterSafe("key");
