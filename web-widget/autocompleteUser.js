@@ -80,9 +80,9 @@
 	  );
 
       if (item.partialResults)
-	  renderOneWarning(ul, "La recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+	  renderOneWarning(ul, "Votre recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
       if (item.partialResultsNoFullSearch)
-	  renderOneWarning(ul, "La recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+	  renderOneWarning(ul, "Votre recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
 
       if (item.wsError)
 	  renderOneWarning(ul, "Erreur web service");
@@ -209,7 +209,7 @@
 		    transformItems(data, settings.wantedAttr, request.term);
 
 		    warning = { warning: true }
-		    data.push(warning);
+		    data.unshift(warning);
 		    if (data.length >= settings.maxRows) {
 			warning.partialResults = settings.maxRows;;
 		    } else if (request.term.length < settings.minLengthFullSearch) {
