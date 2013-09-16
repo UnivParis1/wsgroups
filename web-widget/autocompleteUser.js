@@ -68,24 +68,27 @@
   };
 
   var renderOneWarning = function(ul, msg) {
-      $("<li></li>").addClass("warning").append(msg).appendTo(ul);
+      return $("<li></li>").addClass("warning").append(msg).appendTo(ul);
   };
 
   var renderWarningItem = function(ul, item) {
+      var li = $();
       if (item.nbListeRouge)
-	  renderOneWarning(ul, 
+	  li = renderOneWarning(ul, 
 	      item.nbListeRouge > 1 ?
 		  "NB : des r&eacute;sultats ont &eacute;t&eacute; cach&eacute;s<br>&agrave; la demande des personnes." :
 		  "NB : un r&eacute;sultat a &eacute;t&eacute; cach&eacute;<br>&agrave; la demande de la personne."
 	  );
 
       if (item.partialResults)
-	  renderOneWarning(ul, "Votre recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+	  li = renderOneWarning(ul, "Votre recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
       if (item.partialResultsNoFullSearch)
-	  renderOneWarning(ul, "Votre recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+	  li = renderOneWarning(ul, "Votre recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
 
       if (item.wsError)
-	  renderOneWarning(ul, "Erreur web service");
+	  li = renderOneWarning(ul, "Erreur web service");
+
+      return li;
   };
   var myRenderItemRaw = function(ul, item, moreClass, renderItemContent) {
 	if (item.warning) 
@@ -95,7 +98,7 @@
 	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
 
 	var content = renderItemContent(item);
-      $("<li></li>").addClass(item.odd_even ? "odd" : "even").addClass(moreClass)
+      return $("<li></li>").addClass(item.odd_even ? "odd" : "even").addClass(moreClass)
 	    .data("item.autocomplete", item)
 	    .append("<a>" + content + "</a>")
 	    .appendTo(ul);
