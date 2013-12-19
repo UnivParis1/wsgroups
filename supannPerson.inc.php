@@ -12,6 +12,7 @@ function people_filters($token, $restriction = '', $allowInvalidAccounts = false
         $exactOrs[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
     } else if (preg_match('/^\d+$/', $token, $matches)) {
         $exactOrs[] = "(supannEmpId=$token)";
+        $exactOrs[] = "(supannEtuId=$token)";
     }
     $r = array();
     foreach ($exactOrs as $exactOr)
