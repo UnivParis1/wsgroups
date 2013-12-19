@@ -53,8 +53,8 @@ function GET_extra_group_filter_from_params() {
 }
 
 function computeFilterRegex($in, $out) {
-  $inQ = implode('|', array_map('preg_quote', explode('|', $in)));
-  $outQ = implode('|', array_map('preg_quote', explode('|', $out)));
+  $inQ = str_replace('\|', '|', preg_quote($in, '/'));
+  $outQ = str_replace('\|', '|', preg_quote($out, '/'));
   return '/^' . ($outQ ? "(?!$outQ)" : '') . ($inQ ? "($inQ)$" : '')  . '/';
 }
 
@@ -162,7 +162,7 @@ function getGroupsFromSeeAlso($seeAlso) {
 
 function normalizeSeeAlso($seeAlso) {
     global $ALT_STRUCTURES_DN, $STRUCTURES_DN;
-    return preg_replace("/ou=(.*)," . preg_quote($ALT_STRUCTURES_DN) . "/", 
+    return preg_replace("/ou=(.*)," . preg_quote($ALT_STRUCTURES_DN,'/') . "/", 
 			"supannCodeEntite=$1,$STRUCTURES_DN", $seeAlso);
 }
 function getNameFromSeeAlso($seeAlso) {
@@ -217,7 +217,7 @@ function normalizeNameGroupFromStructuresDn(&$map) {
 
     $name = preg_replace("/^UFR(\d+)/", "UFR $1", $name); // normalize UFRXX into "UFR XX"
 
-    if ($shortName && $shortName != $name && !preg_match("/^[^:]*" . preg_quote($shortName) . "\s*:/", $name)) {
+    if ($shortName && $shortName != $name && !preg_match("/^[^:]*" . preg_quote($shortName, '/') . "\s*:/", $name)) {
 	//echo "adding $shortName to $name\n";
 	$name = "$shortName : $name";
     }
