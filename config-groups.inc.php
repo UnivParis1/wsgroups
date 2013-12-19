@@ -22,6 +22,7 @@ $ETABLISSEMENT_TABLE_ATTRS = array("supannEtablissement" => "key", "displayName"
 $ACTIVITE_TABLE_ATTRS = array("supannActivite" => "key", "displayName" => "name");
 
 $AFFILIATION2TEXT = array("faculty" => "enseignants", 
+			  "teacher" => "enseignants et chargés d'enseignement", 
 			  "student" => "étudiants", 
 			  "staff" => "Biatss", 
 			  "researcher" => "chercheurs", 
