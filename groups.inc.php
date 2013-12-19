@@ -126,7 +126,7 @@ function getGroupsFromDiplomaEntryDn($eduPersonOrgUnitDNs) {
 	  if (contains($key, $DIPLOMA_DN))
 	      $is_prev = false;
 	  else if (contains($key, $DIPLOMA_PREV_DN))
-	      $is_prev = true;
+	      continue; //$is_prev = true;
 	  else
 	      continue;
 
