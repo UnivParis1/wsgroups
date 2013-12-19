@@ -212,6 +212,7 @@ function computeDescriptionsFromSeeAlso(&$groups) {
 }
 
 function normalizeNameGroupFromStructuresDn(&$map) {
+    if (!@$map["name"]) return;
     $shortName = $map["name"];
     $name = $map["description"];
 
