@@ -321,7 +321,7 @@ function flattenFailsafe(l) {
     $.each(l, function (i, subl) {
 	if (subl) $.merge(r, subl);
     });
-    console.log(r);
+    //console.log(r);
     return r;
 }
 
