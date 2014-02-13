@@ -430,22 +430,27 @@ function format_shadowExpire(info) {
     return formadate(info.shadowExpire) + " (" + delta + ")";
 }
 
-function compute_Person(info) {
-    var Person;
+function compute_Person(info, showExtendedInfo) {
+    var person;
        if ($.isArray(info.objectClass) && $.grep(info.objectClass, function (v) { return v === "up1Person" })) {
-	   Person = (info.supannCivilite ? (info.supannCivilite + " " + info.displayName) : info.displayName) || "<INCONNU>";
+	   person = (info.supannCivilite ? (info.supannCivilite + " " + info.displayName) : info.displayName) || "<INCONNU>";
        }
 
-    if (Person) {
+    if (!person) return undefined;
+
 	var birthName = info.up1BirthName;
 	if (birthName === info.sn) birthName = '';
 	if (birthName || info.up1BirthDay) {
 	    var nee = info.supannCivilite === "M." ? "né" :
 		info.supannCivilite.match(/Mme|Mlle/) ? "née" : "né(e)";
-	    Person = Person + ", " + nee +
+	    person = person + ", " + nee +
 		(birthName ? " " + birthName : '') +
 		(info.up1BirthDay ? " le " + formagtime(info.up1BirthDay) : '');
 	}
+
+    var Person = $("<span>").text(person); 
+    if (showExtendedInfo) {
+	Person.attr('title', 'Prénom : ' + info.givenName + ", Nom : " + info.sn);
     }
     return Person;
 }
@@ -586,7 +591,6 @@ function format_link(link) {
 
 function formatUserInfo(info, showExtendedInfo) {
     //if (info.roomNumber) info.postalAddress = info.roomNumber + ", " + info.postalAddress;
-    info.Person = compute_Person(info);
     if (!showExtendedInfo) {
 	delete info.up1Roles; // TODO, handle it in web-service?
 	delete info.supannParrainDN;
@@ -600,6 +604,7 @@ function formatUserInfo(info, showExtendedInfo) {
 
     formatSomeUserValues(info, fInfo);
 
+    fInfo.Person = compute_Person(info, showExtendedInfo);
     if (info.supannListeRouge) fInfo.supannListeRouge = info.supannListeRouge === "TRUE" && important("oui");
     if (info.shadowExpire) fInfo.shadowExpire = format_shadowExpire(info);   
     if (info.eduPersonPrimaryAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
