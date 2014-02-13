@@ -271,6 +271,15 @@ function supannEtuInscriptionsAll($l) {
   return empty($r) ? NULL : $r;
 }
 
+function memberOfAll($l) {
+  global $BASE_DN;
+  $attrs = array("cn" => "key", "ou" => "name", "description" => "description");
+
+  $or = '';
+  foreach ($l as $dn) $or .= "(entryDN=$dn)";
+  return getLdapInfo($BASE_DN, "(|$or)", $attrs);
+}
+
 function rdnToSupannCodeEntites($l) {
   $codes = array();
   foreach ($l as $rdn) {
@@ -315,6 +324,12 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
 	$user['supannEtuInscription-all'] = supannEtuInscriptionsAll($user['supannEtuInscription']);
       if (!isset($wanted_attrs['supannEtuInscription']))
 	  unset($user['supannEtuInscription']);
+  }
+  if (isset($user['memberOf'])) {
+      if (isset($wanted_attrs['memberOf-all']))
+	$user['memberOf-all'] = memberOfAll($user['memberOf']);
+      if (!isset($wanted_attrs['memberOf']))
+	  unset($user['memberOf']);
   }
   if (isset($user['supannRoleGenerique'])) {
     global $roleGeneriqueKeyToShortname;

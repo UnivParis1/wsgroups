@@ -48,6 +48,7 @@ $ALLOWED_MULTI_ATTRS =
 	'supannEtablissement', 'supannActivite', 'supannActivite-all',
 	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
 	'supannEtuInscription', 'supannEtuInscription-all',
+	'memberOf', 'memberOf-all',
 	'supannRoleGenerique',
 
 	'roomNumber', 'up1FloorNumber',
