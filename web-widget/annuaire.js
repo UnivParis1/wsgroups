@@ -76,6 +76,9 @@ var main_attrs_labels = [ [
     //'supannRefID: RefId',
     'up1KrbPrincipal: Kerb',
     'supannListeRouge: ' + important('Liste rouge'),
+],
+[
+    'memberOf: Groupes',
 ]
 ];
 
@@ -412,6 +415,15 @@ function format_supannEtuInscriptionAll(all, fInfo, showExtendedInfo) {
 	fInfo['supannEtuInscription-prev'] = spanFromList($.map(prev, format_it), "<br>");
 }
 
+function format_memberOf(all) {
+    all = all.sort(function (a, b) { 
+	return a.key.toLowerCase().localeCompare(b.key.toLowerCase());
+    });
+    return spanFromList($.map(all, function (e) {
+	return $("<span>").text(e.key + " : " + (e.description || ''));
+    }), "<br>");
+}
+
 function format_shadowExpire(info) {
     var today = todayEpochDay();
     var delta = info.shadowExpire <= today ? important("EXPIRE") : formadelai(today, info.shadowExpire);
@@ -578,6 +590,7 @@ function formatUserInfo(info, showExtendedInfo) {
     if (!showExtendedInfo) {
 	delete info.up1Roles; // TODO, handle it in web-service?
 	delete info.supannParrainDN;
+	delete info.memberOf; delete info['memberOf-all'];
     }
     if (showExtendedInfo) info.Identifiers = compute_Identifiers(info);
 
@@ -599,6 +612,7 @@ function formatUserInfo(info, showExtendedInfo) {
     fInfo.Fonctions = compute_Fonctions(info);
 
     if (info.up1Roles) fInfo.up1Roles = format_up1Roles(info);
+    if (info['memberOf-all']) fInfo.memberOf = format_memberOf(info['memberOf-all']);
     if (info.supannParrainDN) fInfo['supannParrainDN-all'] = format_supannParrainDN(info, showExtendedInfo);
     if (info.supannEntiteAffectation) fInfo['supannEntiteAffectation-all'] = format_supannEntiteAffectation(info, showExtendedInfo);
     if (info.buildingName) fInfo.buildingName = format_buildingName(info.buildingName);
