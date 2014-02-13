@@ -8,10 +8,3 @@ php_value magic_quotes_gpc Off
     Order allow,deny
 </FilesMatch>
 
-<FilesMatch "^(searchUserCAS)$">
-    Order allow,deny
-    Allow from all
-    AuthType CAS
-    require valid-user
-</FilesMatch>
-

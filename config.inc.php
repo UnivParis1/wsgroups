@@ -3,6 +3,10 @@
 $DEBUG = 0;
 $SEARCH_TIMELIMIT = 5; // seconds
 
+$CAS_HOST = 'cas.univ.fr';
+$CAS_CONTEXT = '/cas';
+$CA_certificate_file = '/usr/local/etc/ssl/certs/ca.crt';
+
 $TRUSTED_IPS = array(
      // example:
      // '192.168.1.11',

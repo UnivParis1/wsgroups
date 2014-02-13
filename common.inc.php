@@ -147,6 +147,30 @@ function ensure_ldap_close() {
     }
 }
 
+function initPhpCAS($host, $port, $context, $CA_certificate_file) {
+  phpCAS::client(CAS_VERSION_2_0, $host, intval($port), $context);
+  if ($CA_certificate_file)
+    phpCAS::setCasServerCACert($CA_certificate_file);
+  else
+    phpCAS::setNoCasServerValidation();
+  //phpCAS::setLang(PHPCAS_LANG_FRENCH);
+}
+
+function forceCASAuthentication() {
+  require_once 'CAS.php';
+  global $CAS_HOST, $CAS_CONTEXT, $CA_certificate_file;
+  initPhpCAS($CAS_HOST, '443', $CAS_CONTEXT, $CA_certificate_file);
+  //phpCAS::setNoClearTicketsFromUrl(); // ensure things work without cookies (for safari on cross-domain)
+  phpCAS::forceAuthentication();
+
+  if (isset($_REQUEST['logout'])) {
+    phpCAS::logout();
+  }
+
+  // will be used by function "GET_uid"
+  $_SERVER["HTTP_CAS_USER"] = phpCAS::getUser();
+}
+
 function ipTrusted() {
     global $TRUSTED_IPS;
     return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
