@@ -1,0 +1,27 @@
+<?php // -*-PHP-*-
+
+require ('./supannPerson.inc.php');
+
+forceCASAuthentication();
+if (!isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
+  header("HTTP/1.0 403 Forbidden");
+  exit;
+}
+
+$uid = GET_ldapFilterSafe("uid");
+
+exec("echo $uid | ssh userinfo@cas.univ-paris1.fr", $lines);
+$since = strtotime(array_shift($lines));
+
+$list = array();
+foreach ($lines as $line) {
+  if (preg_match("/(.*?) - AUTHENTICATION_(SUCCESS|FAILED) from '(.*)'/", $line, $m)) {
+    $e = array("time" => strtotime($m[1]), "ip" => $m[3]);
+    if ($m[2] != "SUCCESS") $e["error"] = $m[2];
+    $list[] = $e;
+  }
+}
+
+echoJson(array("since" => $since, "list" => $list));
+
+?>

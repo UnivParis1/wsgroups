@@ -3,6 +3,7 @@
 
 var baseURL = "https://ticetest.univ-paris1.fr/wsgroups";
 var searchUserURL = baseURL + '/searchUserCAS';
+var lastLoginsUrl = baseURL + '/userLastLogins';
 var showExtendedInfo = undefined; showExtendedInfo = true;
 var currentUser = undefined;
 
@@ -346,10 +347,22 @@ function leftPadZero(number, size) {
     return number;
 }
 
+function formatDateRaw(d) {
+    return leftPadZero(d.getDate(), 2) + "/" + leftPadZero(d.getMonth() + 1, 2) + "/" + d.getFullYear();
+}
+
+function formatDateTime(epoch) {
+    var d = new Date(epoch * 1000);
+    return "le " + formatDateRaw(d) + " à " + formatTimeHHhMM(d);
+}
+function formatTimeHHhMM(d) {
+    return leftPadZero(d.getHours(), 2) + "h" + leftPadZero(d.getMinutes(), 2);
+}
+
 function formadate(epoch) {
     if (!epoch) return "(date inconnue)";
     var d = new Date(epoch * 24 * 3600 * 1000);
-    return leftPadZero(d.getDate(), 2) + "/" + leftPadZero(d.getMonth() + 1, 2) + "/" + d.getFullYear();
+    return formatDateRaw(d);
 }
 
 function formadelai(date1, date2) {
@@ -490,6 +503,47 @@ function formatSomeUserValues(info, fInfo) {
     });
 }
 
+function formatLastLogins(data, div) {
+    var since = data.since;
+    var list = data.list.reverse();
+    var lastErrs = [];
+    while (list.length && list[0].error) {
+	lastErrs.push(list.shift());
+    }
+    if (list.length) {
+	div.text(", dernier login " + formatDateTime(list[0].time));
+	if (lastErrs.length)
+	    div.append(important(", " + lastErrs.length + " échecs depuis"));
+    } else if (lastErrs.length) {
+	div.append(", " + important(lastErrs.length + " login en échecs depuis " + formatDateTime(lastErrs.reverse()[0].time)));
+    } else {
+	div.text(", aucune tentative de login depuis " + formatDateTime(since));
+    }
+}
+
+function get_lastLogins(uid, infoDiv) {
+    var infoDiv = $("<span>");
+    $.ajax({
+	url: lastLoginsUrl,
+	dataType: "jsonp",
+	crossDomain: true, // needed if url is CAS-ified or on a different host than application using autocompleteUser
+	data: { uid: uid },
+	error: function () {
+	    infoDiv.text("Erreur web service");
+	},
+	success: function (data) {
+	    if (data.length == 0) {
+		infoDiv.text("user not found (??)");
+	    } else if (data.length > 1) {
+		infoDiv.text("internal error (multiple user found)");
+	    } else {
+		infoDiv.empty().append(formatLastLogins(data, infoDiv));
+	    }
+	}
+    });
+    return infoDiv;
+}
+
 function compute_Account_and_accountStatus(info, fInfo) {
     if (info.up1KrbPrincipal) {
 	$.each(info.up1KrbPrincipal, function (i, krb) {
@@ -515,9 +569,11 @@ function compute_Account_and_accountStatus(info, fInfo) {
 	    info.Account = "LDAP, mot de passe changé le " + formadate(info.shadowLastChange);
 	}
     }
-    if (!info.accountStatus || info.accountStatus === "active")
+    if (!info.accountStatus || info.accountStatus === "active") {
 	if (!info.eduPersonAffiliation)
 	    fInfo.accountStatus.append(" (" + important('il manque eduPersonAffiliation') + ")");
+    }
+    fInfo.accountStatus.append(get_lastLogins(info.uid));
 
     if (fInfo.shadowFlag) fInfo.accountStatus.append(" (" + fInfo.shadowFlag + ")");
 }
