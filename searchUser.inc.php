@@ -112,6 +112,10 @@ $attrRestrictions =
 
 $users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts), $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows);
 
+if ($allowExtendedInfo) {
+  foreach ($users as &$u) $u["allowExtendedInfo"] = $allowExtendedInfo;
+}
+
 echoJson($users);
 
 ?>
