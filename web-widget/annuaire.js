@@ -503,9 +503,9 @@ function formatSomeUserValues(info, fInfo) {
     });
 }
 
-function formatLastLogins(data, div) {
+function formatLastLogins(info, data, div) {
     var since = data.since;
-    var list = data.list.reverse();
+    var list = data.list.reverse().slice();
     var lastErrs = [];
     while (list.length && list[0].error) {
 	lastErrs.push(list.shift());
@@ -517,17 +517,27 @@ function formatLastLogins(data, div) {
     } else if (lastErrs.length) {
 	div.append(", " + important(lastErrs.length + " login en échecs depuis " + formatDateTime(lastErrs.reverse()[0].time)));
     } else {
-	div.text(", aucune tentative de login depuis " + formatDateTime(since));
+	if (info.accountStatus === "active") 
+	    div.text(", aucune tentative de login depuis " + formatDateTime(since));
+    }
+    if (data.list.length) {
+	var details = $("<div class='vertical-scroll hidden'>");
+	$.each(data.list, function (v, e) {
+	    var t = formatDateTime(e.time) + " : " + (e.error || "SUCCESS") + " <small>(ip = " + e.ip + " )</small>";
+	    details.append(t + '<br>');
+	})
+	div.append($("<span class='clickable'>").append(" <small>details</small>").click(function () { details.toggleClass("hidden") }));
+	div.append(details);
     }
 }
 
-function get_lastLogins(uid, infoDiv) {
+function get_lastLogins(info, infoDiv) {
     var infoDiv = $("<span>");
     $.ajax({
 	url: lastLoginsUrl,
 	dataType: "jsonp",
 	crossDomain: true, // needed if url is CAS-ified or on a different host than application using autocompleteUser
-	data: { uid: uid },
+	data: { uid: info.uid },
 	error: function () {
 	    infoDiv.text("Erreur web service");
 	},
@@ -537,7 +547,7 @@ function get_lastLogins(uid, infoDiv) {
 	    } else if (data.length > 1) {
 		infoDiv.text("internal error (multiple user found)");
 	    } else {
-		infoDiv.empty().append(formatLastLogins(data, infoDiv));
+		infoDiv.empty().append(formatLastLogins(info, data, infoDiv));
 	    }
 	}
     });
@@ -573,7 +583,8 @@ function compute_Account_and_accountStatus(info, fInfo) {
 	if (!info.eduPersonAffiliation)
 	    fInfo.accountStatus.append(" (" + important('il manque eduPersonAffiliation') + ")");
     }
-    fInfo.accountStatus.append(get_lastLogins(info.uid));
+    if (info.allowExtendedInfo > 1)
+	fInfo.accountStatus.append(get_lastLogins(info));
 
     if (fInfo.shadowFlag) fInfo.accountStatus.append(" (" + fInfo.shadowFlag + ")");
 }

@@ -43,3 +43,19 @@ span[title], a[title] {
   left: 0;
   white-space: nowrap;
 }
+
+.clickable {
+  cursor: pointer;
+  border-bottom: 1px dotted;  
+}
+.vertical-scroll {
+  max-height: 10em;
+  overflow-y: scroll;
+  border: 1px solid;
+  display: block;
+  padding: 0.3em;
+}
+
+.hidden {
+  display: none;
+}
