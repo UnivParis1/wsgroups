@@ -677,7 +677,7 @@ function formatUserInfo(info, showExtendedInfo) {
     if (info.eduPersonPrimaryAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo, showExtendedInfo);
     if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo, showExtendedInfo);
-    if (info.up1BirthDay) {
+    if (showExtendedInfo) {
 	// if we have up1BirthDay, we have full power
 	compute_Account_and_accountStatus(info, fInfo);
     }
