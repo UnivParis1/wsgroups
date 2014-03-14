@@ -103,7 +103,16 @@ function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $
       foreach ($r as &$e) {
 	if (!isset($e["supannListeRouge"])) continue;
 	$supannListeRouge = getAndUnset($e, "supannListeRouge");
-	if ($supannListeRouge == "TRUE") anonymizeUser($e, $wanted_attrs);
+	if ($supannListeRouge == "TRUE") {
+	  if (sizeof($r) == 1) {
+	    // hum, the search is precise enough to return only one result.
+	    // if we return the anonymized result, someone can know a user exists, even if anonymized
+	    // better return nothing! 
+	    $r = array();
+	  } else {
+	    anonymizeUser($e, $wanted_attrs);
+	  }
+	}
       }
     }
     return $r;
