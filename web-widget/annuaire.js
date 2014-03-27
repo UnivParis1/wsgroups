@@ -788,6 +788,13 @@ function formatUserInfo(info, showExtendedInfo) {
 		    );
     }
 
+    function useHashParam() {
+	var value = document.location.hash && document.location.hash.replace(/^#/, '');
+	if (value && (!currentUser || currentUser.value != value)) {
+	    asyncInfo({ label: value, value: value });
+	}
+    }
+
     function init() {
 	$("#annuaire").append(searchForm()).append(infoDiv);
 
@@ -799,6 +806,8 @@ function formatUserInfo(info, showExtendedInfo) {
 	    asyncInfo(currentUser);
 	});
 	$("#showExtendedInfo").attr('checked', showExtendedInfo ? 'checked' : false);
+
+	window.addEventListener('hashchange', useHashParam, false);
     }
 
     function cachedGetScript(url, success) {
@@ -815,10 +824,7 @@ function formatUserInfo(info, showExtendedInfo) {
     cachedGetScript(baseURL + "/web-widget/jquery-ui-1.8.21.custom.min.js", function () {
 	cachedGetScript(baseURL + "/web-widget/autocompleteUser.js", function () {
 	    init();
-	    if (document.location.hash) {
-		var value = document.location.hash.replace(/^#/, '');
-		asyncInfo({ label: value, value: value });
-	    }
+	    useHashParam();
 	})
     });
 
