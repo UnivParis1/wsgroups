@@ -112,36 +112,35 @@ var eduPersonAffiliation_valnames = {
 };
 
 function buildingNameToUrl(buildingName) {
-    var to_typo3 = {
+    var toTrigramme = {
 // missing: centre-arago centre-bicetre centre-de-sceaux centre-meudon centre-nanterre centre-sorbonne-1 centre-sorbonne-47 centre-villejuif fontenay-aux-roses maison-des-sciences-economiques rue-regnault 
-"centre-albert-chatelet": "centre-albert-chatelet",
-"centre-broca": "centre-broca",
-"centre-cujas": "centre-cujas",
-"centre-malher": "centre-malher",
-"centre-michelet": "centre-michelet",
-"centre-pantheon": "centre-pantheon",
-"centre-port-royal-rene-cassin": "centre-port-royal-rene-cassin",
-"centre-rue-du-four": "centre-rue-du-four",
-"centre-saint-charles": "centre-saint-charles",
-
-"centre-bourg-la-reine": "centre-bourg-la-reine-isst",
-"centre-de-nogent-sur-marne": "centre-de-nogent-sur-marne-iedes",
-"centre-pierre-mendes-france-17": "centre-17-rue-de-tolbiac",
-"centre-pierre-mendes-france-90": "centrepierremendesfrance-90",
-"centre-saint-jacques": "institut-de-geographie",
-"centre-sorbonne-17": "centre-sorbonne",
-"centre-thenard": "centre-thenard-formation-continue",
-"inha": "carre-colbert-inha",
-"publications-sorbonne": "boutique-publications-de-la-sorbonne",
-"rue-dulm": "centre-rue-dulm",
-"rue-valette": "centre-valette",
-"sainte-barbe": "sainte-barbe-institut-tunc" };
+  "Centre 17 rue de Tolbiac"        : '17t',
+  "Maison internationale"	    : 'ara',
+  "Centre Bourg-la-Reine"	    : 'blr',
+  "Sainte Barbe (Institut Tunc)"    : 'brb',
+  "Centre Broca"		    : 'brc',
+  "Centre Port-Royal René Cassin"   : 'cas',
+  "Centre Cujas"		    : 'cuj',
+  "Centre rue du Four"		    : 'dfo',
+  "Centre Michelet"		    : 'iaa',
+  "Centre Malher"		    : 'mah',
+  "Maison des Sciences Économiques" : 'mse',
+  "Centre Pierre Mendès France"	    : 'pmf',
+  "Centre Panthéon"		    : 'pth',
+  "Centre Sorbonne"		    : 'srb',
+  "Centre Saint Charles"	    : 'stc',
+  "Institut de Géographie"	    : 'stj',
+  "Centre Thénard"		    : 'thn',
+  "Centre rue d'Ulm"		    : 'ulm',
+  "Centre Valette"		    : 'val',
+ 
+  "centre Albert Chatelet" 	    : 'ach'
+}
 
     // found on page http://www.univ-paris1.fr/universite/campus/ using:
     // $.map($("#c531163").find("a"), function (e) { return e.href.replace("http://www.univ-paris1.fr/universite/campus/detail-campus/", "") })
-    buildingName = buildingName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
-    var typo3 = to_typo3[buildingName];
-    return typo3 && ("http://www.univ-paris1.fr/universite/campus/detail-campus/" + typo3 + "/");
+    var trigramme = toTrigramme[buildingName];
+    return trigramme && ("http://www.univ-paris1.fr/universite/campus/detail-campus/" + trigramme + "/");
 }
 
 function important(s) {
