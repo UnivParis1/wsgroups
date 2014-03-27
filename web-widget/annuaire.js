@@ -642,7 +642,7 @@ function format_telephoneNumber(number, linkName) {
 
 function format_buildingName(buildingNames) {
     return spanFromList($.map(buildingNames, function (buildingName) {
-	return a_or_span(buildingNameToUrl(buildingName), capitalize(buildingName));
+	return a_or_span(buildingNameToUrl(buildingName), buildingName);
     }), ", ");
 }
 
