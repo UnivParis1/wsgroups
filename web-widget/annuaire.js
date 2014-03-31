@@ -366,7 +366,7 @@ function formadate(epoch) {
 
 function formadelai(date1, date2) {
     var delai = date2 - date1;
-    return delai < 90 ? delai + " jours" :
+    return delai < 90 ? Math.round(delai) + " jours" :
 	delai < 1000 ? Math.round(delai /30.5) + " mois" :
 	Math.round(delai/365.2421875) + " ans";
 }
