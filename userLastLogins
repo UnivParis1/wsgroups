@@ -8,9 +8,9 @@ if (!isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
   exit;
 }
 
-$uid = GET_ldapFilterSafe("uid");
+$login = GET_ldapFilterSafe("login");
 
-exec("echo $uid | ssh userinfo@cas.univ-paris1.fr", $lines);
+exec("echo $login | ssh userinfo@cas.univ-paris1.fr", $lines);
 $since = strtotime(array_shift($lines));
 
 $list = array();

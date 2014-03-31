@@ -537,7 +537,7 @@ function get_lastLogins(info, infoDiv) {
 	url: lastLoginsUrl,
 	dataType: "jsonp",
 	crossDomain: true, // needed if url is CAS-ified or on a different host than application using autocompleteUser
-	data: { uid: info.uid },
+	data: { login: info.supannAliasLogin || info.uid },
 	error: function () {
 	    infoDiv.text("Erreur web service");
 	},
