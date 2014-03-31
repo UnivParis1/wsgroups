@@ -440,7 +440,7 @@ function format_memberOf(all) {
 function format_shadowExpire(info) {
     var today = todayEpochDay();
     var delta = info.shadowExpire <= today ? important("EXPIRE") : formadelai(today, info.shadowExpire);
-    return formadate(info.shadowExpire) + " (" + delta + ")";
+    return formadate(info.shadowExpire) + " (dans " + delta + ")";
 }
 
 function compute_Person(info, showExtendedInfo) {
@@ -463,7 +463,7 @@ function compute_Person(info, showExtendedInfo) {
 
     var Person = $("<span>").text(person); 
     if (showExtendedInfo) {
-	Person.attr('title', 'Prénom : ' + info.givenName + ", Nom : " + info.sn);
+	Person.attr('title', 'Prénom : ' + info.givenName + ", Nom : " + info.sn + ", Complet : " + info.cn);
     }
     return Person;
 }
