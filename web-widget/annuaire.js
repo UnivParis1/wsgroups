@@ -380,7 +380,8 @@ function compute_MailDelivery(info) {
 
 function compute_Affiliation(info, showExtendedInfo) {
     var valnames = eduPersonAffiliation_valnames;
-    var Affiliation = formatValues(valnames, info.eduPersonPrimaryAffiliation);
+    var Affiliation = formatValues(valnames, info.eduPersonPrimaryAffiliation)
+	|| spanFromList([important(info.eduPersonPrimaryAffiliation ? info.eduPersonPrimaryAffiliation + "??" : 'MANQUANTE')]);
     if (info.eduPersonAffiliation) {	
 	var notWanted = $.merge([info.eduPersonPrimaryAffiliation],
 				showExtendedInfo ? [] : [ 'employee', 'member' ]);
@@ -673,7 +674,7 @@ function formatUserInfo(info, showExtendedInfo) {
     fInfo.Person = compute_Person(info, showExtendedInfo);
     if (info.supannListeRouge) fInfo.supannListeRouge = info.supannListeRouge === "TRUE" && important("oui");
     if (info.shadowExpire) fInfo.shadowExpire = format_shadowExpire(info);   
-    if (info.eduPersonPrimaryAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
+    if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo, showExtendedInfo);
     if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo, showExtendedInfo);
     if (showExtendedInfo) {
