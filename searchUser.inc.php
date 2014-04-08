@@ -39,7 +39,7 @@ $ALLOWED_MONO_ATTRS =
 	'up1BirthName',
 	'up1BirthDay',
 
-	'homePhone', 'homePostalAddress',
+	'homePhone', 'homePostalAddress', 'pager',
 	'supannMailPerso',
 	);
 $ALLOWED_MULTI_ATTRS = 
