@@ -29,6 +29,13 @@ $AFFILIATION2TEXT = array("faculty" => "enseignants",
 			  "affiliate" => "invités", 
 			  );
 
+$BUSINESSCATEGORY2TEXT = array("research" => "Laboratoires de recherche", 
+			       "library" => "Bibliothèques", 
+			       "doctoralSchool" => "Écoles doctorales", 
+			       "administration" => "Services", 
+			       "pedagogy" => "Composantes personnels", 
+			       );
+
 $MAX_PARENTS_IN_DESCRIPTION = 4;
 
 ?>

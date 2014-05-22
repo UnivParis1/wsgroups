@@ -58,6 +58,12 @@ function computeFilterRegex($in, $out) {
   return '/^' . ($outQ ? "(?!$outQ)" : '') . ($inQ ? "($inQ)$" : '')  . '/';
 }
 
+function get_businessCategories($l) {
+  $r = array();
+  foreach ($l as $e) $r[] = $e["businessCategory"];
+  return array_unique($r);
+}
+
 function isPersonnel($user) {
   global $AFFILIATIONS_PERSONNEL;
   if (!isset($user["eduPersonAffiliation"])) return false;
@@ -85,6 +91,10 @@ function getUserGroups($uid) {
         $filter = computeOneFilter('supannCodeEntite', implode('|', $user["supannEntiteAffectation"]));
 	$groupsStructures = getGroupsFromStructuresDn(array($filter));
 	if (isPersonnel($user)) {
+	  foreach (get_businessCategories($groupsStructures) as $cat) {
+	    $g = businessCategoryGroup($cat);
+	    if ($g) $groups[] = $g;
+	  }
 	  $groups = array_merge($groups, remove_businessCategory($groupsStructures));
 	}
     } else {
@@ -278,6 +288,15 @@ function affiliationGroup($affiliation) {
     $text = $AFFILIATION2TEXT[$affiliation];
     $name = "Tous les " . $text;
     return array("key" => "affiliation-" . $affiliation, 
+		 "name" => $name, "description" => $name);
+}
+
+function businessCategoryGroup($businessCategory) {
+    global $BUSINESSCATEGORY2TEXT;
+    if (!isset($BUSINESSCATEGORY2TEXT[$businessCategory])) return null;
+
+    $name = $BUSINESSCATEGORY2TEXT[$businessCategory];
+    return array("key" => "businessCategory-" . $businessCategory, 
 		 "name" => $name, "description" => $name);
 }
 
