@@ -176,13 +176,13 @@ function ipTrusted() {
     return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
 }
 
-function echoJson($array) {
+function echoJson($o) {
   ensure_ldap_close();
   header('Content-type: application/json; charset=UTF-8');
   if (isset($_GET["callback"]))
-    echo $_GET["callback"] . "(" . json_encode($array) . ");";
+    echo $_GET["callback"] . "(" . json_encode($o) . ");";
   else
-    echo json_encode($array);  
+    echo json_encode($o);  
 }
 
 function identiqueMap($list) {
