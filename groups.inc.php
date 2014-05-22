@@ -58,6 +58,15 @@ function computeFilterRegex($in, $out) {
   return '/^' . ($outQ ? "(?!$outQ)" : '') . ($inQ ? "($inQ)$" : '')  . '/';
 }
 
+function isPersonnel($user) {
+  global $AFFILIATIONS_PERSONNEL;
+  if (!isset($user["eduPersonAffiliation"])) return false;
+  foreach ($user["eduPersonAffiliation"] as $affiliation) {
+    if (in_array($affiliation, $AFFILIATIONS_PERSONNEL)) return true;
+  }
+  return false;
+}
+
 function getUserGroups($uid) {
     $groups = getGroupsFromGroupsDn(array(member_filter($uid)));
 
@@ -75,7 +84,9 @@ function getUserGroups($uid) {
     if (isset($user["supannEntiteAffectation"])) {
         $filter = computeOneFilter('supannCodeEntite', implode('|', $user["supannEntiteAffectation"]));
 	$groupsStructures = getGroupsFromStructuresDn(array($filter));
-	$groups = array_merge($groups, remove_businessCategory($groupsStructures));
+	if (isPersonnel($user)) {
+	  $groups = array_merge($groups, remove_businessCategory($groupsStructures));
+	}
     } else {
         $groupsStructures = array();
     }
