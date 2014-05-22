@@ -15,7 +15,7 @@ $KEY_FIELD = 'uid';
 $ALLOWED_MONO_ATTRS = 
   array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
 	'postalAddress', 'eduPersonPrincipalName',
-	'sn',
+	'sn', 'givenName',
 	//'up1AltGivenName',
 
 
