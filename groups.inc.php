@@ -165,7 +165,7 @@ function normalizeSeeAlso($seeAlso) {
     return preg_replace("/ou=(.*)," . preg_quote($ALT_STRUCTURES_DN,'/') . "/", 
 			"supannCodeEntite=$1,$STRUCTURES_DN", $seeAlso);
 }
-function getNameFromSeeAlso($seeAlso) {
+function getGroupFromSeeAlso($seeAlso) {
     global $GROUPS_DN, $STRUCTURES_DN;
 
     $seeAlso = normalizeSeeAlso($seeAlso);
@@ -178,9 +178,14 @@ function getNameFromSeeAlso($seeAlso) {
 	$groups = getGroupsFromDiplomaEntryDn(array($seeAlso));
 
     if ($groups && $groups[0])
-    	return $groups[0]["name"];
+    	return $groups[0];
     else
-	return '';
+	return null;
+}
+
+function getNameFromSeeAlso($seeAlso) {
+    $group = getGroupFromSeeAlso($seeAlso);
+    return $group ? $group["name"] : '';
 }
 
 function computeDescriptionsFromSeeAlso(&$groups) {
