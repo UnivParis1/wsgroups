@@ -608,7 +608,7 @@ function compute_Account_and_accountStatus(info, fInfo) {
 	    fInfo.accountStatus = spanFromList([important('NON ACTIVE')]);
 	}
 	if (info.shadowLastChange) {
-	    info.Account = "LDAP, mot de passe changé le " + formadate(info.shadowLastChange);
+	    fInfo.Account = important("LDAP") + ", mot de passe changé le " + formadate(info.shadowLastChange);
 	}
     }
     if (!info.accountStatus || info.accountStatus === "active") {
