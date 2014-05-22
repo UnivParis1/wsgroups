@@ -9,9 +9,9 @@ var currentUser = undefined;
 
 function parse_attrs_text(l) {
     return $.map(l, function (attr_text) {
-	var r = attr_text.match(/(.*?): (.*)/);
+	var r = attr_text && attr_text.match(/(.*?): (.*)/);
 	if (!r) console.error("invalid attr_text " + attr_text);
-	return { attr: r[1], text: r[2] };
+	return r && { attr: r[1], text: r[2] };
     });
 }
 
@@ -174,6 +174,37 @@ var attr2valnames = {
 	'up1Role': 'Compte de fonction',
     }    
 };
+
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (searchElement, fromIndex) {
+      if ( this === undefined || this === null ) {
+        throw new TypeError( '"this" is null or not defined' );
+      }
+
+      var length = this.length >>> 0; // Hack to convert object.length to a UInt32
+
+      fromIndex = +fromIndex || 0;
+
+      if (Math.abs(fromIndex) === Infinity) {
+        fromIndex = 0;
+      }
+
+      if (fromIndex < 0) {
+        fromIndex += length;
+        if (fromIndex < 0) {
+          fromIndex = 0;
+        }
+      }
+
+      for (;fromIndex < length; fromIndex++) {
+        if (this[fromIndex] === searchElement) {
+          return fromIndex;
+        }
+      }
+
+      return -1;
+    };
+}
 
 var diacriticsMap = [
       {'base':'A', 'letters':/[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},
@@ -807,7 +838,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	});
 	$("#showExtendedInfo").attr('checked', showExtendedInfo ? 'checked' : false);
 
-	window.addEventListener('hashchange', useHashParam, false);
+	$(window).on('hashchange', useHashParam);
     }
 
     function cachedGetScript(url, success) {
