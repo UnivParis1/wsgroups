@@ -4,6 +4,7 @@ require_once ('./config-groups.inc.php');
 require ('./supannPerson.inc.php');
 
 $key = GET_ldapFilterSafe("key");
+$wantedAttr = GET_or_NULL("attr");
 $attrRestrictions = array();
 if (ipTrusted()) {
   $maxRows = 0;
@@ -13,7 +14,16 @@ if (ipTrusted()) {
   $maxRows = 5;
 }
 $filter = groupKey2filter($key);
-$users = searchPeople(array($filter), $attrRestrictions, array('uid' => 'uid'), 'uid', $maxRows);
+$attrs = $wantedAttr ? array($wantedAttr => $wantedAttr) : array('uid' => 'uid');
+$users = searchPeople(array($filter), $attrRestrictions, $attrs, 'uid', $maxRows);
+
+if ($wantedAttr) {
+  $r = array();
+  foreach ($users as $user) {
+    $r[] = $user[$wantedAttr];
+  }
+  $users = $r;
+}
 
 echoJson($users);
 
