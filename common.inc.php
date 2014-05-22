@@ -260,6 +260,12 @@ function error($msg) {
    echo("// $msg\n");
 }
 
+function fatal($msg) {
+   header("HTTP/1.0 400 $msg");
+   echo("// $msg\n");
+   exit(0);
+}
+
 // taken more mantisbt
 function ldap_escape_string( $p_string ) {
   $t_find = array( '\\', '*', '(', ')', '/', "\x00" );
