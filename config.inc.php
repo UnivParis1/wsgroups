@@ -22,6 +22,7 @@ $PEOPLE_ATTRS = array("uid" => "uid", "displayName" => "displayName", "supannEnt
 // someone having supannListeRouge=TRUE will be returned with all attrs anonymized except the following
 $PEOPLE_LISTEROUGE_NON_ANONYMIZED_ATTRS = array('eduPersonAffiliation', 'eduPersonPrimaryAffiliation');
 
+$AFFILIATIONS_PERSONNEL = array('staff', 'faculty', 'teacher');
 
 // specific Paris1:
 $UP1_ROLES_DN = "ou=roles,".$BASE_DN;
