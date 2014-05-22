@@ -50,6 +50,7 @@ var main_attrs_labels = [ [
 
     'telephoneNumber: Tél',
     'mobile: Tél mobile',
+    'pager: Tél mobile',
     'supannAutreTelephone: Tél secondaire',
     'facsimileTelephoneNumber: Fax',
 ],
@@ -660,10 +661,14 @@ function format_mail(mail, displayName) {
     return $("<a>", { href: 'mailto:' + encodeURIComponent(dest) }).text(mail);
 }
 
-function format_telephoneNumber(number, linkName) {
-    var format_it = function (number) { 
-	var link = number.replace(/[^0-9+]/g, '');
-	return $("<a>", { href: linkName + ':' + link }).text(number);
+function format_telephoneNumber(number, attr, showExtendedInfo) {
+    var linkName = attr == 'facsimileTelephoneNumber' ? 'fax' : 'tel';
+    var format_it = function (number) {
+	var number_ = number.replace(/^0([67])(\d\d)(\d\d)(\d\d)(\d\d)$/, '+33 $1 $2 $3 $4 $5');
+	var link = number_.replace(/[^0-9+]/g, '');
+	var a = $("<a>", { href: linkName + ':' + link }).text(number_);
+	if (showExtendedInfo) a.attr('title', attr + ": " + number);
+	return a;
     };
     if ($.isArray(number)) {
 	return spanFromList($.map(number, format_it), ", ");
@@ -720,8 +725,8 @@ function formatUserInfo(info, showExtendedInfo) {
     if (info.supannEntiteAffectation) fInfo['supannEntiteAffectation-all'] = format_supannEntiteAffectation(info, showExtendedInfo);
     if (info.buildingName) fInfo.buildingName = format_buildingName(info.buildingName);
     if (info.labeledURI) fInfo.labeledURI = format_link(info.labeledURI);
-    $.each(['telephoneNumber', 'facsimileTelephoneNumber', 'supannAutreTelephone', 'mobile'], function (i, attr) {
-	if (info[attr]) fInfo[attr] = format_telephoneNumber(info[attr], attr == 'facsimileTelephoneNumber' ? 'fax' : 'tel');
+    $.each(['telephoneNumber', 'facsimileTelephoneNumber', 'supannAutreTelephone', 'mobile', 'pager'], function (i, attr) {
+	if (info[attr]) fInfo[attr] = format_telephoneNumber(info[attr], attr, showExtendedInfo);
     });
     $.each(['mail', 'mailAlternateAddress', 'supannAutreMail', 'supannMailPerso'], function (i, attr) {
 	if (info[attr]) fInfo[attr] = format_mail(info[attr], info.displayName);
