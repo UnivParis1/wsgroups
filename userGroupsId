@@ -1,4 +1,4 @@
-<?php
+<?php // -*-PHP-*-
 
 require ('./groups.inc.php');
 
