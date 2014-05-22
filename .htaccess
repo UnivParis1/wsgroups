@@ -12,7 +12,7 @@ php_value magic_quotes_gpc Off
     Order allow,deny
 </FilesMatch>
 
-<FilesMatch "^(search|searchGroup|userGroupsId|userGroupsAndRoles|getSubGroups|allGroups|groupUsers|userLastLogins)$">
+<FilesMatch "^(search|searchGroup|userGroupsId|userGroupsAndRoles|getGroup|getSubGroups|allGroups|groupUsers|userLastLogins)$">
     SetHandler application/x-httpd-php
 </FilesMatch>
 

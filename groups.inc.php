@@ -275,6 +275,50 @@ function groupKeyToCategory($key) {
 	return null;
 }
 
+function groupKey2entryDn($key) {
+  global $GROUPS_DN, $DIPLOMA_DN, $DIPLOMA_PREV_DN, $STRUCTURES_DN;
+
+  if ($cn = removePrefixOrNULL($key, "groups-")) {
+    return "cn=$cn,$GROUPS_DN";
+  } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+    return "supannCodeEntite=$supannCodeEntite,$STRUCTURES_DN";
+  } else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
+    return "ou=$diploma,$DIPLOMA_DN";
+  } else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
+    return "ou=$diploma,$DIPLOMA_PREV_DN";
+  } else {
+    return null;
+  }
+}
+
+function getGroupFromKey($key) {
+  if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+
+    // handle key like structures-U05-affiliation-student:
+    if (preg_match('/(.*)-affiliation-(.*)/', $supannCodeEntite, $matches)) {
+      $supannCodeEntite = $matches[1];
+      $affiliation = $matches[2];
+
+      $structure = getGroupFromKey("structures-$supannCodeEntite");
+      return structureAffiliationGroup($structure, $affiliation);
+    }
+  }
+
+  if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
+      return affiliationGroup($affiliation);
+  }
+
+  if ($businessCategory = removePrefixOrNULL($key, "businessCategory-")) {
+      return businessCategoryGroup($businessCategory);
+  }
+
+  if ($entryDn = groupKey2entryDn($key)) {
+      return getGroupFromSeeAlso($entryDn);
+  }
+
+  fatal("invalid group key $key");
+}
+
 function add_group_category(&$groups) {
     foreach ($groups as &$g) {
 	$g["category"] = groupKeyToCategory($g["key"]);
