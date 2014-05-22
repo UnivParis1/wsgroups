@@ -62,7 +62,7 @@ function getUserGroups($uid) {
     $groups = getGroupsFromGroupsDn(array(member_filter($uid)));
 
     global $PEOPLE_DN;
-    $attrs = identiqueMap(array("supannEntiteAffectation"));
+    $attrs["supannEntiteAffectation"] = "MULTI";
     $attrs["eduPersonAffiliation"] = "MULTI";
     $attrs["eduPersonOrgUnitDN"] = "MULTI";
     $user = getFirstLdapInfo($PEOPLE_DN, "(uid=$uid)", $attrs);
@@ -73,8 +73,8 @@ function getUserGroups($uid) {
 	$groups = array_merge($groups, $groups_);
     }
     if (isset($user["supannEntiteAffectation"])) {
-	$key = $user["supannEntiteAffectation"];
-	$groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntite=$key)"), 1);
+        $filter = computeOneFilter('supannCodeEntite', implode('|', $user["supannEntiteAffectation"]));
+	$groupsStructures = getGroupsFromStructuresDn(array($filter));
 	$groups = array_merge($groups, remove_businessCategory($groupsStructures));
     } else {
         $groupsStructures = array();
