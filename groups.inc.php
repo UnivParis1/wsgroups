@@ -255,17 +255,35 @@ function add_group_category(&$groups) {
     }
 }
 
+function affiliationGroup($affiliation) {
+    global $AFFILIATION2TEXT;
+    if (!isset($AFFILIATION2TEXT[$affiliation])) return null;
+
+    $text = $AFFILIATION2TEXT[$affiliation];
+    $name = "Tous les " . $text;
+    return array("key" => "affiliation-" . $affiliation, 
+		 "name" => $name, "description" => $name);
+}
+
+function structureAffiliationGroup($groupStructure, $affiliation) {
+    global $AFFILIATION2TEXT;
+    $text = $AFFILIATION2TEXT[$affiliation];
+    $suffix = " (" . $text . ")";
+
+    $description = ''; //$groupStructure["description"] . $suffix;
+    return array("key" => $groupStructure["key"] . "-affiliation-" . $affiliation, 
+		 "name" => $groupStructure["name"] . $suffix, 
+		 "description" => $description);
+}
+
 function getGroupsFromAffiliations($affiliations, $groupsStructures) {
   $r = array();
   foreach ($affiliations as $affiliation) {
-    global $AFFILIATION2TEXT;
-    if (isset($AFFILIATION2TEXT[$affiliation])) {
+    $affiliationGroup = affiliationGroup($affiliation);
+    if ($affiliationGroup) {
       $r = array_merge($r, getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures));
 
-      $text = $AFFILIATION2TEXT[$affiliation];
-      $name = "Tous les " . $text;
-      $r[] = array("key" => "affiliation-" . $affiliation, 
-		   "name" => $name, "description" => $name);
+      $r[] = $affiliationGroup;
     }
   }
   return $r;
@@ -274,14 +292,9 @@ function getGroupsFromAffiliations($affiliations, $groupsStructures) {
 function getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures) {
   $r = array();
   if ($groupsStructures && ($affiliation == "student" || $affiliation == "faculty")) {
-    global $AFFILIATION2TEXT;
-    $text = $AFFILIATION2TEXT[$affiliation];
-    $suffix = " (" . $text . ")";
     foreach ($groupsStructures as $group) {
 	if ($group["businessCategory"] == "pedagogy")
-	    $r[] = array("key" => $group["key"] . "-affiliation-" . $affiliation, 
-			 "name" => $group["name"] . $suffix, 
-			 "description" => $group["description"] . $suffix);
+	    $r[] = structureAffiliationGroup($group, $affiliation);
     }
   }
   return $r;
