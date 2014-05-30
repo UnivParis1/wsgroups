@@ -108,14 +108,18 @@ function getUserGroups($uid) {
     return $groups;
 }
 
-function groupsNotCreatedByGrouper($map) {  
-  return !preg_match("/^(structures:|employees:|employees\.)/", $map["key"]);
+function groupsNotPedagogyResearchStructures($map) {  
+  return !preg_match("/^employees\.(pedagogy|research)\./", $map["key"]);
+}
+
+function structurePedagogyResearch($map) {  
+  return $map["businessCategory"] === 'pedagogy' || $map["businessCategory"] === "research";
 }
 
 function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
   $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit);
-  $r = array_filter($r, 'groupsNotCreatedByGrouper');
+  $r = array_filter($r, 'groupsNotPedagogyResearchStructures');
   foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "groups-" . $map["key"];
@@ -132,6 +136,7 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
 function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
     global $STRUCTURES_DN, $STRUCTURES_ATTRS;
     $r = getLdapInfoMultiFilters($STRUCTURES_DN, $filters, $STRUCTURES_ATTRS, "key", $sizelimit);
+    $r = array_filter($r, 'structurePedagogyResearch');
     foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
