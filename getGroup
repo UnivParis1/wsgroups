@@ -1,0 +1,9 @@
+<?php // -*-PHP-*-
+require ('./groups.inc.php');
+
+$key = GET_ldapFilterSafe("key");
+$group = getGroupFromKey($key);
+
+echoJson($group);
+
+?>
