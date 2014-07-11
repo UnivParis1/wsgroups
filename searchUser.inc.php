@@ -62,7 +62,7 @@ $ALLOWED_MULTI_ATTRS =
 
 	// below are restricted or internal attributes.
 	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
-	'mailForwardingAddress',
+	'mailForwardingAddress', 'mailDeliveryOption',
 	'up1Profile',
 	);
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
