@@ -404,9 +404,9 @@ function formadelai(date1, date2) {
 }
 
 function compute_MailDelivery(info) {
-    var fwd = $.grep(info.mailForwardingAddress, function (addr) { return addr !== '\\' + info.uid });
-    var is_fwd = fwd.length === info.mailForwardingAddress.length;
-    return (is_fwd ? "redirigée vers " : "copies vers ") + 
+    var fwd = info.mailForwardingAddress;
+    var is_copy = $.inArray('mailbox', info.mailDeliveryOption) != -1;
+    return (is_copy ? "copies vers " : "redirigée vers ") + 
 	(fwd[0] === 'supannListeRouge' ? "une adresse mail" : fwd.join(", "));
 }
 
