@@ -846,23 +846,8 @@ function formatUserInfo(info, showExtendedInfo) {
 	$(window).on('hashchange', useHashParam);
     }
 
-    function cachedGetScript(url, success) {
-	return $.ajax({ url: url, dataType: "script", cache: true, success: success });
-    }
-    function getCSS(url) {
-	$("head").append('<link rel="stylesheet" href="' + url + '" type="text/css" media="all" />');
-    }
-    getCSS(baseURL + '/web-widget/jquery-ui.css');
-    getCSS(baseURL + '/web-widget/ui.theme.css');
-    getCSS(baseURL + '/web-widget/autocompleteUser.css');
-    getCSS(baseURL + '/web-widget/annuaire.css');
-
-    cachedGetScript(baseURL + "/web-widget/jquery-ui-1.8.21.custom.min.js", function () {
-	cachedGetScript(baseURL + "/web-widget/autocompleteUser.js", function () {
-	    init();
-	    useHashParam();
-	})
-    });
+    init();
+    useHashParam();
 
     infoDiv.on('click', "span[title]", function () {
 	var $title = $(this).find(".clickedTitle");
