@@ -95,7 +95,7 @@
 	    return renderWarningItem(ul, item);
 
 	if (item.pre)
-	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
+	    $("<li class='kind ui-menu-divider'><span>" + item.pre + "</span></li>").appendTo(ul);
 
 	var content = renderItemContent(item);
       return $("<li></li>").addClass(item.odd_even ? "odd" : "even").addClass(moreClass)
@@ -160,8 +160,12 @@
       });
   }
 
+  function ui_autocomplete_data(input) {
+      return input.data("ui-autocomplete") || input.data("autocomplete"); // compatibility with jquery-ui <= 1.8.x
+  }
+
   var myOpen = function () {
-      var menu = $(this).data("autocomplete").menu.element;
+      var menu = ui_autocomplete_data($(this)).menu.element;
       var menu_bottom = menu.position().top + menu.outerHeight();
       var window_bottom = $(window).scrollTop() + $(window).height();
       if (window_bottom < menu_bottom) {
@@ -243,7 +247,7 @@
 
       input.autocomplete(params);
 
-      input.data("autocomplete")._renderItem = myRenderUserItem;
+      ui_autocomplete_data(input)._renderItem = myRenderUserItem;
 
       // below is useful when going back on the search values
       input.click(function () {
@@ -328,7 +332,7 @@
 
       input.autocomplete(params);
 
-      input.data("autocomplete")._renderItem = myRenderGroupItem;
+      ui_autocomplete_data(input)._renderItem = myRenderGroupItem;
 
       // below is useful when going back on the search values
       input.click(function () {
