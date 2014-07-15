@@ -89,9 +89,10 @@ function getUserGroups($uid) {
     }
     if (isset($user["supannEntiteAffectation"])) {
         $filter = computeOneFilter('supannCodeEntite', implode('|', $user["supannEntiteAffectation"]));
-	$groupsStructures = getGroupsFromStructuresDn(array($filter));
+	$groupsStructuresAll = getGroupsFromStructuresDnAll(array($filter));
+	$groupsStructures = array_filter($groupsStructuresAll, 'structurePedagogyResearch');
 	if (isPersonnel($user)) {
-	  foreach (get_businessCategories($groupsStructures) as $cat) {
+	  foreach (get_businessCategories($groupsStructuresAll) as $cat) {
 	    $g = businessCategoryGroup($cat);
 	    if ($g) $groups[] = $g;
 	  }
@@ -134,9 +135,14 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
 }
 
 function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
+  $r = getGroupsFromStructuresDnAll($filters, $sizelimit);
+  $r = array_filter($r, 'structurePedagogyResearch');
+  return $r;
+}
+
+function getGroupsFromStructuresDnAll($filters, $sizelimit = 0) {
     global $STRUCTURES_DN, $STRUCTURES_ATTRS;
     $r = getLdapInfoMultiFilters($STRUCTURES_DN, $filters, $STRUCTURES_ATTRS, "key", $sizelimit);
-    $r = array_filter($r, 'structurePedagogyResearch');
     foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
