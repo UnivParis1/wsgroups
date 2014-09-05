@@ -355,6 +355,11 @@ function businessCategoryGroup($businessCategory) {
 		 "name" => $name, "description" => $name);
 }
 
+function businessCategoryGroups() {
+    global $BUSINESSCATEGORY2TEXT;
+    return array_map('businessCategoryGroup', array_keys($BUSINESSCATEGORY2TEXT));
+}
+
 function structureAffiliationGroup($groupStructure, $affiliation) {
     global $AFFILIATION2TEXT;
     $text = $AFFILIATION2TEXT[$affiliation];
