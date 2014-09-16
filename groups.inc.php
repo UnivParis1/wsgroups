@@ -286,6 +286,10 @@ function groupKeyToCategory($key) {
 	return null;
 }
 
+function groupIsStudentsOnly($key) {
+    return in_array(groupKeyToCategory($key), array('gpelp', 'gpetp', 'elp', 'diploma'));
+}
+
 function groupKey2entryDn($key) {
   global $GROUPS_DN, $DIPLOMA_DN, $DIPLOMA_PREV_DN, $STRUCTURES_DN;
 
@@ -300,6 +304,28 @@ function groupKey2entryDn($key) {
   } else {
     return null;
   }
+}
+
+function entryDn2groupKey($entryDN, $affiliation = '') {
+    global $GROUPS_DN, $STRUCTURES_DN;
+    global $DIPLOMA_DN, $DIPLOMA_PREV_DN;
+    $entryDN = normalizeSeeAlso($entryDN);
+
+    if (!preg_match("/=([^,]*)/", $entryDN, $matches)) {
+        return null;
+    }
+    $key = $matches[1];
+
+    if (contains($entryDN, $GROUPS_DN))
+        return "groups-$key";
+    else if (contains($entryDN, $STRUCTURES_DN))
+	return $affiliation ? "structures-$key-affiliation-$affiliation" : "structures-$key";
+    else if (contains($entryDN, $DIPLOMA_DN))
+	return "diploma-$key";
+    else if (contains($key, $DIPLOMA_PREV_DN))
+	return "diplomaPrev-$key";
+    else
+	return null;
 }
 
 function getGroupFromKey($key) {
@@ -325,6 +351,39 @@ function getGroupFromKey($key) {
 
   if ($entryDn = groupKey2entryDn($key)) {
       return getGroupFromSeeAlso($entryDn);
+  }
+
+  fatal("invalid group key $key");
+}
+
+function groupKey2parentKey($key) {
+  if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+
+    // handle key like structures-U05-affiliation-teacher:
+    if (preg_match('/(.*)-affiliation-(.*)/', $supannCodeEntite, $matches)) {
+      $supannCodeEntite = $matches[1];
+      $affiliation = $matches[2];
+      $r = array("affiliation-$affiliation");
+      // structures-U05 is for personnel only
+      if ($affiliation !== 'student') $r[] = "structures-$supannCodeEntite";
+      return $r;
+    }
+  } 
+  if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
+    return array();
+  }
+
+  if ($entryDn = groupKey2entryDn($key)) {
+    global $BASE_DN;
+    $g = getFirstLdapInfo($BASE_DN, "(entryDN=$entryDn)", array("seeAlso" => "MULTI"));
+    $affiliation = groupIsStudentsOnly($key) ? 'student' : '';
+    $r = array();
+    if ($g && $g["seeAlso"]) {
+	foreach ($g["seeAlso"] as $seeAlso) {
+	    $r[] = entryDn2groupKey($seeAlso, $affiliation);
+	}
+    }
+    return $r;
   }
 
   fatal("invalid group key $key");
