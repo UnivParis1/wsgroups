@@ -389,6 +389,69 @@ function groupKey2parentKey($key) {
   fatal("invalid group key $key");
 }
 
+function getSuperGroups(&$all_groups, $key, $depth) {
+  $group = getGroupFromKey($key);
+  $group['superGroups'] = groupKey2parentKey($key);
+  $all_groups[$key] = $group;
+
+  $superGroups = $group['superGroups'];
+  if ($depth > 0 && $superGroups) {
+    foreach ($superGroups as $k) {
+      getSuperGroups($all_groups, $k, $depth -1);
+    }
+  }
+}
+
+function getSubGroups_one($key) {
+  global $ALT_STRUCTURES_DN, $DIPLOMA_DN, $DIPLOMA_PREV_DN;
+
+  $all_groups = array();
+  if ($cn = removePrefixOrNULL($key, "groups-")) {
+    $all_groups = getGroupsFromGroupsDn(array(seeAlso_filter($cn)));
+  } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
+
+    // handle key like structures-U05-affiliation-student:
+    if (preg_match('/(.*)-affiliation-(.*)/', $supannCodeEntite, $matches)) {
+      $supannCodeEntite = $matches[1];
+      $affiliation = $matches[2];
+    } else {
+      $affiliation = null;
+    }
+
+    $groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntiteParent=$supannCodeEntite)"));
+    if ($affiliation)
+      $groupsStructures = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
+
+    $ou = "ou=$supannCodeEntite," . $ALT_STRUCTURES_DN;
+    $groups = getGroupsFromSeeAlso($ou);
+    $all_groups = array_merge($groupsStructures, $groups);
+  } else if ($diploma = removePrefixOrNULL($key, "diploma-")) {
+    $ou = "ou=$diploma," . $DIPLOMA_DN;
+    $all_groups = getGroupsFromSeeAlso($ou);
+  } else if ($diploma = removePrefixOrNULL($key, "diplomaPrev-")) {
+    $ou = "ou=$diploma," . $DIPLOMA_PREV_DN;
+    $all_groups = getGroupsFromSeeAlso($ou);
+  } else if ($affiliation = removePrefixOrNULL($key, "affiliation-")) {
+    $groupsStructures = getGroupsFromStructuresDn(array("(businessCategory=pedagogy)"));
+    $all_groups = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
+  } else {
+    error("invalid group key $key");
+  }
+  remove_rawKey_and_modifyTimestamp($all_groups);
+  return $all_groups;
+}
+
+function getSubGroups($key, $depth) {
+  $groups = getSubGroups_one($key);
+  if ($depth > 0) {
+    foreach ($groups as &$g) {
+      $subGroups = getSubGroups($g["key"], $depth-1);
+      if ($subGroups) $g["subGroups"] = $subGroups;
+    }
+  }
+  return $groups;
+}
+
 function add_group_category(&$g) {
   $g["category"] = groupKeyToCategory($g["key"]);
 }

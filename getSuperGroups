@@ -4,26 +4,6 @@ require ('./groups.inc.php');
 $DEBUG = 99;
 
 
-function getGroupAndSuperGroups($key) {
-  $group = getGroupFromKey($key);
-  $group['superGroups'] = groupKey2parentKey($key);
-  return $group;
-}
-
-$all_groups = array();
-
-function getSuperGroups(&$all_groups, $key, $depth) {
-  $group = getGroupAndSuperGroups($key);
-  $all_groups[$key] = $group;
-
-  $superGroups = $group['superGroups'];
-  if ($depth > 0 && $superGroups) {
-    foreach ($superGroups as $k) {
-      getSuperGroups($all_groups, $k, $depth -1);
-    }
-  }
-}
-
 $key = GET_ldapFilterSafe("key");
 $depth = min(max(0, GET_or_NULL("depth")), 3);
 $all_groups = array();
