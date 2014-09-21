@@ -8,9 +8,13 @@
   <script src="autocompleteUser-resources.html.js"></script>
 
 <script>
-    $( "#foo" ).autocompleteGroup("http://ticetest.univ-paris1.fr/wsgroups/searchGroup", {
-    wantedAttr: 'name',
-       wsParams: { filter_category: 'diploma', group_filter_attrs: 'ou,displayName' }
+    var searchGroupURL = "http://ticetest.univ-paris1.fr/wsgroups/searchGroup";
+    var subAndSuperGroupsURL = "http://ticetest.univ-paris1.fr/wsgroups/getSubAndSuperGroups";
+
+    $( "#foo" ).autocompleteGroup(searchGroupURL, {
+       subAndSuperGroupsURL: subAndSuperGroupsURL,
+       wantedAttr: 'name',
+       wsParams: { Xfilter_category: 'diploma', Xgroup_filter_attrs: 'ou,displayName' }
     }); 
 </script>
 </body>
