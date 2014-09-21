@@ -391,6 +391,7 @@ function groupKey2parentKey($key) {
 
 function getSuperGroups(&$all_groups, $key, $depth) {
   $group = getGroupFromKey($key);
+  add_group_category($group);
   $group['superGroups'] = groupKey2parentKey($key);
   $all_groups[$key] = $group;
 
@@ -443,6 +444,7 @@ function getSubGroups_one($key) {
 
 function getSubGroups($key, $depth) {
   $groups = getSubGroups_one($key);
+  add_groups_category($groups);
   if ($depth > 0) {
     foreach ($groups as &$g) {
       $subGroups = getSubGroups($g["key"], $depth-1);
