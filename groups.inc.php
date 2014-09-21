@@ -389,10 +389,11 @@ function groupKey2parentKey($key) {
   fatal("invalid group key $key");
 }
 
-function add_group_category(&$groups) {
-    foreach ($groups as &$g) {
-	$g["category"] = groupKeyToCategory($g["key"]);
-    }
+function add_group_category(&$g) {
+  $g["category"] = groupKeyToCategory($g["key"]);
+}
+function add_groups_category(&$groups) {
+  foreach ($groups as &$g) add_group_category($g);
 }
 
 function affiliationGroup($affiliation) {
@@ -485,7 +486,7 @@ function searchGroups($token, $maxRows, $restriction) {
   $all_groups = array_merge($groups, $structures, $diploma);
 
   $all_groups = exact_match_first($all_groups, $token);
-  add_group_category($all_groups);
+  add_groups_category($all_groups);
   remove_rawKey_and_modifyTimestamp($all_groups);
   
   return $all_groups;
