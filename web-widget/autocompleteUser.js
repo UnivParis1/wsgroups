@@ -3,6 +3,8 @@
     var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, alum: 7, member: 8 };
   var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", alum: "Anciens &eacute;tudiants", member: "Divers", "": "Divers" };
 
+  var category2order = { structures: 5, affiliation: 5, diploma: 1, elp: 2, gpelp: 3, gpetp: 4 };
+
   var highlight = function (text) {
       return "<span class='match'>" + text + "</span>";
   };
@@ -273,6 +275,12 @@
       });
   };
 
+  function sortByGroupCategory (items) {
+      return items.sort(function (a, b) {
+          return a.category == b.category ? 0 : (category2order[a.category] || 99) - (category2order[b.category] || 99);
+      });
+  }
+
   $.fn.autocompleteGroup = function (searchGroupURL, options) {
       if (!searchGroupURL) throw "missing param searchGroupURL";
 
@@ -302,6 +310,7 @@
 		    response([ { warning: true, wsError: true } ]);
 		},
 		success: function (data) {
+		    data = sortByGroupCategory(data);
 		    transformGroupItems(data, settings.wantedAttr, request.term);
 
 		    warning = { warning: true }
