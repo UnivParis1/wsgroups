@@ -12,6 +12,16 @@
       elp: 'Groupes Mati&egrave;res',
       gpelp: 'Groupes TD'
   };
+  var subAndSuper_category2text = {
+      structures: 'Groupes parents',
+      affiliation: 'Groupes parents',
+      diploma: '&Eacute;tapes associ&eacute;es',
+      elp: 'Mati&egrave;res associ&eacute;es',
+      gpelp: 'Groupes TD associ&eacute;s'
+  };
+
+  var symbol_select = "\u229E";
+  var symbol_navigate = "\u21B8";
 
   var highlight = function (text) {
       return "<span class='match'>" + text + "</span>";
@@ -283,15 +293,129 @@
 	});
   };
 
-  var myRenderGroupItem = function (ul, item) {
-      return myRenderItemRaw(ul, item, 'groupItem', function (item) {
-	  return item.name;
+  function object_values(o) {
+      return $.map(o, function (e) { return e; })
+  }
+
+  // ["aa", "aaa", "ab"] => "a"
+  function find_common_prefix(list){
+      var A = list.slice(0).sort(), word1 = A[0], word2 = A[A.length-1];
+      var len = word1.length, i= 0;
+      while(i < len && word1.charAt(i)=== word2.charAt(i)) i++;
+      return word1.substring(0, i);
+  }
+
+  // ["aa", "aaa", "ab"] => ["a", "aa", "b"]
+  function remove_common_prefix(list) {
+      var offset = find_common_prefix(list).length;
+      return $.map(list, function(e) {
+	  return e.substring(offset);
       });
+  }
+
+  var simplifySubGroups = function (subGroups) {
+      var names = $.map(subGroups, function (e) { return e.name });
+      var offset = find_common_prefix(names).length;
+      $.each(subGroups, function(i, e) {
+	  e.name = e.name.substring(offset);
+      });
+  };
+ 
+  var flattenSuperGroups = function (superGroups, groupId) {
+      // remove current group
+      delete superGroups[groupId];
+      return sortByGroupCategory(object_values(superGroups));
+  };
+
+  var transformSubAndSuperGroups = function (items, wantedAttr) {
+      var categoryText;
+      var odd_even;
+      $.each(items, function ( i, item ) {
+	    item.label = item.name;
+	    item.value = item[wantedAttr];
+
+	    var categoryText_ = item.selected ? 'Selectionn&eacute;' : subAndSuper_category2text[item.category || ""] || 'Autres types de groupes';
+	    if (categoryText != categoryText_) {
+		item.pre = categoryText = categoryText_;
+	    }
+	    item.odd_even = odd_even = !odd_even;
+	});
+  };
+
+    var onNavigate = function (input, settings) {
+	var response = function (items) {
+	    ui_autocomplete_data(input)._suggest(items);
+	};
+	return function (item) {
+	    var allItems = [];
+	    var cookAndAddReponses = function (items) {
+		allItems = $.merge(allItems, items);
+		transformSubAndSuperGroups(items, settings.wantedAttr);
+		response(allItems);
+	    };
+
+	    var current = $.extend({}, item);
+	    current.selected = true;
+	    cookAndAddReponses([current]);
+
+	    var wsParams = $.extend({ 
+		key: item.key,
+		depth: 99
+	    }, settings.wsParams);
+
+	    $.ajax({
+		url: settings.subAndSuperGroupsURL,
+		dataType: "jsonp",
+		crossDomain: true, // needed if searchGroupURL is CAS-ified or on a different host than application using autocompleteUser
+		data: wsParams,
+		error: function () {
+		    // we should display on error. but we do not have a nice error to display
+		    // the least we can do is to show the user the request is finished!
+		    response([ { warning: true, wsError: true } ]);
+		},
+		success: function (data) {
+		    var subGroups = sortByGroupCategory(data.subGroups);
+		    simplifySubGroups(subGroups);
+		    var superGroups = flattenSuperGroups(data.superGroups, item.key);
+		    var items = $.merge(subGroups, superGroups);
+		    cookAndAddReponses(items);
+		}
+	    });
+      };
+    };
+
+  var myRenderGroupItem = function (navigate) {
+     return function (ul, item) {
+	if (item.warning) 
+	     return renderWarningItem(ul, item);
+
+	if (item.pre)
+	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
+
+	var content = item.name;
+        var li = $("<li></li>").addClass(item.odd_even ? "odd" : "even").addClass('groupItem')
+	     .data("item.autocomplete", item);
+
+	var button_navigate;
+	if (navigate && !item.selected) {
+	  button_navigate = $("<a style='display: inline' href='#'>" + symbol_navigate + "</a>").click(function (event) {
+	    var item = $(this).closest("li").data("item.autocomplete");
+	    navigate(item);
+	    return false;
+	  });
+	  li.append($("<big>").append(button_navigate));
+	}
+        li.append($("<a style='display: inline' >")
+		   .append(content + " &nbsp;")
+		   .append($("<big>").append(symbol_select)));
+	li.appendTo(ul);
+     };
   };
 
   function sortByGroupCategory (items) {
       return items.sort(function (a, b) {
-          return a.category == b.category ? 0 : (category2order[a.category] || 99) - (category2order[b.category] || 99);
+	  var cmp = (category2order[a.category] || 99) - (category2order[b.category] || 99);
+          return cmp ? cmp : a.name.localeCompare(b.name);
       });
   }
 
@@ -355,7 +479,8 @@
 
       input.autocomplete(params);
 
-      ui_autocomplete_data(input)._renderItem = myRenderGroupItem;
+      var navigate = settings.subAndSuperGroupsURL && onNavigate(input, settings);
+      ui_autocomplete_data(input)._renderItem = myRenderGroupItem(navigate);
 
       // below is useful when going back on the search values
       input.click(function () {
