@@ -5,6 +5,14 @@
 
   var category2order = { structures: 5, affiliation: 5, diploma: 1, elp: 2, gpelp: 3, gpetp: 4 };
 
+  var category2text = {
+      structures: 'Groupes &Eacute;tablissement',
+      affiliation: 'Groupes &Eacute;tablissement',
+      diploma: 'Groupes &Eacute;tapes',
+      elp: 'Groupes Mati&egrave;res',
+      gpelp: 'Groupes TD'
+  };
+
   var highlight = function (text) {
       return "<span class='match'>" + text + "</span>";
   };
@@ -260,11 +268,17 @@
 
   var transformGroupItems = function (items, wantedAttr, searchedToken) {
       var searchedTokenL = searchedToken.toLowerCase();
+      var category;
       var odd_even;
       $.each(items, function ( i, item ) {
 	    item.label = item.name;
 	    item.value = item[wantedAttr];
 	    item.searchedTokenL = searchedTokenL;
+
+	    if (category != item.category) {
+		category = item.category;
+		item.pre = category2text[category || ""] || 'Autres types de groupes';
+	    }
 	    item.odd_even = odd_even = !odd_even;
 	});
   };
