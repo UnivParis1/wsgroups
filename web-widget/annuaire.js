@@ -78,6 +78,7 @@ var main_attrs_labels = [ [
     //'supannRefID: RefId',
     'up1KrbPrincipal: Kerb',
     'supannListeRouge: ' + important('Liste rouge'),
+    'modifyTimestamp: modifyTimestamp',
 ],
 [
     'memberOf: Groupes',
@@ -403,6 +404,13 @@ function formadelai(date1, date2) {
 	Math.round(delai/365.2421875) + " ans";
 }
 
+function format_timestamp(timestamp) {
+    var date = timestamp.replace(/(....)(..)(..)(..)(..)(.*)/, "$1-$2-$3 $4:$5:$6");
+    var d = new Date(date);
+    var text = "le " + formatDateRaw(d) + " à " + formatTimeHHhMM(d);
+    return $("<span>", { title: timestamp }).text(text);
+}
+
 function compute_MailDelivery(info) {
     var fwd = info.mailForwardingAddress;
     var is_copy = $.inArray('mailbox', info.mailDeliveryOption) != -1;
@@ -710,6 +718,7 @@ function formatUserInfo(info, showExtendedInfo) {
     fInfo.Person = compute_Person(info, showExtendedInfo);
     if (info.supannListeRouge) fInfo.supannListeRouge = info.supannListeRouge === "TRUE" && important("oui");
     if (info.shadowExpire) fInfo.shadowExpire = format_shadowExpire(info);   
+    if (info.modifyTimestamp) fInfo.modifyTimestamp = format_timestamp(info.modifyTimestamp);   
     if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo, showExtendedInfo);
     if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo, showExtendedInfo);
