@@ -314,6 +314,7 @@
   }
 
   var simplifySubGroups = function (subGroups) {
+      if (subGroups.length <= 1) return;
       var names = $.map(subGroups, function (e) { return e.name });
       var offset = find_common_prefix(names).length;
       $.each(subGroups, function(i, e) {
