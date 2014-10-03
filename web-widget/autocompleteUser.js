@@ -144,20 +144,38 @@
       });
   }
 
+  var groupByAttr = function(l, attrName) {
+      var r = [];
+      var subl, prevAttrVal;
+      $.each(l, function (i, e) {
+	  var attrVal = e[attrName] || '';	    
+	  if (attrVal != prevAttrVal) {
+	      subl = [];
+	      r.push(subl);
+	      prevAttrVal = attrVal;
+	  }
+	  subl.push(e);
+	});
+	return r;
+  };
+
   var transformItems = function (items, wantedAttr, searchedToken) {
+      var items_by_affiliation = groupByAttr(data, 'eduPersonPrimaryAffiliation');
+
       var searchedTokenL = searchedToken.toLowerCase();
-      var affiliation;
       var odd_even;
-      // nb: "cn" is easer to compare since there is no accents. Two "displayName"s could be equal after removing accents.
-      var cnOccurences = countOccurences($.map(items, function (item) { return item.cn }));
-      var displayNameOccurences = countOccurences($.map(items, function (item) { return item.displayName }));
-      $.each(items, function ( i, item ) {
+      var r = [];
+      $.each(items_by_affiliation, function (i, items) {
+	// nb: "cn" is easer to compare since there is no accents. Two "displayName"s could be equal after removing accents.
+	var cnOccurences = countOccurences($.map(items, function (item) { return item.cn }));
+	var displayNameOccurences = countOccurences($.map(items, function (item) { return item.displayName }));
+	$.each(items, function ( i, item ) {
 	    item.label = item.displayName;
 	    item.value = item[wantedAttr] || 'unknown';
 	    item.searchedTokenL = searchedTokenL;
 
-	    if (affiliation != item.eduPersonPrimaryAffiliation) {
-		affiliation = item.eduPersonPrimaryAffiliation;
+	    if (i === 0) {
+		var affiliation = item.eduPersonPrimaryAffiliation;
 		item.pre = affiliation2text[affiliation || ""];
 	    }
 
@@ -166,6 +184,9 @@
 
 	    item.odd_even = odd_even = !odd_even;
 	});
+	$.merge(r, items);
+      });
+      return r;
   };
 
   function disableEnterKey(input) {
@@ -233,7 +254,7 @@
 		    nbListeRouge = dataAll.length - data.length;
 
 		    data = sortByAffiliation(data);
-		    transformItems(data, settings.wantedAttr, request.term);
+		    data = transformItems(data, settings.wantedAttr, request.term);
 
 		    warning = { warning: true }
 		    data.unshift(warning);
