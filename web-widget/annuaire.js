@@ -405,7 +405,7 @@ function formadelai(date1, date2) {
 }
 
 function format_timestamp(timestamp) {
-    var date = timestamp.replace(/(....)(..)(..)(..)(..)(.*)/, "$1-$2-$3 $4:$5:$6");
+    var date = timestamp.replace(/(....)(..)(..)(..)(..)(.*)/, "$1-$2-$3T$4:$5:$6");
     var d = new Date(date);
     var text = "le " + formatDateRaw(d) + " à " + formatTimeHHhMM(d);
     return $("<span>", { title: timestamp }).text(text);
