@@ -78,6 +78,7 @@ var main_attrs_labels = [ [
     //'supannRefID: RefId',
     'up1KrbPrincipal: Kerb',
     'supannListeRouge: ' + important('Liste rouge'),
+    'createTimestamp: createTimestamp',
     'modifyTimestamp: modifyTimestamp',
 ],
 [
@@ -718,6 +719,7 @@ function formatUserInfo(info, showExtendedInfo) {
     fInfo.Person = compute_Person(info, showExtendedInfo);
     if (info.supannListeRouge) fInfo.supannListeRouge = info.supannListeRouge === "TRUE" && important("oui");
     if (info.shadowExpire) fInfo.shadowExpire = format_shadowExpire(info);   
+    if (info.createTimestamp) fInfo.createTimestamp = format_timestamp(info.createTimestamp);   
     if (info.modifyTimestamp) fInfo.modifyTimestamp = format_timestamp(info.modifyTimestamp);   
     if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo, showExtendedInfo);
