@@ -373,6 +373,10 @@ function groupKey2parentKey($key) {
     return array();
   }
 
+  if ($businessCategory = removePrefixOrNULL($key, "businessCategory-")) {
+    return array();
+  }
+
   if ($entryDn = groupKey2entryDn($key)) {
     global $BASE_DN;
     $g = getFirstLdapInfo($BASE_DN, "(entryDN=$entryDn)", array("seeAlso" => "MULTI"));
