@@ -79,8 +79,8 @@ function getLdapInfoMultiFilters($base, $filters, $attributes_map, $uniqueField,
   return $r;
 }
 
-function getFirstLdapInfo($base, $filter, $attributes_map) {
-  $r = getLdapInfo($base, $filter, $attributes_map, 1);
+function getFirstLdapInfo($base, $filter, $attributes_map, $timelimit = 0) {
+  $r = getLdapInfo($base, $filter, $attributes_map, 1, $timelimit);
   return $r ? $r[0] : NULL;
 }
 
