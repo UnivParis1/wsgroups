@@ -117,9 +117,9 @@ function structurePedagogyResearch($map) {
   return $map["businessCategory"] === 'pedagogy' || $map["businessCategory"] === "research";
 }
 
-function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0) {
+function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0, $timelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
-  $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit);
+  $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit, $timelimit);
   $r = array_filter($r, 'groupsNotPedagogyResearchStructures');
   foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
@@ -203,7 +203,7 @@ function getGroupFromSeeAlso($seeAlso) {
     $seeAlso = normalizeSeeAlso($seeAlso);
 
     if (contains($seeAlso, $GROUPS_DN))
-	$groups = getGroupsFromGroupsDnRaw(array("(entryDN=$seeAlso)"), 1);
+	$groups = getGroupsFromGroupsDnRaw(array("(entryDN=$seeAlso)"), 1, 1);
     else if (contains($seeAlso, $STRUCTURES_DN)) {
 	$groups = getGroupsFromStructuresDn(array("(entryDN=$seeAlso)"), 1);
     } else
@@ -379,7 +379,7 @@ function groupKey2parentKey($key) {
 
   if ($entryDn = groupKey2entryDn($key)) {
     global $BASE_DN;
-    $g = getFirstLdapInfo($BASE_DN, "(entryDN=$entryDn)", array("seeAlso" => "MULTI"));
+    $g = getFirstLdapInfo($BASE_DN, "(entryDN=$entryDn)", array("seeAlso" => "MULTI"), 1);
     $affiliation = groupIsStudentsOnly($key) ? 'student' : '';
     $r = array();
     if ($g && $g["seeAlso"]) {
