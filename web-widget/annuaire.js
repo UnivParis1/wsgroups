@@ -3,6 +3,7 @@
 
 var baseURL = "https://ticetest.univ-paris1.fr/wsgroups";
 var searchUserURL = baseURL + '/searchUserCAS';
+var getGroupURL = baseURL + '/getGroup';
 var lastLoginsUrl = baseURL + '/userLastLogins';
 var showExtendedInfo = undefined; showExtendedInfo = true;
 var currentUser = undefined;
@@ -21,6 +22,7 @@ var main_attrs_labels = [ [
     'employeeType: Type',
     'Fonctions: Fonction(s)',
     'supannEntiteAffectation-all: Affectation(s)',
+    'Responsable: Responsable',
     'Affiliation: Affiliation',
     'businessCategory: Catégorie',
 
@@ -610,6 +612,35 @@ function get_lastLogins(info) {
     return infoDiv;
 }
 
+function get_Responsable(info) {
+    var infoDiv = $("<span>");
+    infoDiv.appendText("...");
+    $.ajax({
+	url: getGroupURL,
+	dataType: "jsonp",
+	crossDomain: true, // needed if url is CAS-ified or on a different host than application using autocompleteUser
+	data: { key: "structures-" + info.supannEntiteAffectationPrincipale, attrs: 'roles' },
+	error: function () {
+	    infoDiv.text("Erreur web service");
+	},
+	success: function (data) {
+	    infoDiv.empty();
+	    if (!data || !data.key) {
+		infoDiv.text("group not found (??)");
+	    } else if (data.roles.length == 0) {
+		infoDiv.text("inconnu");
+	    } else {
+		$.each(data.roles, function (i, user) {
+		    infoDiv.append($("<a>", { href: '#' + encodeURIComponent(user.uid) }).text(user.displayName));
+		    infoDiv.appendText(" (" + user.supannRoleGenerique.join(', ') + ")");
+		    infoDiv.append("<br>");
+		});
+	    }
+	}
+    });
+    return infoDiv;
+}
+
 function compute_Account_and_accountStatus(info, fInfo) {
     if (info.up1KrbPrincipal) {
 	$.each(info.up1KrbPrincipal, function (i, krb) {
@@ -745,6 +776,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	// if we have up1BirthDay, we have full power
 	compute_Account_and_accountStatus(info, fInfo);
     }
+    if (info.supannEntiteAffectationPrincipale) fInfo.Responsable = get_Responsable(info);
     fInfo.Fonctions = compute_Fonctions(info, showExtendedInfo);
 
     if (info.up1Roles) fInfo.up1Roles = format_up1Roles(info);

@@ -2,7 +2,8 @@
 require ('./groups.inc.php');
 
 $key = GET_ldapFilterSafe("key");
-$group = getGroupFromKey($key, 'allStructures');
+$attrs = explode(',', GET_or_NULL("attrs"));
+$group = getGroupFromKey($key, 'allStructures', $attrs);
 
 echoJson($group);
 

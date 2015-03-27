@@ -89,7 +89,7 @@ function getUserGroups($uid) {
     }
     if (isset($user["supannEntiteAffectation"])) {
         $filter = computeOneFilter('supannCodeEntite', implode('|', $user["supannEntiteAffectation"]));
-	$groupsStructuresAll = getGroupsFromStructuresDnAll(array($filter));
+        $groupsStructuresAll = getGroupsFromStructuresDn(array($filter), 0, 'allStructures');
 	$groupsStructures = array_filter($groupsStructuresAll, 'structurePedagogyResearch');
 	if (isPersonnel($user)) {
 	  foreach (get_businessCategories($groupsStructuresAll) as $cat) {
@@ -134,18 +134,21 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
     return $r;
 }
 
-function getGroupsFromStructuresDn($filters, $sizelimit = 0, $all = false) {
-  $r = getGroupsFromStructuresDnAll($filters, $sizelimit);
+function getGroupsFromStructuresDn($filters, $sizelimit = 0, $all = false, $attrs = array()) {
+  $r = getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs);
   if (!$all) {
       $r = array_filter($r, 'structurePedagogyResearch');
   }
   return $r;
 }
 
-function getGroupsFromStructuresDnAll($filters, $sizelimit = 0) {
+function getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs) {
     global $STRUCTURES_DN, $STRUCTURES_ATTRS;
     $r = getLdapInfoMultiFilters($STRUCTURES_DN, $filters, $STRUCTURES_ATTRS, "key", $sizelimit);
     foreach ($r as &$map) {
+      if (in_array('roles', $attrs)) {
+          $map["roles"] = structureRoles($map["key"]);
+      }
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
       normalizeNameGroupFromStructuresDn($map);
@@ -199,7 +202,7 @@ function normalizeSeeAlso($seeAlso) {
     return preg_replace("/ou=(.*)," . preg_quote($ALT_STRUCTURES_DN,'/') . "/", 
 			"supannCodeEntite=$1,$STRUCTURES_DN", $seeAlso);
 }
-function getGroupFromSeeAlso($seeAlso, $allStructures = false) {
+function getGroupFromSeeAlso($seeAlso, $allStructures = false, $attrs = array()) {
     global $GROUPS_DN, $STRUCTURES_DN;
 
     $seeAlso = normalizeSeeAlso($seeAlso);
@@ -207,7 +210,7 @@ function getGroupFromSeeAlso($seeAlso, $allStructures = false) {
     if (contains($seeAlso, $GROUPS_DN))
 	$groups = getGroupsFromGroupsDnRaw(array("(entryDN=$seeAlso)"), 1, 1);
     else if (contains($seeAlso, $STRUCTURES_DN)) {
-    $groups = getGroupsFromStructuresDn(array("(entryDN=$seeAlso)"), 1, $allStructures);
+    $groups = getGroupsFromStructuresDn(array("(entryDN=$seeAlso)"), 1, $allStructures, $attrs);
     } else
 	$groups = getGroupsFromDiplomaEntryDn(array($seeAlso));
 
@@ -330,7 +333,7 @@ function entryDn2groupKey($entryDN, $affiliation = '') {
 	return null;
 }
 
-function getGroupFromKey($key, $allStructures) {
+function getGroupFromKey($key, $allStructures, $attrs) {
   if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
 
     // handle key like structures-U05-affiliation-student:
@@ -338,7 +341,7 @@ function getGroupFromKey($key, $allStructures) {
       $supannCodeEntite = $matches[1];
       $affiliation = $matches[2];
 
-      $structure = getGroupFromKey("structures-$supannCodeEntite", $allStructures);
+      $structure = getGroupFromKey("structures-$supannCodeEntite", $allStructures, $attrs);
       return structureAffiliationGroup($structure, $affiliation);
     }
   }
@@ -352,7 +355,7 @@ function getGroupFromKey($key, $allStructures) {
   }
 
   if ($entryDn = groupKey2entryDn($key)) {
-      return getGroupFromSeeAlso($entryDn, $allStructures);
+      return getGroupFromSeeAlso($entryDn, $allStructures, $attrs);
   }
 
   fatal("invalid group key $key");
@@ -410,7 +413,7 @@ function group2parentKey($key, $group) {
 }
 
 function getSuperGroups(&$all_groups, $key, $depth) {
-  $group = getGroupFromKey($key, '');
+  $group = getGroupFromKey($key, '', array());
   add_group_category($group);
   $group['superGroups'] = group2parentKey($key, $group);
   $all_groups[$key] = $group;
@@ -575,6 +578,15 @@ function searchGroups($token, $maxRows, $restriction) {
   remove_rawKey_and_modifyTimestamp($all_groups);
   
   return $all_groups;
+}
+
+function structureRoles($supannCodeEntite) {
+    $maxRows = 10;
+    $filter = "(supannRoleEntite=*[code=$supannCodeEntite]*)";
+    $wanted_attrs = array("uid" => "uid", "displayName" => "displayName", "supannRoleGenerique" => "MULTI");
+    require_once('./supannPerson.inc.php');
+    $all = searchPeople(array($filter), array(), $wanted_attrs, 'uid', $maxRows);    
+    return $all;
 }
 
 ?>
