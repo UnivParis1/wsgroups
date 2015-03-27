@@ -134,9 +134,11 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
     return $r;
 }
 
-function getGroupsFromStructuresDn($filters, $sizelimit = 0) {
+function getGroupsFromStructuresDn($filters, $sizelimit = 0, $all = false) {
   $r = getGroupsFromStructuresDnAll($filters, $sizelimit);
-  $r = array_filter($r, 'structurePedagogyResearch');
+  if (!$all) {
+      $r = array_filter($r, 'structurePedagogyResearch');
+  }
   return $r;
 }
 
@@ -197,7 +199,7 @@ function normalizeSeeAlso($seeAlso) {
     return preg_replace("/ou=(.*)," . preg_quote($ALT_STRUCTURES_DN,'/') . "/", 
 			"supannCodeEntite=$1,$STRUCTURES_DN", $seeAlso);
 }
-function getGroupFromSeeAlso($seeAlso) {
+function getGroupFromSeeAlso($seeAlso, $allStructures = false) {
     global $GROUPS_DN, $STRUCTURES_DN;
 
     $seeAlso = normalizeSeeAlso($seeAlso);
@@ -205,7 +207,7 @@ function getGroupFromSeeAlso($seeAlso) {
     if (contains($seeAlso, $GROUPS_DN))
 	$groups = getGroupsFromGroupsDnRaw(array("(entryDN=$seeAlso)"), 1, 1);
     else if (contains($seeAlso, $STRUCTURES_DN)) {
-	$groups = getGroupsFromStructuresDn(array("(entryDN=$seeAlso)"), 1);
+    $groups = getGroupsFromStructuresDn(array("(entryDN=$seeAlso)"), 1, $allStructures);
     } else
 	$groups = getGroupsFromDiplomaEntryDn(array($seeAlso));
 
@@ -216,7 +218,7 @@ function getGroupFromSeeAlso($seeAlso) {
 }
 
 function getNameFromSeeAlso($seeAlso) {
-    $group = getGroupFromSeeAlso($seeAlso);
+    $group = getGroupFromSeeAlso($seeAlso, 'allStructures');
     return $group ? $group["name"] : '';
 }
 
@@ -328,7 +330,7 @@ function entryDn2groupKey($entryDN, $affiliation = '') {
 	return null;
 }
 
-function getGroupFromKey($key) {
+function getGroupFromKey($key, $allStructures) {
   if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
 
     // handle key like structures-U05-affiliation-student:
@@ -336,7 +338,7 @@ function getGroupFromKey($key) {
       $supannCodeEntite = $matches[1];
       $affiliation = $matches[2];
 
-      $structure = getGroupFromKey("structures-$supannCodeEntite");
+      $structure = getGroupFromKey("structures-$supannCodeEntite", $allStructures);
       return structureAffiliationGroup($structure, $affiliation);
     }
   }
@@ -350,7 +352,7 @@ function getGroupFromKey($key) {
   }
 
   if ($entryDn = groupKey2entryDn($key)) {
-      return getGroupFromSeeAlso($entryDn);
+      return getGroupFromSeeAlso($entryDn, $allStructures);
   }
 
   fatal("invalid group key $key");
@@ -408,7 +410,7 @@ function group2parentKey($key, $group) {
 }
 
 function getSuperGroups(&$all_groups, $key, $depth) {
-  $group = getGroupFromKey($key);
+  $group = getGroupFromKey($key, '');
   add_group_category($group);
   $group['superGroups'] = group2parentKey($key, $group);
   $all_groups[$key] = $group;
