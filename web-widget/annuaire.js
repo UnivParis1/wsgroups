@@ -569,7 +569,7 @@ function formatLastLogins(info, data, div) {
     }
 }
 
-function get_lastLogins(info, infoDiv) {
+function get_lastLogins(info) {
     var infoDiv = $("<span>");
     $.ajax({
 	url: lastLoginsUrl,
