@@ -16,6 +16,7 @@ $ALLOWED_MONO_ATTRS =
   array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
 	'postalAddress', 'eduPersonPrincipalName',
 	'sn', 'givenName',
+    'supannEntiteAffectationPrincipale',
 	//'up1AltGivenName',
 
 
