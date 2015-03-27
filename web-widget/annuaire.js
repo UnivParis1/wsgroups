@@ -635,12 +635,14 @@ var role2text = {
 
 function format_up1Roles(info) {
     var mail2roles = {};
+    var mail2seeAlso = {}
     $.each(info.up1Roles, function (i, e) {
 	if (!mail2roles[e.mail]) mail2roles[e.mail] = []
 	mail2roles[e.mail].push(role2text[e.role] || e.role);
+	mail2seeAlso[e.mail] = e.seeAlso;
     });
     return spanFromList($.map(mail2roles, function (roles, mail) {
-	return $("<span>")
+	return $("<span>", { title: mail2seeAlso[mail] })
 	    .append(format_mail(mail))
 	    .appendText(" (" + roles.join(", ") + ")");
     }), "<br>");
