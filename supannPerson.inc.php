@@ -217,7 +217,7 @@ function supannActiviteShortnames($keys) {
     return empty($r) ? NULL : $r;
 }
 
-function parse_supannEtuInscription($s) {
+function parse_composite_value($s) {
   preg_match_all('/\[(.*?)\]/', $s, $m);
   $r = array();
   foreach ($m[1] as $e) {
@@ -225,6 +225,10 @@ function parse_supannEtuInscription($s) {
     $r[$k] = $v;
   }
   return $r;
+}
+
+function parse_supannEtuInscription($s) {
+  return parse_composite_value($s);
 }
 
 function supannEtuInscriptionAll($supannEtuInscription) {
@@ -273,10 +277,31 @@ function supannEtuInscriptionAll($supannEtuInscription) {
   return $r;
 }
 
+function supannRoleEntiteAll($e) {
+  $r = parse_composite_value($e);
+  if (@$r['role']) {
+    global $roleGeneriqueKeyToShortname;
+    $r['role'] = $roleGeneriqueKeyToShortname[$r['role']];
+  }
+  if (@$r['code']) {
+    $r['structure'] = array_shift(structureAll(array($r['code'])));
+    unset($r['code']);
+  }
+  return $r;
+}
+
 function supannEtuInscriptionsAll($l) {
   $r = array();
   foreach ($l as $supannEtuInscription) {
     $r[] = supannEtuInscriptionAll($supannEtuInscription);
+  }
+  return empty($r) ? NULL : $r;
+}
+
+function supannRoleEntitesAll($l) {
+  $r = array();
+  foreach ($l as $e) {
+    $r[] = supannRoleEntiteAll($e);
   }
   return empty($r) ? NULL : $r;
 }
@@ -334,6 +359,12 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
 	$user['supannEtuInscription-all'] = supannEtuInscriptionsAll($user['supannEtuInscription']);
       if (!isset($wanted_attrs['supannEtuInscription']))
 	  unset($user['supannEtuInscription']);
+  }
+  if (isset($user['supannRoleEntite'])) {
+      if (isset($wanted_attrs['supannRoleEntite-all']))
+	$user['supannRoleEntite-all'] = supannRoleEntitesAll($user['supannRoleEntite']);
+      if (!isset($wanted_attrs['supannRoleEntite']))
+	  unset($user['supannRoleEntite']);
   }
   if (isset($user['memberOf'])) {
       if (isset($wanted_attrs['memberOf-all']))

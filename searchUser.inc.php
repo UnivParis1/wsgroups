@@ -48,6 +48,7 @@ $ALLOWED_MULTI_ATTRS =
 	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'description', 'info',
 	'supannEtablissement', 'supannActivite', 'supannActivite-all',
 	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
+	'supannRoleEntite', 'supannRoleEntite-all',
 	'supannEtuInscription', 'supannEtuInscription-all',
 	'memberOf', 'memberOf-all',
 	'supannRoleGenerique',
