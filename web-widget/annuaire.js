@@ -33,9 +33,6 @@ var main_attrs_labels = [ [
     'eduPersonOrgUnitDN: Formation(s)',
 
     //les attributs renvoyant des DN
-    'manager: Responsable',
-    'roleOccupant: Titulaire(s)',
-    'secretary: Suppléant(s)',
     'seeAlso: Rattachement',
     'supannParrainDN-all: Parrainé par',
 
