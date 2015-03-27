@@ -430,9 +430,27 @@ function compute_Affiliation(info, showExtendedInfo) {
     return Affiliation;
 }
 
-function compute_Fonctions(info) {
+function compute_Fonctions(info, showExtendedInfo) {
+    var span = $("<span>");
+    var done = {};
+    if (info['supannRoleEntite-all']) {
+	$.each(info['supannRoleEntite-all'], function (i, role) {
+	    if (!$.isEmptyObject(done)) span.append("<br>");
+	    done[role.role] = true;
+	    span.appendText(role.role + " (");
+	    span.append(format_supannCodeEntite([role['structure']], showExtendedInfo));
+	    span.appendText(")");
+	});
+    }
     var list = flattenFailsafe([info.supannRoleGenerique, info.description, info.info]);
-    return list.length && jqueryAppendManyText($("<span>"), list, "<br>");
+    $.each(list, function (i, fonction) {
+	if (!done[fonction]) {
+	    if (!$.isEmptyObject(done)) span.append("<br>");
+	    done[fonction] = true;
+	    span.appendText(fonction);
+	}
+    });
+    return !$.isEmptyObject(done) && span;
 }
 
 function format_supannActivite(all, fInfo, showExtendedInfo) {
@@ -727,7 +745,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	// if we have up1BirthDay, we have full power
 	compute_Account_and_accountStatus(info, fInfo);
     }
-    fInfo.Fonctions = compute_Fonctions(info);
+    fInfo.Fonctions = compute_Fonctions(info, showExtendedInfo);
 
     if (info.up1Roles) fInfo.up1Roles = format_up1Roles(info);
     if (info['memberOf-all']) fInfo.memberOf = format_memberOf(info['memberOf-all']);
