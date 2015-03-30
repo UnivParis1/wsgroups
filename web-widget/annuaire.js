@@ -109,7 +109,6 @@ var eduPersonAffiliation_valnames = {
 	'emeritus': "professeur émérite",
 	'retired': "retraité",
 	'employee': "employé",
-        'member': 'membre',
 	'internal': "compte interne",
 };
 
@@ -421,7 +420,7 @@ function compute_MailDelivery(info) {
 function compute_Affiliation(info, showExtendedInfo) {
     var valnames = eduPersonAffiliation_valnames;
     var Affiliation = formatValues(valnames, info.eduPersonPrimaryAffiliation)
-	|| spanFromList([important(info.eduPersonPrimaryAffiliation ? info.eduPersonPrimaryAffiliation + "??" : 'MANQUANTE')]);
+	|| spanFromList([important(info.eduPersonPrimaryAffiliation ? info.eduPersonPrimaryAffiliation : 'MANQUANTE')]);
     if (info.eduPersonAffiliation) {	
 	var notWanted = $.merge([info.eduPersonPrimaryAffiliation],
 				showExtendedInfo ? [] : [ 'employee', 'member' ]);
