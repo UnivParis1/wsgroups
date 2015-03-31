@@ -5,6 +5,8 @@ var baseURL = "https://ticetest.univ-paris1.fr/wsgroups";
 var searchUserURL = baseURL + '/searchUserCAS';
 var getGroupURL = baseURL + '/getGroup';
 var lastLoginsUrl = baseURL + '/userLastLogins';
+var helpUrl = 'https://dsidoc.univ-paris1.fr/doku.php?id=refi:userinfo-web#HELP_ID';
+helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://dsidoc.univ-paris1.fr/shibboleth/Shibboleth.sso/SAML/POST&target=' + escape(helpUrl) + '&providerId=https://dsidoc.univ-paris1.fr';
 var showExtendedInfo = undefined; showExtendedInfo = true;
 var currentUser = undefined;
 
@@ -144,15 +146,23 @@ function buildingNameToUrl(buildingName) {
     return trigramme && ("http://www.univ-paris1.fr/universite/campus/detail-campus/" + trigramme + "/");
 }
 
-function important(s) {
-    return "<span class='important'>" + s + "</span>";
+function important(s, helpPage) {
+    var span = "<span class='important'>" + s + "</span>";
+    if (helpPage) {
+	var url = helpUrl.replace('HELP_ID', helpPage);
+	var openOptions = 'toolbar=no,scrollbars=yes,alwaysRaised,width=1000,height=400';
+	var onclick = 'window.open("", "form_help", "' + openOptions + '")';
+	var help_span = "<a href='" + url + "' onclick='" + onclick + "' target='form_help' class='help'>?</a>";
+	span = span + help_span;
+    }
+    return span;
 }
 
 var attr2valnames = {
     'accountStatus': {
 	'active': "ACTIF",
 	'noaccess': important("VERROUILLE"),
-	'disabled': important("DESACTIVE"),
+	'disabled': important("DESACTIVE", 'status-expire'),
 	'deleted': important("PURGE"),
     },
     'shadowFlag': {
@@ -419,7 +429,8 @@ function compute_MailDelivery(info) {
 
 function compute_Affiliation(info, showExtendedInfo) {
     var valnames = eduPersonAffiliation_valnames;
-    var Affiliation = formatValues(valnames, info.eduPersonPrimaryAffiliation)
+    var Affiliation = info.eduPersonPrimaryAffiliation === 'member' && important('member', 'no-precise-affiliation') ||
+	formatValues(valnames, info.eduPersonPrimaryAffiliation)
 	|| spanFromList([important(info.eduPersonPrimaryAffiliation ? info.eduPersonPrimaryAffiliation : 'MANQUANTE')]);
     if (info.eduPersonAffiliation) {	
 	var notWanted = $.merge([info.eduPersonPrimaryAffiliation],
@@ -659,10 +670,10 @@ function compute_Account_and_accountStatus(info, fInfo) {
 	   });
     } else {
 	if ( (!info.shadowExpire || info.shadowExpire > todayEpochDay()) && !info.accountStatus) {
-	    fInfo.accountStatus = spanFromList([important('NON ACTIVE')]);
+	    fInfo.accountStatus = spanFromList([important('NON ACTIVE', 'status-non-active')]);
 	}
 	if (info.shadowLastChange) {
-	    fInfo.Account = important("LDAP") + ", mot de passe changé le " + formadate(info.shadowLastChange);
+	    fInfo.Account = important("LDAP", 'non-kerberos') + ", mot de passe changé le " + formadate(info.shadowLastChange);
 	}
     }
     if (!info.accountStatus || info.accountStatus === "active") {
