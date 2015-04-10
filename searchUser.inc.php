@@ -35,7 +35,7 @@ $ALLOWED_MONO_ATTRS =
 	'employeeNumber',
 
 	'homeDirectory', 'gecos',
-	'sambaAcctFlags', 'sambaSID',
+	'sambaAcctFlags', 'sambaSID', 'sambaHomePath',
 	'createTimestamp', 'modifyTimestamp',
 
 	'up1BirthName',
