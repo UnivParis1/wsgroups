@@ -2,7 +2,7 @@ $(function() {
     $( "#foo" ).autocomplete({
 	source: function( request, response ) {
 	    $.ajax({
-		url: "http://ticetest.univ-paris1.fr/wsgroups/search",
+		url: "http://wsgroups-test.univ-paris1.fr/search",
 		dataType: "jsonp",
 		data: { maxRows: 10, token: request.term },
 		success: function( data ) {

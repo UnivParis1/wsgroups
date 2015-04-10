@@ -1,7 +1,7 @@
 (function ($) {
 "use strict";
 
-var baseURL = "https://ticetest.univ-paris1.fr/wsgroups";
+var baseURL = "https://wsgroups-test.univ-paris1.fr";
 var searchUserURL = baseURL + '/searchUserCAS';
 var getGroupURL = baseURL + '/getGroup';
 var lastLoginsUrl = baseURL + '/userLastLogins';
