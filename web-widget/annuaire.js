@@ -602,15 +602,7 @@ function formatLastLogins(info, data, div) {
 
 function get_lastLogins(info) {
     var infoDiv = $("<span>");
-    $.ajax({
-	url: lastLoginsUrl,
-	dataType: "jsonp",
-	crossDomain: true, // needed if url is CAS-ified or on a different host than application using autocompleteUser
-	data: { login: info.supannAliasLogin || info.uid },
-	error: function () {
-	    infoDiv.text("Erreur web service");
-	},
-	success: function (data) {
+    asyncInfoRaw(lastLoginsUrl, { login: info.supannAliasLogin || info.uid }, infoDiv, function (data) {
 	    if (data.length == 0) {
 		infoDiv.text("user not found (??)");
 	    } else if (data.length > 1) {
@@ -618,23 +610,14 @@ function get_lastLogins(info) {
 	    } else {
 		infoDiv.empty().append(formatLastLogins(info, data, infoDiv));
 	    }
-	}
     });
     return infoDiv;
 }
 
 function get_Responsable(info) {
-    var infoDiv = $("<span>");
-    infoDiv.appendText("...");
-    $.ajax({
-	url: getGroupURL,
-	dataType: "jsonp",
-	crossDomain: true, // needed if url is CAS-ified or on a different host than application using autocompleteUser
-	data: { key: "structures-" + info.supannEntiteAffectationPrincipale, attrs: 'roles' },
-	error: function () {
-	    infoDiv.text("Erreur web service");
-	},
-	success: function (data) {
+    var infoDiv = $("<span>...</span>");
+    asyncInfoRaw(getGroupURL, { key: "structures-" + info.supannEntiteAffectationPrincipale, attrs: 'roles' }, infoDiv,
+       function (data) {
 	    infoDiv.empty();
 	    if (!data || !data.key) {
 		infoDiv.text("group not found (??)");
@@ -647,9 +630,21 @@ function get_Responsable(info) {
 		    infoDiv.append("<br>");
 		});
 	    }
-	}
-    });
+       });
     return infoDiv;
+}
+
+function asyncInfoRaw(url, params, infoDiv, success) {
+    $.ajax({
+	url: url,
+	dataType: "jsonp",
+	crossDomain: true, // needed if url is CAS-ified or on a different host than application using autocompleteUser
+	data: params,
+	error: function () {
+	    infoDiv.text("Erreur web service");
+	},
+	success: success
+    });
 }
 
 function compute_Account_and_accountStatus(info, fInfo) {
@@ -847,15 +842,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	   allowInvalidAccounts: true,
 	   showExtendedInfo: showExtendedInfo
        };
-       $.ajax({
-	   url: searchUserURL,
-	   dataType: "jsonp",
-	   crossDomain: true, // needed if searchUserURL is CAS-ified or on a different host than application using autocompleteUser
-	   data: wsParams,
-	   error: function () {
-	       infoDiv.text("Erreur web service");
-	   },
-	   success: function (data) {
+       asyncInfoRaw(searchUserURL, wsParams, infoDiv, function (data) {
 	       if (data.length == 0) {
 		   infoDiv.text("user not found (??)");
 	       } else if (data.length > 1) {
@@ -863,7 +850,6 @@ function formatUserInfo(info, showExtendedInfo) {
 	       } else {
 		   infoDiv.empty().append(formatUserInfo(data[0], showExtendedInfo));
 	       }
-	   }
        });
    }
 
