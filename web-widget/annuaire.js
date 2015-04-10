@@ -508,8 +508,8 @@ function format_memberOf(all) {
 
 function format_shadowExpire(info) {
     var today = todayEpochDay();
-    var delta = info.shadowExpire <= today ? important("EXPIRE") : formadelai(today, info.shadowExpire);
-    return formadate(info.shadowExpire) + " (dans " + delta + ")";
+    var delta = info.shadowExpire <= today ? important("EXPIRE") : "dans " + formadelai(today, info.shadowExpire);
+    return formadate(info.shadowExpire) + " (" + delta + ")";
 }
 
 function compute_Person(info, showExtendedInfo) {
