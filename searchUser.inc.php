@@ -23,7 +23,6 @@ $ALLOWED_MONO_ATTRS =
 	// below are restricted or internal attributes.
 	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
 	'accountStatus', 'shadowFlag', 'shadowExpire', 'shadowLastChange',
-	'up1KrbPrincipal',
 
 	'supannCivilite', 
 	'supannListeRouge',
@@ -54,6 +53,7 @@ $ALLOWED_MULTI_ATTRS =
 	'memberOf', 'memberOf-all',
 	'supannRoleGenerique',
 
+	'up1KrbPrincipal',
 	'roomNumber', 'up1FloorNumber',
 
 	'telephoneNumber', 
