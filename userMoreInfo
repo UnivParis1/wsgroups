@@ -1,0 +1,18 @@
+<?php // -*-PHP-*-
+
+require ('./supannPerson.inc.php');
+
+forceCASAuthentication();
+if (!isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
+  header("HTTP/1.0 403 Forbidden");
+  exit;
+}
+
+$uid = GET_ldapFilterSafe("uid");
+$info = GET_ldapFilterSafe_or("info", '*');
+
+exec("ssh wsgroups@marmite.univ-paris1.fr getinfo user '$info' $uid", $lines);
+
+echoJson(json_decode(implode('', $lines)));
+
+?>

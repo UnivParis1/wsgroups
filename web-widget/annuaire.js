@@ -5,6 +5,7 @@ var baseURL = "https://wsgroups-test.univ-paris1.fr";
 var searchUserURL = baseURL + '/searchUserCAS';
 var getGroupURL = baseURL + '/getGroup';
 var lastLoginsUrl = baseURL + '/userLastLogins';
+var moreInfoUrl = baseURL + '/userMoreInfo';
 var helpUrl = 'https://dsidoc.univ-paris1.fr/doku.php?id=refi:userinfo-web#HELP_ID';
 helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://dsidoc.univ-paris1.fr/shibboleth/Shibboleth.sso/SAML/POST&target=' + escape(helpUrl) + '&providerId=https://dsidoc.univ-paris1.fr';
 var showExtendedInfo = undefined; showExtendedInfo = true;
@@ -78,7 +79,6 @@ var main_attrs_labels = [ [
     'sambaHomePath: Dossier de travail',
 
     //'supannRefID: RefId',
-    'up1KrbPrincipal: Kerb',
     'supannListeRouge: ' + important('Liste rouge'),
     'createTimestamp: createTimestamp',
     'modifyTimestamp: modifyTimestamp',
@@ -600,6 +600,38 @@ function formatLastLogins(info, data, div) {
     }
 }
 
+function format_one_kerberosInfo(info, principal, krb) {
+    var txt = [ $("<span>", { title: principal }).text("KERBEROS") ];
+	
+    var txtPassword = [];
+    if (krb.lastmod) txtPassword.push("changé le " + formadate(krb.lastmod / 24 / 3600));
+    if (krb.expire) {
+	krb.expire = krb.expire / 24 / 3600;
+	if (krb.expire != info.shadowExpire) txtPassword.push("expire le " + formadate(krb.expire));
+    } else {
+	if (info.expire) txtPassword.push(important("SANS EXPIRATION"));
+    }
+    if (txtPassword.length) txt.push("mot de passe " + txtPassword.join(", "));
+    if (krb.locked) {
+	if (info.accountStatus != 'noaccess') txt.push(important("VERROUILLE"));
+    } else {
+	if (info.accountStatus == 'noaccess') txt.push(important("NON VERROUILLE"));
+    }
+    return spanFromList(txt, ", ");
+}
+    
+function format_kerberosInfo(info, auth, div) {
+    var kerberos = auth && auth.kerberos;
+    $.each(info.up1KrbPrincipal, function (i, principal) {
+	var krb = kerberos[principal];
+	if (krb) {
+	    div.append(format_one_kerberosInfo(info, principal, krb)).append('<br>');
+	} else {
+	    div.append("Approbation inter-domaine KERBEROS " + principal + important(" ??")).append('<br>');
+	}
+    });
+}
+    
 function get_lastLogins(info) {
     var infoDiv = $("<span>");
     asyncInfoRaw(lastLoginsUrl, { login: info.supannAliasLogin || info.uid }, infoDiv, function (data) {
@@ -612,6 +644,17 @@ function get_lastLogins(info) {
 	    }
     });
     return infoDiv;
+}
+    
+function get_kerberosInfo(info, infoDiv) {
+    asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "auth" }, infoDiv, function (data) {
+	    var moreInfo = data[info.uid];
+	    if (!moreInfo) {
+		infoDiv.text("user not found (??)");
+	    } else {
+		infoDiv.empty().append(format_kerberosInfo(info, moreInfo.auth, infoDiv));
+	    }
+    });
 }
 
 function get_Responsable(info) {
@@ -649,21 +692,12 @@ function asyncInfoRaw(url, params, infoDiv, success) {
 
 function compute_Account_and_accountStatus(info, fInfo) {
     if (info.up1KrbPrincipal) {
-	$.each(info.up1KrbPrincipal, function (i, krb) {
-	    if (info.krbrealm && krb.split('@')[1] != krbrealm) {
-		info.Account = "Approbation inter-domaine KERBEROS " + krb;
-	    } else {
-		var val = undefined; //krbgetusers(krb);
-		if (val && val[krb]) {
-		    info.Account = "KERBEROS, mot de passe";
-		    //push @vals, ("changé le ".formadate($val->{$krb}{'lastchng'})) if $val->{$krb}{'lastchng'};
-		    //push @vals, ("expire le ".formadate($val->{$krb}{'expire'})) if $val->{$krb}{'expire'} && $val->{$krb}{'expire'} != ($expire||0);
-		    //push @vals, ("SANS EXPIRATION") if ! $val->{$krb}{'expire'} && $expire;
-		    //push @vals, ("VERROUILLE") if $val->{$krb}{'locked'};
-		    //print join(", ",@vals)."\n";
-		}
-	    }
-	   });
+	fInfo.Account = spanFromList($.map(info.up1KrbPrincipal, function (principal) {
+	    return format_one_kerberosInfo(info, principal, {});
+	}), '');
+	if (info.allowExtendedInfo > 1) {
+	    get_kerberosInfo(info, fInfo.Account);
+	}
     } else {
 	if ( (!info.shadowExpire || info.shadowExpire > todayEpochDay()) && !info.accountStatus) {
 	    fInfo.accountStatus = spanFromList([important('NON ACTIVE', 'status-non-active')]);
