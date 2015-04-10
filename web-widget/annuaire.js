@@ -75,6 +75,7 @@ var main_attrs_labels = [ [
     'shadowExpire: Expire le',
     'accountStatus: Etat du compte',
     'Account: Compte',
+    'sambaHomePath: Dossier de travail',
 
     //'supannRefID: RefId',
     'up1KrbPrincipal: Kerb',
