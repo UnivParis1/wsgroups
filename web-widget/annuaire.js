@@ -22,18 +22,16 @@ function parse_attrs_text(l) {
 var main_attrs_labels = [ [
     'Person: Personne',
 
-    'employeeType: Type',
-    'Fonctions: Fonction(s)',
-    'supannEntiteAffectation-all: Affectation(s)',
-    'Responsable: Responsable',
-    'Affiliation: Affiliation',
+    'Affiliation: Statut(s)',
     'businessCategory: Catégorie',
-
-    'mail: Mail',
-    'mailAlternateAddress: Mail secondaire',
-    'supannAutreMail: Mail secondaire',
-    'supannMailPerso: Mail perso',
-    'MailDelivery: Messagerie',
+    
+    'employeeType: Type',
+    'supannActivite-REFERENS: Emploi type',
+    'supannActivite-other: Discipline(s)',
+    //'departmentNumber: Discipline(s)', // redundant
+    'Fonctions: Fonction(s)',
+    'supannEntiteAffectation-all: Structure(s)/Composante(s)',
+    'Responsable: Responsable',
 
     'eduPersonOrgUnitDN: Formation(s)',
 
@@ -49,39 +47,45 @@ var main_attrs_labels = [ [
     'supannEtuEtape: Etape',
     'supannEtuAnneeInscription: Année',
     'eduPersonOrgUnitDN: Affectation(s)',
+],
+[   
+    'mail: Courriel',
+    'mailAlternateAddress: Courriel secondaire',
+    'supannAutreMail: Courriel secondaire',
 
-    'telephoneNumber: Tél',
-    'mobile: Tél mobile',
-    'pager: Tél mobile',
+    'telephoneNumber: Téléphone fixe',
     'supannAutreTelephone: Tél secondaire',
     'facsimileTelephoneNumber: Fax',
-],
-[
-    'supannActivite-REFERENS: Emploi type',
-    'supannActivite-other: Discipline(s)',
-    //'departmentNumber: Discipline(s)', // redundant
 
-    'labeledURI: Web',
+    'labeledURI: Page personnelle',
 
     'buildingName: Site',
-    'up1FloorNumber: Etage',
     'roomNumber: Bureau',
-    'postalAddress: Adresse postale',
-
-    //'cn: cn',
+    'up1FloorNumber: Etage',
+    'postalAddress: Adresse professionnelle',
 ],
 [
-    'up1Roles: Mail(s) de fonction',
     'Identifiers: Identifiant(s)',
-    'shadowExpire: Expire le',
     'accountStatus: Etat du compte',
     'Account: Compte',
+    'shadowExpire: Expire le',
+],
+[
+    'up1Roles: Courriel(s) de fonction',
     'sambaHomePath: Dossier de travail',
 
     //'supannRefID: RefId',
     'supannListeRouge: ' + important('Liste rouge'),
     'createTimestamp: createTimestamp',
     'modifyTimestamp: modifyTimestamp',
+],
+[
+			  
+    'supannMailPerso: Courriel personnel',
+    'MailDelivery: Messagerie',
+
+    'mobile: Tél mobile',
+    'pager: Tél mobile',
 ],
 [
     'memberOf: Groupes',
@@ -104,7 +108,7 @@ var sub_attrs_labels = {
 
 var eduPersonAffiliation_valnames = {
 	'student': "étudiant",
-	'staff': "personnel technique ou administratif",
+	'staff': "BIATSS",
 	'teacher': "enseignant",
 	'researcher': "chercheur",
 	'affiliate': "partenaire extérieur",
