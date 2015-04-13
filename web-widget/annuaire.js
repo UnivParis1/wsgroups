@@ -65,7 +65,8 @@ var main_attrs_labels = [ [
     'postalAddress: Adresse professionnelle',
 ],
 [
-    'Identifiers: Identifiant(s)',
+    'Identifiers: Identifiant',
+    'OtherIdentifiers: Identifiant(s)',
     'accountStatus: Etat du compte',
     'Account: Compte',
     'shadowExpire: Expire le',
@@ -94,13 +95,11 @@ var main_attrs_labels = [ [
 
 var sub_attrs_labels = {
     'Identifiers': 
-    [ 'uid: '
-    , 'supannAliasLogin: Login'
-    , 'uidNumber: UID'
-    , 'supannEmpId: Emp'
-    , 'supannEtuId: Etu'
+    [ 'supannEmpId: code harpège'
+    , 'supannEtuId: code étudiant'
     , 'supannCodeINE: INE'
-    , 'employeeNumber: Code-barre'
+    , 'uidNumber: UID'
+    , 'employeeNumber: code-barre'
   //, 'eduPersonPrincipalName: EPPN'
     ]
 };
@@ -541,10 +540,7 @@ function compute_Person(info, showExtendedInfo) {
     return Person;
 }
 
-function compute_Identifiers(info) {
-    if (info.supannAliasLogin && info.supannAliasLogin === info.uid)
-	delete info.supannAliasLogin;
-    
+function compute_Identifiers(info) {   
     return rejectEmpty($.map(parse_attrs_text(sub_attrs_labels.Identifiers), function (e) {
 	var v = info[e.attr];
 	return v && (e.text ? e.text + ": " + v : v);
@@ -800,7 +796,6 @@ function formatUserInfo(info, showExtendedInfo) {
 	delete info.supannParrainDN;
 	delete info.memberOf; delete info['memberOf-all'];
     }
-    if (showExtendedInfo) info.Identifiers = compute_Identifiers(info);
 
     if (info.mailForwardingAddress) info.MailDelivery = compute_MailDelivery(info);
 
@@ -808,6 +803,12 @@ function formatUserInfo(info, showExtendedInfo) {
 
     formatSomeUserValues(info, fInfo);
 
+    if (showExtendedInfo) {
+	fInfo.Identifiers = info.supannAliasLogin && info.supannAliasLogin !== info.uid ? info.supannAliasLogin + ", uid: " + important(info.uid) : info.uid;
+	info.OtherIdentifiers = compute_Identifiers(info);
+    }
+
+    
     fInfo.Person = compute_Person(info, showExtendedInfo);
     if (info.supannListeRouge) fInfo.supannListeRouge = info.supannListeRouge === "TRUE" && important("oui");
     if (info.shadowExpire) fInfo.shadowExpire = format_shadowExpire(info);   
