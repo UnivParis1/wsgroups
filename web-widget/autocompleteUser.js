@@ -59,7 +59,7 @@
 	var textL = text.toLowerCase();
 	var pos = textL.search(searchedTokenL);
 	if (pos < 0) 
-	    return text;
+	    return null;
 	else {
 	    var endPos = pos + searchedTokenL.length;
 	    return text.substring(0, pos) + 
@@ -78,8 +78,11 @@
 	  uid = highlight(uid);
       } else if (item.cn.toLowerCase().indexOf(searchedTokenL) === 0)
 	  displayName = highlightMatched(item.cn, searchedTokenL);
-      else
-	  displayName = highlightMatched(displayName, searchedTokenL);
+      else {
+	  displayName = highlightMatched(item.displayName, searchedTokenL);
+	  if (!displayName) displayName = highlightMatched(item.mail, searchedTokenL);
+	  if (!displayName) displayName = item.displayName;
+      }
 
       if (display_uid)
 	  displayName += " (" + uid + ")";
