@@ -20,7 +20,7 @@ function people_filters($token, $restriction = '', $allowInvalidAccounts = false
 
     if (strlen($token) > 3) 
 	// too short strings are useless
-	$r[] = "(&(|(displayName=*$token*)(cn=*$token*))$restriction)";
+	$r[] = "(&(|(displayName=*$token*)(cn=*$token*)(up1BirthName=*$token*))$restriction)";
     return $r;
 }
 function staffFaculty_filter() {
