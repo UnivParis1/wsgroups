@@ -59,7 +59,7 @@
 	var textL = text.toLowerCase();
 	var pos = textL.search(searchedTokenL);
 	if (pos < 0) 
-	    return textL;
+	    return text;
 	else {
 	    var endPos = pos + searchedTokenL.length;
 	    return text.substring(0, pos) + 
