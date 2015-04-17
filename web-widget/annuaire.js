@@ -72,6 +72,9 @@ var main_attrs_labels = [ [
     'shadowExpire: Expire le',
 ],
 [
+    'Mailbox: Boîte mail',
+],
+[
     'up1Roles: Courriel(s) de fonction',
     'sambaHomePath: Dossier de travail',
 
@@ -392,6 +395,15 @@ function leftPadZero(number, size) {
     return number;
 }
 
+function round(number, precision) {
+    return Math.round(number / precision) * precision;
+}
+function formatMB(n) {
+    n = n / 1024 / 1024;
+    // round it
+    n = round(n, n >= 10 ? 1 : 0.1)
+    return "" + n + "MB";
+}
 function formatDateRaw(d) {
     return leftPadZero(d.getDate(), 2) + "/" + leftPadZero(d.getMonth() + 1, 2) + "/" + d.getFullYear();
 }
@@ -631,6 +643,45 @@ function format_kerberosInfo(info, auth, div) {
 	}
     });
 }
+
+function format_mailboxQuota(quota) {
+    var size = quota.size;
+    var txt = '';
+    var grace = size.grace && size.grace /24 / 3600;
+    if (size.blocked) {
+        txt = important("BLOQUÉE", "mailbox-blocked");
+        if (grace && grace <= todayEpochDay()) txt = txt + important(" depuis le " + formadate(grace));
+    } else if (grace && grace > todayEpochDay()) {
+        txt = important("delai de grâce restant : " + formadelai(todayEpochDay(), grace), "mailbox-grace");
+    }
+    var percent = Math.round(size.used / size.soft * 100) + "%";
+    if (size.used >= size.soft) percent = important(percent);
+    txt = (txt ? txt + "<br>" : '') + "Taux d'occupation " + percent;
+    txt = txt + " (" + formatMB(size.used * 1024) + " / " + formatMB(size.soft * 1024) + ")";
+    return txt;
+}
+
+function format_mailboxINBOX(mbox) {
+    return mbox.recent + " courriels reçus depuis la dernière consultation";
+}
+
+function format_mailboxFilters(filter) {
+    if (filter && filter.rules) {
+	return "Filtres présents (" + filter.rules + " règles)";
+    } else {
+	return "Aucun filtre";
+    }
+}
+    
+function format_mailboxInfo(info, mailboxes, infoDiv) {
+    infoDiv.empty();
+    $.each(mailboxes, function (server, mailbox) {
+	if (mailbox.quota) infoDiv.append(format_mailboxQuota(mailbox.quota));
+	infoDiv.append("<br>" + format_mailboxINBOX(mailbox.status && mailbox.status.INBOX));
+	infoDiv.append("<br>" + format_mailboxFilters(mailbox.filter));
+	if (mailbox.filter && mailbox.filter.vacation) infoDiv.append("<br>Répondeur activé");
+    });
+}
     
 function get_lastLogins(info) {
     var infoDiv = $("<span>");
@@ -677,6 +728,19 @@ function get_Responsable(info) {
     return infoDiv;
 }
 
+function get_mailboxInfo(info) {
+    var infoDiv = $("<div>...</div>");
+    asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "mailbox" }, infoDiv, function (data) {
+	    var moreInfo = data[info.uid];
+	    if (!moreInfo) {
+		infoDiv.text("user not found (??)");
+	    } else {
+		format_mailboxInfo(info, moreInfo.mailbox, infoDiv);
+	    }
+    });
+    return infoDiv;
+}
+    
 function asyncInfoRaw(url, params, infoDiv, success) {
     $.ajax({
 	url: url,
@@ -836,6 +900,8 @@ function formatUserInfo(info, showExtendedInfo) {
     $.each(['mail', 'mailAlternateAddress', 'supannAutreMail', 'supannMailPerso'], function (i, attr) {
 	if (info[attr]) fInfo[attr] = format_mail(info[attr], info.displayName);
     });
+
+    if (info.allowExtendedInfo > 1) fInfo["Mailbox"] = get_mailboxInfo(info);
 
        var div = $("<div></div>");
        $.each(main_attrs_labels, function (i, sections) {
