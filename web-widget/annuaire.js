@@ -840,7 +840,7 @@ function formatUserInfo(info, showExtendedInfo) {
        var div = $("<div></div>");
        $.each(main_attrs_labels, function (i, sections) {
 	   var attrs_labels = parse_attrs_text(sections);
-	   var table = $("<table style='border: 1px solid; padding: 1em; margin: 0.5em; 0'></table>").appendTo(div);
+	   var table = $("<table class='info-block'></table>").appendTo(div);
 	   $.each(attrs_labels, function (i, e) {
 	       var fv = fInfo[e.attr];
 	       var v = !(e.attr in fInfo) && info[e.attr];

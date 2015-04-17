@@ -72,3 +72,15 @@ span[title], a[title] {
 .hidden {
   display: none;
 }
+
+.info-block {
+    border: 1px solid;
+    padding: 1em;
+    margin: 0.5em;
+    width: 100%;
+    max-width: 800px;
+}
+
+.info-block td:first-child {
+    width: 15em;
+}
