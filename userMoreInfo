@@ -3,7 +3,8 @@
 require ('./supannPerson.inc.php');
 
 forceCASAuthentication();
-if (!isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
+if (!isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER) &&
+    !isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
   header("HTTP/1.0 403 Forbidden");
   exit;
 }

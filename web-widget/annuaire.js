@@ -759,7 +759,7 @@ function compute_Account_and_accountStatus(info, fInfo) {
 	fInfo.Account = spanFromList($.map(info.up1KrbPrincipal, function (principal) {
 	    return format_one_kerberosInfo(info, principal, {});
 	}), '');
-	if (info.allowExtendedInfo > 1) {
+	if (info.allowExtendedInfo >= 1) {
 	    get_kerberosInfo(info, fInfo.Account);
 	}
     } else {
@@ -901,7 +901,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	if (info[attr]) fInfo[attr] = format_mail(info[attr], info.displayName);
     });
 
-    if (info.allowExtendedInfo > 1) fInfo["Mailbox"] = get_mailboxInfo(info);
+    if (info.allowExtendedInfo >= 1) fInfo["Mailbox"] = get_mailboxInfo(info);
 
        var div = $("<div></div>");
        $.each(main_attrs_labels, function (i, sections) {
