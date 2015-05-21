@@ -105,6 +105,14 @@ if ($allowExtendedInfo >= 1) {
   $LDAP_CONNECT = $allowExtendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
   global_ldap_open('reOpen');
 }
+// most attributes visibility are enforced using ACLs on LDAP bind
+// here are a few special cases
+if ($allowExtendedInfo < 1) {
+  foreach (array('memberOf', 'memberOf-all') as $attr) {
+    unset($wanted_attrs[$attr]);
+  }
+}
+
 if ($allowInvalidAccounts) $allowInvalidAccounts = $allowExtendedInfo >= 1;
 
 $attrRestrictions = 
