@@ -8,6 +8,7 @@ var lastLoginsUrl = baseURL + '/userLastLogins';
 var moreInfoUrl = baseURL + '/userMoreInfo';
 var helpUrl = 'https://dsidoc.univ-paris1.fr/doku.php?id=refi:userinfo-web#HELP_ID';
 helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://dsidoc.univ-paris1.fr/shibboleth/Shibboleth.sso/SAML/POST&target=' + escape(helpUrl) + '&providerId=https://dsidoc.univ-paris1.fr';
+var impersonateUrl = 'https://uportal3-test.univ-paris1.fr/ProlongationENT/impersonate.html';
 var showExtendedInfo = undefined; showExtendedInfo = true;
 var currentUser = undefined;
 
@@ -93,6 +94,7 @@ var main_attrs_labels = [ [
 ],
 [
     'memberOf: Groupes',
+    'Applications: Applications',
 ]
 ];
 
@@ -903,6 +905,8 @@ function formatUserInfo(info, showExtendedInfo) {
 
     if (info.allowExtendedInfo >= 1) fInfo["Mailbox"] = get_mailboxInfo(info);
 
+    if (info.accountStatus === "active" && info.allowExtendedInfo >= 1) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
+    
        var div = $("<div></div>");
        $.each(main_attrs_labels, function (i, sections) {
 	   var attrs_labels = parse_attrs_text(sections);
