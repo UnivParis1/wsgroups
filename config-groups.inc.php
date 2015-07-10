@@ -1,8 +1,8 @@
 <?php
 
 // specific Paris1:
-$ANNEE = 2014;
-$ANNEE_PREV = 2013;
+$ANNEE = 2015;
+$ANNEE_PREV = 2014;
 $ALT_STRUCTURES_DN = "ou=structures,o=Paris1,".$BASE_DN;
 $DIPLOMA_DN = "ou=$ANNEE,ou=diploma,o=Paris1,".$BASE_DN;
 $DIPLOMA_PREV_DN = "ou=$ANNEE_PREV,ou=diploma,o=Paris1,".$BASE_DN;
