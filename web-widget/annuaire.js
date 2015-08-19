@@ -172,14 +172,14 @@ function important(s, helpPage) {
 var attr2valnames = {
     'accountStatus': {
 	'active': "ACTIF",
-	'noaccess': important("VERROUILLE"),
-	'disabled': important("DESACTIVE", 'status-expire'),
-	'deleted': important("PURGE"),
+	'noaccess': important("VERROUILLÉ"),
+	'disabled': important("DÉSACTIVÉ", 'status-expire'),
+	'deleted': important("PURGÉ"),
     },
     'shadowFlag': {
 	2: "DOUBLON",
-	8: "DECEDE",
-//	9: "VERROUILLE",
+	8: "DÉCÉDÉ",
+//	9: "VERROUILLÉ",
     },
     //'businessCategory': {
     //	'administration': "administration",
