@@ -110,7 +110,7 @@ function getUserGroups($uid) {
 }
 
 function groupsNotPedagogyResearchStructures($map) {  
-  return !preg_match("/^employees\.(pedagogy|research)\./", $map["key"]);
+  return !preg_match("/^employees\.(pedagogy|research|affiliation)\./", $map["key"]);
 }
 
 function structurePedagogyResearch($map) {  
