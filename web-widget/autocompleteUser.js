@@ -20,7 +20,6 @@
       gpelp: 'Groupes TD associ&eacute;s'
   };
 
-  var symbol_select = "\u229E";
   var symbol_navigate = "\u21B8";
 
   var highlight = function (text) {
@@ -431,8 +430,7 @@
 	  li.append($("<big>").append(button_navigate));
 	}
         li.append($("<a style='display: inline' >")
-		   .append(content + " &nbsp;")
-		   .append($("<big>").append(symbol_select)));
+		   .append(content + " &nbsp;"));
 	li.appendTo(ul);
      };
   };
