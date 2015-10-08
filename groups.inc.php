@@ -114,7 +114,7 @@ function groupsNotPedagogyResearchStructures($map) {
 }
 
 function structurePedagogyResearch($map) {  
-  return $map["businessCategory"] === 'pedagogy' || $map["businessCategory"] === "research";
+  return $map["businessCategory"] === 'pedagogy' || $map["businessCategory"] === "research" || $map["businessCategory"] === 'library';
 }
 
 function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0, $timelimit = 0) {
