@@ -46,8 +46,8 @@
       if (item.departmentNumber) {
 	  details.push((item.departmentNumber.count >= 2 ? "Disciplines : " : "Discipline : ") + item.departmentNumber.join(' - '));
       }
-      if (item.supannEtablissement)
-	  details.push(item.supannEtablissement.join(" - "));
+//      if (item.supannEtablissement)
+//	  details.push(item.supannEtablissement.join(" - "));
 
       if (details.length) 
 	  return "<div class='details'>" + details.join("<br>") + "</div>"
