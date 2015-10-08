@@ -611,6 +611,13 @@ function formatLastLogins(info, data, div) {
 	    var t = formatDateTime(e.time) + " : " + (e.error || "SUCCESS") + " <small>(ip = " + e.ip + " )</small>";
 	    details.append(t + '<br>');
 	})
+	if (data.fuzzy_failed.length) {
+	    details.append("<br>Logins en échec avec login légèrement différent :<br>");
+	}
+	$.each(data.fuzzy_failed, function (v, e) {
+	    var t = formatDateTime(e.time) + " : " + e.username + " FAILED <small>(ip = " + e.ip + " )</small>";
+	    details.append(t + '<br>');
+	})
 	div.append($("<span class='clickable'>").append(" <small>details</small>").click(function () { details.toggleClass("hidden") }));
 	div.append(details);
     }
