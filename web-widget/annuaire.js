@@ -9,6 +9,7 @@ var moreInfoUrl = baseURL + '/userMoreInfo';
 var helpUrl = 'https://dsidoc.univ-paris1.fr/doku.php?id=refi:userinfo-web#HELP_ID';
 helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://dsidoc.univ-paris1.fr/shibboleth/Shibboleth.sso/SAML/POST&target=' + escape(helpUrl) + '&providerId=https://dsidoc.univ-paris1.fr';
 var impersonateUrl = 'https://uportal3-test.univ-paris1.fr/ProlongationENT/impersonate.html';
+var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudiant.jsp?config=apoprod&cod_etu=';
 var photoLdapUrl = 'https://photo-ldap.univ-paris1.fr/ldap.php';
 var showExtendedInfo = undefined; showExtendedInfo = true;
 var currentUser = undefined;
@@ -557,10 +558,19 @@ function compute_Person(info, showExtendedInfo) {
 }
 
 function compute_Identifiers(info) {   
-    return rejectEmpty($.map(parse_attrs_text(sub_attrs_labels.Identifiers), function (e) {
+    var span = $("<span>");
+    $.each(parse_attrs_text(sub_attrs_labels.Identifiers), function (i, e) {
 	var v = info[e.attr];
-	return v && (e.text ? e.text + ": " + v : v);
-    }));
+	if (v) {
+	    if (e.text) span.appendText(e.text + ": ");
+	    if (e.attr === 'supannEtuId') {
+		span.append(a_or_span(apogeeStudentDetailUrl + v, v)).appendText(" ");
+	    } else {
+		span.appendText(v + " ");
+	    }
+	}
+    });
+    return span;
 }
 
 function todayEpochDay() {
@@ -880,7 +890,7 @@ function formatUserInfo(info, showExtendedInfo) {
 
     if (showExtendedInfo) {
 	fInfo.Identifiers = info.supannAliasLogin && info.supannAliasLogin !== info.uid ? info.supannAliasLogin + ", uid: " + important(info.uid) : info.uid;
-	info.OtherIdentifiers = compute_Identifiers(info);
+	fInfo.OtherIdentifiers = compute_Identifiers(info);
     }
 
     
