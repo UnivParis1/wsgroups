@@ -987,6 +987,10 @@ function formatUserInfo(info, showExtendedInfo) {
 
    var select = function (event, ui) {
         $(this).blur(); // important to close virtual keyboard on mobile phones
+        if (ui.item.value === 'unknown') {
+	   // gasp, no mail, forcing wantedAttr "uid"
+	   ui.item.value = ui.item.uid;
+        }
         asyncInfo(ui.item);
         return false;
     };
