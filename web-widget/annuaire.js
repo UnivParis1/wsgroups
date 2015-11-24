@@ -824,17 +824,21 @@ function format_up1Roles(info) {
     }), "<br>");
 }
 
-function format_supannCodeEntite(l, showExtendedInfo) {
+function format_supannCodeEntite(l, showExtendedInfo, principale) {
     return spanFromList(rejectEmpty($.map(l, function (e) {
 	if (e.name) {
 	    var title = e.description + (showExtendedInfo ? " (" + e.key + ")" : "");
-	    return a_or_span(e.labeledURI, e.name).attr('title', title);
+	    var elt = a_or_span(e.labeledURI, e.name).attr('title', title);
+	    if (principale && e.key === principale && l.length > 1) elt = $("<b>").append(elt);
+	    return elt;
 	} else
 	    return null;
     })), ", ");
 }
 function format_supannEntiteAffectation(info, showExtendedInfo) {
-	return format_supannCodeEntite(info['supannEntiteAffectation-all'], showExtendedInfo);
+    var principale = info['supannEntiteAffectationPrincipale'];
+    var l = info['supannEntiteAffectation-all'];
+    return format_supannCodeEntite(l, showExtendedInfo, principale);
 }
 function format_supannParrainDN(info, showExtendedInfo) {
     return format_supannCodeEntite(info['supannParrainDN-all'], showExtendedInfo);
