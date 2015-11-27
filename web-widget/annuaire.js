@@ -838,7 +838,15 @@ function format_supannCodeEntite(l, showExtendedInfo, principale) {
 function format_supannEntiteAffectation(info, showExtendedInfo) {
     var principale = info['supannEntiteAffectationPrincipale'];
     var l = info['supannEntiteAffectation-all'];
-    return format_supannCodeEntite(l, showExtendedInfo, principale);
+    var elt = format_supannCodeEntite(l, showExtendedInfo, principale);
+    var err;
+    if (!principale) {
+	err = important("affectation principale manquante");
+    } else if ($.grep(l, function (e) { return e.key === principale }).length === 0) {
+	err = important("affectation principale " + principale + " non listée");
+    }
+    if (err) elt.appendText(l && l.length ? ", " : '').append(err);
+    return elt;
 }
 function format_supannParrainDN(info, showExtendedInfo) {
     return format_supannCodeEntite(info['supannParrainDN-all'], showExtendedInfo);
