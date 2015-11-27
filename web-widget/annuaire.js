@@ -795,7 +795,7 @@ function compute_Account_and_accountStatus(info, fInfo) {
     }
     if (!info.accountStatus || info.accountStatus === "active") {
 	if (!info.eduPersonAffiliation)
-	    fInfo.accountStatus.append(" (" + important('il manque eduPersonAffiliation') + ")");
+	    fInfo.accountStatus.append(" (" + important('il manque eduPersonAffiliation', 'no-affiliation') + ")");
     }
     if (info.allowExtendedInfo > 1)
 	fInfo.accountStatus.append(get_lastLogins(info));
