@@ -545,8 +545,9 @@ function compute_Person(info, showExtendedInfo) {
 	var birthName = info.up1BirthName;
 	if (birthName === info.sn) birthName = '';
 	if (birthName || info.up1BirthDay) {
-	    var nee = info.supannCivilite === "M." ? "né" :
-		info.supannCivilite.match(/Mme|Mlle/) ? "née" : "né(e)";
+	    var civilite = info.supannCivilite || '';
+	    var nee = civilite === "M." ? "né" :
+		civilite.match(/Mme|Mlle/) ? "née" : "né(e)";
 	    person = person + ", " + nee +
 		(birthName ? " " + birthName : '') +
 		(info.up1BirthDay ? " le " + formagtime(info.up1BirthDay) : '');
