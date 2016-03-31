@@ -128,6 +128,15 @@ function wanted_attrs_raw($wanted_attrs) {
     return $r;
 }
 
+function attrRestrictions($allowExtendedInfo = 0) {
+    global $isTrustedIp;
+    return
+        array('allowListeRouge' => $allowExtendedInfo > 0 || @$isTrustedIp || GET_uid() && isStaffOrFaculty(GET_uid()),
+        'allowMailForwardingAddress' => $allowExtendedInfo > 1,
+        'allowEmployeeType' => $allowExtendedInfo > 1,
+        );
+}
+
 function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows) {
     $allowListeRouge = @$attrRestrictions['allowListeRouge'];
     $wanted_attrs_raw = wanted_attrs_raw($wanted_attrs);

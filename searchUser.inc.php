@@ -115,11 +115,7 @@ if ($allowExtendedInfo < 1) {
 
 if ($allowInvalidAccounts) $allowInvalidAccounts = $allowExtendedInfo >= 1;
 
-$attrRestrictions = 
-  array('allowListeRouge' => $allowExtendedInfo > 0 || @$isTrustedIp || GET_uid() && isStaffOrFaculty(GET_uid()),
-	'allowMailForwardingAddress' => $allowExtendedInfo > 1,
-	'allowEmployeeType' => $allowExtendedInfo > 1,
-	);
+$attrRestrictions = attrRestrictions($allowExtendedInfo);
 
 $users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts), $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows);
 
