@@ -175,6 +175,14 @@ function forceCASAuthentication() {
   $_SERVER["HTTP_CAS_USER"] = phpCAS::getUser();
 }
 
+function isCASAuthenticated() {
+  initPhpCAS();
+  if (phpCAS::isAuthenticated()) {
+      // will be used by function "GET_uid"
+      $_SERVER["HTTP_CAS_USER"] = phpCAS::getUser();
+  }
+}
+
 function ipTrusted() {
     global $TRUSTED_IPS;
     return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
