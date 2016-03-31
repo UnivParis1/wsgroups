@@ -147,7 +147,7 @@ function ensure_ldap_close() {
     }
 }
 
-function initPhpCAS($host, $port, $context, $CA_certificate_file) {
+function initPhpCAS_raw($host, $port, $context, $CA_certificate_file) {
   phpCAS::client(CAS_VERSION_2_0, $host, intval($port), $context);
   if ($CA_certificate_file)
     phpCAS::setCasServerCACert($CA_certificate_file);
@@ -156,10 +156,14 @@ function initPhpCAS($host, $port, $context, $CA_certificate_file) {
   //phpCAS::setLang(PHPCAS_LANG_FRENCH);
 }
 
-function forceCASAuthentication() {
+function initPhpCAS() {
   require_once 'CAS.php';
   global $CAS_HOST, $CAS_CONTEXT, $CA_certificate_file;
-  initPhpCAS($CAS_HOST, '443', $CAS_CONTEXT, $CA_certificate_file);
+  initPhpCAS_raw($CAS_HOST, '443', $CAS_CONTEXT, $CA_certificate_file);
+}
+
+function forceCASAuthentication() {
+  initPhpCAS();
   //phpCAS::setNoClearTicketsFromUrl(); // ensure things work without cookies (for safari on cross-domain)
   phpCAS::forceAuthentication();
 
