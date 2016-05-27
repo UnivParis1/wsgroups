@@ -191,14 +191,18 @@
       return r;
   };
 
-  function disableEnterKey(input) {
+  function handleEnterKey(input, disableEnterKey) {
       input.keydown(function(event){
 	      var keyCode = $.ui.keyCode;
       	      switch( event.keyCode ) {
       	      case keyCode.ENTER:
 	      case keyCode.NUMPAD_ENTER:
-		  event.preventDefault();
-		  event.stopPropagation();    
+                  if (disableEnterKey) {
+		      event.preventDefault();
+		      event.stopPropagation();
+                  } else {
+                      input.autocomplete('close');
+                  }
 	      }
       });
   }
@@ -286,7 +290,7 @@
 	  };
       }
 
-      if (settings.disableEnterKey) disableEnterKey(input);
+      handleEnterKey(input, settings.disableEnterKey);
 
       input.autocomplete(params);
 
@@ -498,7 +502,7 @@
 	  };
       }
 
-      if (settings.disableEnterKey) disableEnterKey(input);
+      handleEnterKey(input, settings.disableEnterKey);
 
       input.autocomplete(params);
 
