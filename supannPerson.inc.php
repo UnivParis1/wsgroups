@@ -9,7 +9,9 @@ function people_filters($token, $restriction = '', $allowInvalidAccounts = false
 
     $l = array();
     if ($token === '') {
-        $l[] = '';
+        $l[] = '(supannRoleGenerique={SUPANN}D*)'; // important people first!
+        $l[] = '(supannRoleGenerique={SUPANN}*)'; // then other important people
+        $l[] = ''; // then the rest
     } else if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
         $l[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
     } else if (preg_match('/^\d+$/', $token, $matches)) {
