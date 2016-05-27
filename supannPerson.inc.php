@@ -7,20 +7,24 @@ require_once ('./config-groups.inc.php'); // in case groups.inc.php is used (php
 function people_filters($token, $restriction = '', $allowInvalidAccounts = false) {
     if (!$allowInvalidAccounts) $restriction = '(eduPersonAffiliation=*)' . $restriction;
 
-    $exactOrs = $token == '' ? array('') : array("(uid=$token)", "(sn=$token)");
-    if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
-        $exactOrs[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
+    $l = array();
+    if ($token === '') {
+        $l[] = '';
+    } else if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
+        $l[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
     } else if (preg_match('/^\d+$/', $token, $matches)) {
-        $exactOrs[] = "(supannEmpId=$token)";
-        $exactOrs[] = "(supannEtuId=$token)";
-    }
-    $r = array();
-    foreach ($exactOrs as $exactOr)
-      $r[] = "(&$exactOr$restriction)";
+        $l[] = "(|(supannEmpId=$token)(supannEtuId=$token))";
+    } else {
+        $l[] = "(uid=$token)";
 
-    if (strlen($token) > 3) 
-	// too short strings are useless
-	$r[] = "(&(|(displayName=*$token*)(cn=*$token*)(up1BirthName=*$token*))$restriction)";
+        if (strlen($token) > 3) 
+            // too short strings are useless
+            $l[] = "(|(displayName=*$token*)(cn=*$token*)(up1BirthName=*$token*))";
+    }
+
+    $r = array();
+    foreach ($l as $cond)
+      $r[] = "(&$cond$restriction)";    
     return $r;
 }
 function staffFaculty_filter() {
