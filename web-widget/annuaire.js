@@ -11,6 +11,7 @@ helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://d
 var impersonateUrl = 'https://uportal3-test.univ-paris1.fr/ProlongationENT/impersonate.html';
 var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudiant.jsp?config=apoprod&cod_etu=';
 var photoLdapUrl = 'https://photo-ldap.univ-paris1.fr/ldap.php';
+var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&membershipType=immediate&groupName=';
 var showExtendedInfo = undefined; showExtendedInfo = true;
 var currentUser = undefined;
 
@@ -524,7 +525,8 @@ function format_memberOf(all) {
 	return a.key.toLowerCase().localeCompare(b.key.toLowerCase());
     });
     return spanFromList($.map(all, function (e) {
-	return $("<span>").text(e.key + " : " + (e.description || ''));
+	return $("<span>").append(a_or_span(e.name && e.name.match(/:/) && (grouperUrl + e.key.replace(/\./g, ":")), e.key))
+                .appendText(" : " + (e.description || ''));
     }), "<br>");
 }
 
