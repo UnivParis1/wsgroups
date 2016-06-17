@@ -11,6 +11,7 @@ $groups[] = getGroupsFromDiplomaDnOrPrev(array("(description=*)"), false);
 $groupsStructures = getGroupsFromStructuresDn(array("(&(supannCodeEntite=*)(ou=*))"));
 $groups[] = remove_businessCategory($groupsStructures);
 
+global $AFFILIATION2TEXT;
 $groups[] = getGroupsFromAffiliations(array_keys($AFFILIATION2TEXT), $groupsStructures);
 
 $groups[] = businessCategoryGroups();

@@ -68,6 +68,7 @@ $ALLOWED_MULTI_ATTRS =
 	'mailForwardingAddress', 'mailDeliveryOption', 'mailAlternateAddress',
 	'up1Profile',
 	);
+global $UP1_ROLES_DN;
 if (@$UP1_ROLES_DN) $ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
 
 if (!$attrs) $attrs = implode(',', array_merge($ALLOWED_MONO_ATTRS, $ALLOWED_MULTI_ATTRS));
@@ -92,6 +93,7 @@ if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumbe
 
 $allowExtendedInfo = 0;
 if (isset($showExtendedInfo) && GET_uid()) {
+  global $LEVEL1_FILTER, $LEVEL2_FILTER;
   if (isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER)) {
     if (isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
       $allowExtendedInfo = 2;
@@ -102,6 +104,7 @@ if (isset($showExtendedInfo) && GET_uid()) {
 }
 
 if ($allowExtendedInfo >= 1) {
+  global $LDAP_CONNECT_LEVEL1, $LDAP_CONNECT_LEVEL2;
   $LDAP_CONNECT = $allowExtendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
   global_ldap_open('reOpen');
 }
