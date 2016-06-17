@@ -18,6 +18,7 @@ function people_filters($token, $restriction = '', $allowInvalidAccounts = false
         $l[] = "(|(supannEmpId=$token)(supannEtuId=$token))";
     } else {
         $l[] = "(uid=$token)";
+        $l[] = "(sn=$token)";
 
         if (strlen($token) > 3) 
             // too short strings are useless
