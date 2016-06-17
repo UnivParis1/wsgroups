@@ -26,10 +26,10 @@ function GET_uid() {
 
 function computeOneFilter($attr, $valsS) {
     $vals = explode('|', $valsS);
-    $orFilter = '';
+    $orFilter = [];
     foreach ($vals as $val)
-      $orFilter .= "($attr=$val)";
-    return sizeof($vals) > 1 ? "(|$orFilter)" : $orFilter;
+      $orFilter[] = "($attr=$val)";
+    return ldapOr($orFilter);
 }
 function computeFilter($filters, $not) {
    $r = '';

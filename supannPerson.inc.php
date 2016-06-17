@@ -326,9 +326,9 @@ function memberOfAll($l) {
   global $BASE_DN;
   $attrs = array("cn" => "key", "ou" => "name", "description" => "description");
 
-  $or = '';
-  foreach ($l as $dn) $or .= "(entryDN=$dn)";
-  return getLdapInfo($BASE_DN, "(|$or)", $attrs);
+  $or = [];
+  foreach ($l as $dn) $or[] = "(entryDN=$dn)";
+  return getLdapInfo($BASE_DN, ldapOr($or), $attrs);
 }
 
 function rdnToSupannCodeEntites($l) {
