@@ -1,6 +1,6 @@
 <?php // -*-PHP-*-
 
-require ('./supannPerson.inc.php');
+require_once ('./supannPerson.inc.php');
 
 $token = GET_ldapFilterSafe_or("token", '');
 $attrs = GET_or_NULL("attrs");
