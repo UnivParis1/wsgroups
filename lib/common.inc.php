@@ -105,6 +105,15 @@ function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0, $timelimit
   unset($all_entries["count"]);
   $r = array();  
   foreach ($all_entries as $entry) {
+    $r[] = _ldap_entry_remap($entry, $attributes_map);
+  }
+
+  //echo sprintf("// Elapsed %f\t%3d answers for $filter on $base\n", $before - microtime(true), count($r));
+
+  return $r;
+}
+
+function _ldap_entry_remap($entry, $attributes_map) {
     $map = array();
     foreach ($attributes_map as $ldap_attr => $attr) {
       $ldap_attr_ = strtolower($ldap_attr);
@@ -119,12 +128,7 @@ function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0, $timelimit
 	}
       }
     }
-    $r[] = $map;
-  }
-
-  //echo sprintf("// Elapsed %f\t%3d answers for $filter on $base\n", $before - microtime(true), count($r));
-
-  return $r;
+    return $map;
 }
 
 function global_ldap_open($reOpen = false) {
