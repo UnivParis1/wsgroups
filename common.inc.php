@@ -32,11 +32,11 @@ function computeOneFilter($attr, $valsS) {
     return ldapOr($orFilter);
 }
 function computeFilter($filters, $not) {
-   $r = '';
+   $r = [];
   foreach ($filters as $attr => $vals) {
     if (!$vals) continue;
     $one = computeOneFilter($attr, $vals);
-    $r .= $not ? "(!$one)" : $one;
+    $r[] = $not ? "(!$one)" : $one;
   }
   return $r;
 }

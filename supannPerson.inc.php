@@ -4,8 +4,8 @@ require_once ('./common.inc.php');
 require_once ('./tables.inc.php');
 require_once ('./config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
-function people_filters($token, $restriction = '', $allowInvalidAccounts = false) {
-    if (!$allowInvalidAccounts) $restriction = '(eduPersonAffiliation=*)' . $restriction;
+function people_filters($token, $restriction = [], $allowInvalidAccounts = false) {
+    if (!$allowInvalidAccounts) $restriction[] = '(eduPersonAffiliation=*)';
 
     $l = array();
     if ($token === '') {
@@ -27,7 +27,7 @@ function people_filters($token, $restriction = '', $allowInvalidAccounts = false
 
     $r = array();
     foreach ($l as $cond)
-      $r[] = "(&$cond$restriction)";    
+      $r[] = ldapAnd(array_merge([$cond], $restriction));    
     return $r;
 }
 function staffFaculty_filter() {
@@ -48,14 +48,17 @@ function GET_extra_people_filter_from_params() {
     else if ($val === "only") $filters["eduPersonAffiliation"] = $attr;
     else exit("invalid filter_$attr value $val");
   }  
-  return computeFilter($filters, false) . computeFilter($filters_not, true) . GET_filter_member_of_group();
+  return array_merge(
+      computeFilter($filters, false),
+      computeFilter($filters_not, true),
+      GET_filter_member_of_group());
 }
 
 function GET_filter_member_of_group() {
   $keys = GET_or_NULL("filter_member_of_group");
-  if (!$keys) return '';
+  if (!$keys) return [];
 
-  return ldapOr(array_map('groupKey2filter', array_map('ldap_escape_string', explode('|', $keys))));
+  return [ldapOr(array_map('groupKey2filter', array_map('ldap_escape_string', explode('|', $keys))))];
 }
 
 function groupKey2filter($key) {
