@@ -1,5 +1,5 @@
 <?php // -*-PHP-*-
-require ('./groups.inc.php');
+require ('lib/groups.inc.php');
 
 $key = GET_ldapFilterSafe("key");
 $depth = min(max(0, GET_or_NULL("depth")), 3);

@@ -1,14 +1,14 @@
 <?php
 
-require_once ('./config.inc.php');
-require_once ('./config-groups.inc.php');
+require_once ('config/config.inc.php');
+require_once ('config/config-groups.inc.php');
 $ANNEE = 2014;
 $ANNEE_PREV = 2013;
 $DIPLOMA_DN = "ou=$ANNEE,ou=diploma,o=Paris1,".$BASE_DN;
 $DIPLOMA_PREV_DN = "ou=$ANNEE_PREV,ou=diploma,o=Paris1,".$BASE_DN;
 
-require_once ('./common.inc.php');
-require_once ('./tables.inc.php'); // TODO: use a generated one with tests data
+require_once ('lib/common.inc.php');
+require_once ('gen/tables.inc.php'); // TODO: use a generated one with tests data
 $LDAP_CONNECT['test_ldif_files'] = glob('test/*/*.ldif');
 $LDAP_CONNECT_LEVEL1 = $LDAP_CONNECT_LEVEL2 = $LDAP_CONNECT;
 $LEVEL1_FILTER = $LEVEL2_FILTER = '(uid=prigaux)';

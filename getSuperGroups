@@ -1,5 +1,5 @@
 <?php // -*-PHP-*-
-require_once ('./groups.inc.php');
+require_once ('lib/groups.inc.php');
 
 $DEBUG = 99;
 

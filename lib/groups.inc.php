@@ -1,7 +1,7 @@
 <?php
 
-require_once ('./common.inc.php');
-require_once ('./config-groups.inc.php');
+require_once ('lib/common.inc.php');
+require_once ('config/config-groups.inc.php');
 
 function groups_filters($token) {
   $words_filter = wordsFilter(array('description', 'ou'), $token);
@@ -584,7 +584,7 @@ function structureRoles($supannCodeEntite) {
     $maxRows = 10;
     $filter = "(supannRoleEntite=*[code=$supannCodeEntite]*)";
     $wanted_attrs = array("uid" => "uid", "displayName" => "displayName", "supannRoleGenerique" => "MULTI");
-    require_once('./supannPerson.inc.php');
+    require_once('lib/supannPerson.inc.php');
     isCasAuthenticated();
     $all = searchPeople(array($filter), attrRestrictions(), $wanted_attrs, 'uid', $maxRows);    
     return $all;

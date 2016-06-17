@@ -1,8 +1,8 @@
 <?php
 
-require_once ('./common.inc.php');
-require_once ('./tables.inc.php');
-require_once ('./config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
+require_once ('lib/common.inc.php');
+require_once ('gen/tables.inc.php');
+require_once ('config/config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
 function people_filters($token, $restriction = [], $allowInvalidAccounts = false) {
     if (!$allowInvalidAccounts) $restriction[] = '(eduPersonAffiliation=*)';
@@ -254,7 +254,7 @@ function supannEtuInscriptionAll($supannEtuInscription) {
   $r = parse_supannEtuInscription($supannEtuInscription);
   if (@$r['etape']) {
     $localEtape = removePrefix($r['etape'], '{UAI:0751717J}');
-    require_once 'groups.inc.php';
+    require_once 'lib/groups.inc.php';
     $diploma = getGroupsFromDiplomaDn(array("(ou=$localEtape)"), 1);
     if ($diploma) $r['etape'] = $diploma[0]["description"];
   }

@@ -1,8 +1,8 @@
 <?php
 
-require_once ('./config-auth.inc.php');
-require_once ('./config.inc.php');
-require_once ('./MyLdap.inc.php');
+require_once ('config/config-auth.inc.php');
+require_once ('config/config.inc.php');
+require_once ('lib/MyLdap.inc.php');
 
 function GET_ldapFilterSafe($name) {
     return ldap_escape_string($_GET[$name]);

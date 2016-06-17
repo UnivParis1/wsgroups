@@ -1,5 +1,5 @@
 <?php // -*-PHP-*-
 
-require ('./searchUser.inc.php');
+require ('lib/searchUser.inc.php');
 
 ?>

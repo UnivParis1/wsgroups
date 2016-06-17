@@ -1,6 +1,6 @@
 <?php // -*-PHP-*-
 
-require ('./supannPerson.inc.php');
+require ('lib/supannPerson.inc.php');
 
 forceCASAuthentication();
 if (!isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER) &&
