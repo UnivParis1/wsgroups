@@ -17,6 +17,12 @@ class MyTestLdap {
     public function search($base, $filter, $attributes, $sizelimit = 0, $timelimit = 0) {
         return $this->_search($base, $filter, $attributes, $sizelimit);
     }
+
+    public function read($dn, $attributes, $timelimit = 0) {
+        if (!preg_match("!(.*?=.*?),(.*)!", $dn, $m))
+            exit("invalid dn $dn");
+        return $this->_search($m[2], "(" . $m[1] . ")", $attributes, 1);
+    }
     
         
     public function close() {

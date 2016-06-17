@@ -30,6 +30,13 @@ class MyLdap {
 
         return ldap_get_entries($this->_ds, $search_result);
     }
+
+    public function read($dn, $attributes, $timelimit = 0) {
+        $search_result = @ldap_read($this->_ds, $dn, '(objectClass=*)', $attributes, 0, 1, $timelimit);
+        if (!$search_result) return NULL;
+
+        return ldap_get_entries($this->_ds, $search_result);
+    }
         
     public function close() {
         if ($this->_ds) {

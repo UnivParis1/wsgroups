@@ -85,6 +85,11 @@ function getFirstLdapInfo($base, $filter, $attributes_map, $timelimit = 0) {
   return $r ? $r[0] : NULL;
 }
 
+function getLdapDN($dn, $attributes_map, $timelimit = 0) {
+  $r = getLdapInfo($dn, null, $attributes_map, 1, $timelimit);
+  return $r ? $r[0] : NULL;
+}
+
 function existsLdap($base, $filter) {
   $r = getLdapInfo($base, $filter, array(), 1);
   return (bool) $r;
@@ -93,12 +98,23 @@ function existsLdap($base, $filter) {
 function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0, $timelimit = 0) {
   global $DEBUG;
 
+  if (preg_match("/\(entryDN=(.*)\)/", $filter, $m)) {
+      // use LDAP read when possible
+      $base = $m[1];
+      $filter = null;
+  }
+  
   $before = microtime(true);
 
   $ds = global_ldap_open();
 
-  if ($DEBUG) error_log("searching $base for $filter");
-  $all_entries = $ds->search($base, $filter, array_keys($attributes_map), $sizelimit, $timelimit);
+  if (!$filter) {
+      if ($DEBUG) error_log("getting $base");
+      $all_entries = $ds->read($base, array_keys($attributes_map), $timelimit);
+  } else {
+      if ($DEBUG) error_log("searching $base for $filter");
+      $all_entries = $ds->search($base, $filter, array_keys($attributes_map), $sizelimit, $timelimit);
+  }
   if (!$all_entries) return array();
   if ($DEBUG) error_log("found " . $all_entries['count'] . " results");
 

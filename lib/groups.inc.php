@@ -383,8 +383,7 @@ function groupKey2parentKey($key) {
   }
 
   if ($entryDn = groupKey2entryDn($key)) {
-    global $BASE_DN;
-    $g = getFirstLdapInfo($BASE_DN, "(entryDN=$entryDn)", array("seeAlso" => "MULTI"), 1);
+    $g = getLdapDN($entryDn, array("seeAlso" => "MULTI"), 1);
     $affiliation = groupIsStudentsOnly($key) ? 'student' : '';
     $r = array();
     if ($g && $g["seeAlso"]) {

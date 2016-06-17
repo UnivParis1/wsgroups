@@ -326,12 +326,11 @@ function supannRoleEntitesAll($l) {
 }
 
 function memberOfAll($l) {
-  global $BASE_DN;
   $attrs = array("cn" => "key", "ou" => "name", "description" => "description");
 
-  $or = [];
-  foreach ($l as $dn) $or[] = "(entryDN=$dn)";
-  return getLdapInfo($BASE_DN, ldapOr($or), $attrs);
+  $r = [];
+  foreach ($l as $dn) $r[] = getLdapDN($dn, $attrs);
+  return $r;
 }
 
 function rdnToSupannCodeEntites($l) {
