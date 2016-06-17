@@ -1,0 +1,57 @@
+dn: uid=e0g422l021q,ou=people,dc=univ-paris1,dc=fr
+supannListeRouge: FALSE
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: eduPerson
+objectClass: supannPerson
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: up1Person
+objectClass: up1NasUser
+uid: e0g422l021q
+supannAliasLogin: e0g422l021q
+eduPersonPrincipalName: e0g422l021q@univ-paris1.fr
+uidNumber: 537694
+gecos: Suzie Cool
+displayName: Suzie Cool
+cn: Cool Suzie
+sn: Cool
+up1BirthName: Cool
+givenName: Suzie
+mail: Suzie.Cool@malix.univ-paris1.fr
+supannEtuId: 11234598
+supannCivilite: Mme
+up1BirthDay: 19530504000000Z
+supannCodeINE: 0G413F02YN8
+supannParrainDN: ou=DGFB,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+supannEntiteAffectation: SC2
+eduPersonOrgUnitDN: ou=L2T101,ou=2014,ou=diploma,o=Paris1,dc=univ-paris1,dc=fr
+supannEtuSecteurDisciplinaire: {SISE}36
+supannEtuRegimeInscription: {SISE}20
+supannEtuEtape: {UAI:0751717J}L2T101
+supannEtuAnneeInscription: 2014
+supannEtablissement: {UAI}0751717J
+supannEtuDiplome: {SISE}2300002
+supannEtuCursusAnnee: {SUPANN}L1
+supannEtuInscription: [etab={UAI}0751717J][anneeinsc=2014][regimeinsc={SISE}20
+ ][sectdisc={SISE}36][typedip={INCONNU}][cursusann={SUPANN}L1][affect=SC2][dip
+ lome={SISE}2300002][etape={UAI:0751717J}L2T101]
+eduPersonAffiliation: student
+eduPersonAffiliation: member
+supannOrganisme: {EES}0751717J
+eduPersonPrimaryOrgUnitDN: ou=L2T101,ou=2014,ou=diploma,o=Paris1,dc=univ-paris
+ 1,dc=fr
+eduPersonPrimaryAffiliation: student
+homePostalAddress: 18, rue de Xxxxx$75020 PARIS 20EME$FRANCE
+eduPersonOrgDN: o=Paris1,dc=univ-paris1,dc=fr
+employeeNumber: 1012456677
+pager: 0604667723
+up1TermsOfUse: {SMSU}CG
+up1TermsOfUse: {PAGER}DISPLAY.FACULTY
+up1TermsOfUse: {SMSU}MP
+up1TermsOfUse: {SMSU}crous
+accountStatus: active
+gidNumber: 2000000
+shadowLastChange: 16387
+

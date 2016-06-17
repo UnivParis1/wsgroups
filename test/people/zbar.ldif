@@ -1,0 +1,16 @@
+cn: Bar Zo
+displayName: Zo Bar
+dn: uid=zbar,ou=people,dc=univ-paris1,dc=fr
+eduPersonAffiliation: employee
+eduPersonAffiliation: member
+eduPersonAffiliation: staff
+eduPersonPrimaryAffiliation: staff
+eduPersonPrincipalName: zbar@univ-paris1.fr
+givenName: Zo
+mail: Zo.Bar@univ-paris1.fr
+objectClass: supannPerson
+sn: Bar
+supannAliasLogin: zbar
+supannCivilite: M.
+supannEmpId: 99008
+uid: zbar

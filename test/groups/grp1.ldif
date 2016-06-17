@@ -1,0 +1,13 @@
+dn: cn=grp1,ou=groups,dc=univ-paris1,dc=fr
+labeledURI: http://dsiun.univ-paris1.fr
+ou: GRP1
+member: uid=fbar,ou=people,dc=univ-paris1,dc=fr
+objectClass: groupOfNames
+objectClass: labeledURIObject
+objectClass: supannGroupe
+objectClass: top
+objectClass: posixGroup
+cn: grp1
+businessCategory: administration
+owner: cn=grouper,ou=admin,dc=univ-paris1,dc=fr
+description: Utilisateurs GRP1 

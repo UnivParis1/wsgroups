@@ -1,0 +1,29 @@
+dn: uid=e2100800035,ou=people,dc=univ-paris1,dc=fr
+supannListeRouge: FALSE
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: eduPerson
+objectClass: supannPerson
+objectClass: shadowAccount
+objectClass: up1Person
+objectClass: posixAccount
+uid: e2100800035
+supannAliasLogin: e2100800035
+displayName: Suzie Moon
+cn: Moon Suzie
+sn: Moon
+mail: Suzie.Moon@malix.univ-paris1.fr
+supannEtuId: 10732325
+supannCodeINE: 2234900035V
+supannCivilite: Mme
+up1BirthDay: 19730516000000Z
+eduPersonPrincipalName: e2100800035@univ-paris1.fr
+givenName: Suzie
+up1BirthName: Moon
+gidNumber: 318225
+gecos: Suzie Moon
+uidNumber: 318225
+supannParrainDN: ou=DGFB,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+accountStatus: deleted
+

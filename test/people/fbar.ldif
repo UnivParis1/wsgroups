@@ -1,0 +1,45 @@
+accountStatus: active
+cn: Bar Fooo
+displayName: Fooo Bar
+dn: uid=fbar,ou=people,dc=univ-paris1,dc=fr
+eduPersonAffiliation: employee
+eduPersonAffiliation: member
+eduPersonAffiliation: staff
+eduPersonOrgDN: o=Paris1,dc=univ-paris1,dc=fr
+eduPersonOrgUnitDN: ou=DGHA,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+eduPersonPrimaryAffiliation: staff
+eduPersonPrimaryOrgUnitDN: ou=DGHA,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+eduPersonPrincipalName: fbar@univ-paris1.fr
+employeeType: Ingenieur de recherche rf
+givenName: Fooo
+homePhone: +33 1 02 03 04 05
+homePostalAddress: 6 rue Zoo$75018 PARIS$FRANCE
+mail: Fooo.Bar@univ-paris1.fr
+memberOf: cn=grp1,ou=groups,dc=univ-paris1,dc=fr
+objectClass: eduPerson
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: supannPerson
+pager: 0607070707
+postalAddress: 90 rue de Tolbiac$75634 PARIS CEDEX 13$FRANCE
+roomNumber: B 407
+sn: Bar
+supannActivite: {REFERENS}E1C23
+supannAliasLogin: fbar
+supannCivilite: M.
+supannEmpId: 99007
+supannEntiteAffectation: DGHA
+supannEntiteAffectationPrincipale: DGHA
+supannEtablissement: {UAI}0751717J
+supannListeRouge: FALSE
+supannOrganisme: {EES}0751717J
+supannParrainDN: ou=DGEP,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+telephoneNumber: +33 1 44 07 86 59
+uid: fbar
+up1BirthDay: 20150101010000Z
+up1BirthName: Bar
+up1FloorNumber: 4e
+

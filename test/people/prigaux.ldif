@@ -1,0 +1,72 @@
+dn: uid=prigaux,ou=people,dc=univ-paris1,dc=fr
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: eduPerson
+objectClass: supannPerson
+objectClass: shadowAccount
+objectClass: up1Person
+objectClass: posixAccount
+objectClass: up1NasUser
+uid: prigaux
+mail: Pascal.Rigaux@univ-paris1.fr
+eduPersonPrincipalName: prigaux@univ-paris1.fr
+supannListeRouge: FALSE
+supannAliasLogin: prigaux
+supannCivilite: M.
+supannOrganisme: {EES}0751717J
+eduPersonOrgDN: o=Paris1,dc=univ-paris1,dc=fr
+supannEmpId: 14464
+cn: Rigaux Pascal
+up1BirthDay: 19751002000000Z
+up1BirthName: Rigaux
+sn: Rigaux
+givenName: Pascal
+supannEtablissement: {UAI}0751717J
+supannEtablissement: {AUTRE}PCU-ReseauPro
+homePostalAddress:: NiwgQWxsw6llIEQnQU5EUkVaSUVVWCQ3NTAxOCBQQVJJUyRGUkFOQ0U=
+homePhone: +33 1 82 09 08 74
+gecos: Pascal Rigaux
+uidNumber: 560940
+eduPersonAffiliation: member
+eduPersonAffiliation: employee
+eduPersonAffiliation: staff
+employeeType: Ingenieur de recherche rf
+eduPersonPrimaryAffiliation: staff
+employeeNumber: 9100035248
+eduPersonOrgUnitDN: ou=DGHA,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+eduPersonPrimaryOrgUnitDN: ou=DGHA,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+supannEntiteAffectation: DGHA
+supannEntiteAffectationPrincipale: DGHA
+up1FloorNumber: 4e
+accountStatus: active
+roomNumber: B 407
+supannParrainDN: ou=DGEP,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+info:: RXhwZXJ0IGVuIGTDqXZlbG9wcGVtZW50IGV0IGTDqXBsb2llbWVudCBkJ2FwcGxpY2F0aW9ucw==
+shadowLastChange: 15838
+displayName: Pascal Rigaux
+supannActivite: {REFERENS}E1C23
+up1TermsOfUse: {PCU-ReseauPro}CG
+up1TermsOfUse: {SMSU}CG
+gidNumber: 2000000
+buildingName:: Q2VudHJlIFBpZXJyZSBNZW5kw6hzIEZyYW5jZQ==
+postalAddress: 90 rue de Tolbiac$75634 PARIS CEDEX 13$FRANCE
+pager: 0652767675
+telephoneNumber: +33 1 44 07 86 59
+memberOf: cn=employees.administration.DGH,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=employees.administration.DGHA,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.grouper.admins,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.media-webdav.podcast-admins,ou=groups,dc=univ-paris1 ,dc=fr
+memberOf: cn=applications.sof.users,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.apogee.users,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.nuxeo.phd-managers,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.reserva.reservasport-managers,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.reserva.reservalang-managers,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=employees.affiliation.staff,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.Typo3.intranet-managers,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=employees.site.pmf,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.smsu.users.smsu-api-admin,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=collab.cri-commun,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.moodle.Mcours-managers,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.media-webdav.e-cours-admins,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=applications.Typo3.backoffice-users,ou=groups,dc=univ-paris1,dc=fr

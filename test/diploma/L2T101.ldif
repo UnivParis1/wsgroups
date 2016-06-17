@@ -1,0 +1,8 @@
+dn: ou=L2T101,ou=2014,ou=diploma,o=Paris1,dc=univ-paris1,dc=fr
+ou: L2T101
+seeAlso: ou=DGH,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+description:: TDJUMTAxIC0gTGljZW5jZSAxw6hyZSBhbm7DqWUgRHJvaXQgKEZDKQ==
+objectClass: top
+objectClass: organizationalUnit
+objectClass: extensibleObject
+

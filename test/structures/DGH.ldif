@@ -1,0 +1,13 @@
+dn: supannCodeEntite=DGH,ou=structures,dc=univ-paris1,dc=fr
+supannCodeEntite: DGH
+businessCategory: administration
+supannCodeEntiteParent: DG
+objectClass: organizationalUnit
+objectClass: supannEntite
+objectClass: labeledURIObject
+ou: DSIUN
+description:: RFNJVU4gOiBEaXJlY3Rpb24gZHUgc3lzdMOobWUgZCdpbmZvcm1hdGlvbiBldCBk
+ ZXMgVXNhZ2VzIE51bcOpcmlxdWVz
+supannTypeEntite: {SUPANN}S230
+labeledURI: http://dsiun.univ-paris1.fr
+

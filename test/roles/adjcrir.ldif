@@ -1,0 +1,18 @@
+dn: uid=adjcrir,ou=roles,dc=univ-paris1,dc=fr
+objectClass: organizationalRole
+objectClass: shadowAccount
+objectClass: up1Role
+uid: adjcrir
+businessCategory: administration
+cn: Adjoint directeur DSI
+displayName: Adjoint directeur DSI
+manager: uid=tbedouin,ou=people,dc=univ-paris1,dc=fr
+roleOccupant: uid=dchopard,ou=people,dc=univ-paris1,dc=fr
+roleOccupant: uid=prigaux,ou=people,dc=univ-paris1,dc=fr
+accountStatus: active
+mail: adjdsi@univ-paris1.fr
+seeAlso: ou=DGH,ou=structures,o=paris1,dc=univ-paris1,dc=fr
+description: DSI - Directeur adjoint
+shadowLastChange: 15859
+supannAliasLogin: adjcrir
+

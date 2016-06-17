@@ -1,0 +1,76 @@
+dn: uid=e2404567812,ou=people,dc=univ-paris1,dc=fr
+supannListeRouge: FALSE
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: eduPerson
+objectClass: supannPerson
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: up1Person
+objectClass: up1NasUser
+eduPersonAffiliation: student
+eduPersonAffiliation: member
+eduPersonPrimaryAffiliation: student
+supannParrainDN: ou=DGFB,ou=structures,o=Paris1,dc=univ-paris1,dc=fr
+supannOrganisme: {EES}0751717J
+uid: e2404567812
+supannAliasLogin: e2404567812
+eduPersonPrincipalName: e2404567812@univ-paris1.fr
+uidNumber: 575501
+gecos: Suzie Riue
+displayName: Suzie Riue
+cn: Riue Suzie
+eduPersonOrgDN: o=Paris1,dc=univ-paris1,dc=fr
+sn: Riue
+up1BirthName: Riue
+givenName: Suzie
+mail: Suzie.Riue@malix.univ-paris1.fr
+supannEtuId: 12334661
+supannCodeINE: 2432354562U
+supannCivilite: Mme
+up1BirthDay: 19960122000000Z
+supannEtuEtape: {UAI:0751717J}L2B101
+supannEtablissement: {UAI}0751717J
+supannEtuAnneeInscription: 2014
+eduPersonOrgUnitDN: ou=L2B101,ou=2014,ou=diploma,o=Paris1,dc=univ-paris1,dc=fr
+eduPersonPrimaryOrgUnitDN: ou=L2B101,ou=2014,ou=diploma,o=Paris1,dc=univ-paris
+ 1,dc=fr
+supannEtuRegimeInscription: {SISE}10
+supannEntiteAffectation: U02
+supannEtuSecteurDisciplinaire: {SISE}38
+supannEtuCursusAnnee: {SUPANN}L1
+homePhone: +33 1 99 99 34 23
+homePostalAddress: 48, RUE JEAN XXXX$93110 ROSNY-SOUS-BOIS$FRANCE
+employeeNumber: 1012356626
+pager: 0601030455
+up1TermsOfUse: {SMSU}CG
+up1TermsOfUse: {PAGER}DISPLAY.FACULTY
+accountStatus: active
+gidNumber: 2000000
+shadowLastChange: 16327
+supannEtuDiplome: {SISE}2300003
+supannEtuInscription: [etab={UAI}0751717J][anneeinsc=2014][regimeinsc={SISE}10
+ ][sectdisc={SISE}38][typedip={INCONNU}][cursusann={SUPANN}L1][affect=U02][dip
+ lome={SISE}2300003][etape={UAI:0751717J}L2B101]
+memberOf: cn=students.SX5.registered,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010514,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010314,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1011314,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010114,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010714,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=gpelp.36795,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=gpelp.36767,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010914,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=mati18B3A108,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=gpelp.18930,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1011414,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010214,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010814,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1011214,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1011014,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010614,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=matiB1010414,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=gpelp.38117,ou=groups,dc=univ-paris1,dc=fr
+memberOf: cn=gpelp.38090,ou=groups,dc=univ-paris1,dc=fr
+

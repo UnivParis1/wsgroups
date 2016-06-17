@@ -1,0 +1,10 @@
+dn: supannCodeEntite=DGEP,ou=structures,dc=univ-paris1,dc=fr
+supannCodeEntite: DGEP
+businessCategory: administration
+supannCodeEntiteParent: DG
+objectClass: organizationalUnit
+objectClass: supannEntite
+objectClass: labeledURIObject
+ou: DRH-SP BIATSS
+description: DRH-SP BIATSS : service des personnels des bibliothèques, ingénieurs, administratifs, techniques, sociaux et de santé
+supannTypeEntite: {SUPANN}S230

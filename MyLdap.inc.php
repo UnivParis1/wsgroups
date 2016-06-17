@@ -5,7 +5,12 @@ class MyLdap {
     protected $_ds = NULL;
 
     public static function connect($config) {
-        return new MyLdap($config['HOST'], $config['BIND_DN'], $config['BIND_PASSWORD']);
+        if (isset($config['test_ldif_files'])) {
+            require_once 'test/MyTestLdap.inc.php';
+            return new MyTestLdap($config['test_ldif_files']);
+        } else {
+            return new MyLdap($config['HOST'], $config['BIND_DN'], $config['BIND_PASSWORD']);
+        }
     }
     
     public function __construct($host, $dn, $password) {
