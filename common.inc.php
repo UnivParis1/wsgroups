@@ -2,6 +2,7 @@
 
 require_once ('./config-auth.inc.php');
 require_once ('./config.inc.php');
+require_once ('./MyLdap.inc.php');
 
 function GET_ldapFilterSafe($name) {
     return ldap_escape_string($_GET[$name]);
@@ -97,9 +98,8 @@ function getLdapInfo($base, $filter, $attributes_map, $sizelimit = 0, $timelimit
   $ds = global_ldap_open();
 
   if ($DEBUG) error_log("searching $base for $filter");
-  $search_result = @ldap_search($ds, $base, $filter, array_keys($attributes_map), 0, $sizelimit, $timelimit);
-  if (!$search_result) return array();
-  $all_entries = ldap_get_entries($ds, $search_result);
+  $all_entries = $ds->search($base, $filter, array_keys($attributes_map), $sizelimit, $timelimit);
+  if (!$all_entries) return array();
   if ($DEBUG) error_log("found " . $all_entries['count'] . " results");
 
   unset($all_entries["count"]);
@@ -131,10 +131,7 @@ function global_ldap_open($reOpen = false) {
     global $ldapDS;
     if (!$ldapDS || $reOpen) {
 	global $LDAP_CONNECT;
-	$ldapDS = ldap_connect($LDAP_CONNECT['HOST']);
-	if (!$ldapDS) exit("error: connection to " . $LDAP_CONNECT['HOST'] . " failed");
-
-	if (!ldap_bind($ldapDS,$LDAP_CONNECT['BIND_DN'],$LDAP_CONNECT['BIND_PASSWORD'])) exit("error: failed to bind using " . $LDAP_CONNECT['BIND_DN']);
+	$ldapDS = MyLdap::connect($LDAP_CONNECT);
     }
     return $ldapDS;
 }
@@ -142,7 +139,7 @@ function global_ldap_open($reOpen = false) {
 function ensure_ldap_close() {
     global $ldapDS;
     if ($ldapDS) {
-      ldap_close($ldapDS);
+      $ldapDS->close();
       $ldapDS = NULL;
     }
 }
