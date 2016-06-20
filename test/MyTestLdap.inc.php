@@ -6,10 +6,16 @@ class MyTestLdap {
 
     protected $_entries = array();
 
+    static $_ldif_cache = [];
+    
     public function __construct($ldif_files) {
         //error_log("constructing MyTestLdap from ldif_files");
         foreach ($ldif_files as $file) {
-            $entry = MyTestLdap::read_one_ldif($file);
+            $entry = @MyTestLdap::$_ldif_cache[$file];
+            if (!$entry) {
+                $entry = MyTestLdap::read_one_ldif($file);
+                MyTestLdap::$_ldif_cache[$file] = $entry;
+            }
             $this->add_entry($entry);
         }
     }
