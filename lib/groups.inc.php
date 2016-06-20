@@ -474,16 +474,23 @@ function getSubGroups_one($key) {
   return $all_groups;
 }
 
-function getSubGroups($key, $depth) {
+function getSubGroups($key, $depth, $restriction) {
   $groups = getSubGroups_one($key);
   add_groups_category($groups);
+  $groups = apply_category_restriction($groups, $restriction['category']);
   if ($depth > 0) {
     foreach ($groups as &$g) {
-      $subGroups = getSubGroups($g["key"], $depth-1);
+      $subGroups = getSubGroups($g["key"], $depth-1, $restriction);
       if ($subGroups) $g["subGroups"] = $subGroups;
     }
   }
   return $groups;
+}
+
+function apply_category_restriction($groups, $category_filter) {
+  return array_filter($groups, function ($g) use ($category_filter) {
+      return preg_match($category_filter, $g["category"]);
+  });
 }
 
 function add_group_category(&$g) {
