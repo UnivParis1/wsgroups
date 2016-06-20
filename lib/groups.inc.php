@@ -418,7 +418,7 @@ function group2parentKey($key, $group) {
 }
 
 function getSuperGroups(&$all_groups, $key, $depth, $restriction) {
-  $group = getGroupFromKey($key, '', array());
+  $group = getGroupFromKey($key, true, array());
   add_group_category($group);
 
   $category_filter = $restriction['category']; 
