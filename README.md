@@ -356,6 +356,7 @@ with `attr=mail`:
 ### params
 * `key=`group
 * `depth=`number (default: 1)
+* `filter_category=`category|...
 
 ### result example
 

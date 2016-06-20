@@ -417,16 +417,20 @@ function group2parentKey($key, $group) {
   return $r;
 }
 
-function getSuperGroups(&$all_groups, $key, $depth) {
+function getSuperGroups(&$all_groups, $key, $depth, $restriction) {
   $group = getGroupFromKey($key, '', array());
   add_group_category($group);
-  $group['superGroups'] = group2parentKey($key, $group);
+
+  $category_filter = $restriction['category']; 
+  $group['superGroups'] = array_filter(group2parentKey($key, $group), function ($k) use ($category_filter) {
+      return preg_match($category_filter, groupKeyToCategory($k));
+  });
   $all_groups[$key] = $group;
 
   $superGroups = $group['superGroups'];
   if ($depth > 0 && $superGroups) {
     foreach ($superGroups as $k) {
-      getSuperGroups($all_groups, $k, $depth -1);
+      getSuperGroups($all_groups, $k, $depth -1, $restriction);
     }
   }
 }
