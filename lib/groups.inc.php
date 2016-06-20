@@ -383,10 +383,16 @@ function groupKey2parentKey($key) {
   }
 
   if ($entryDn = groupKey2entryDn($key)) {
-    $g = getLdapDN($entryDn, array("seeAlso" => "MULTI"), 1);
+    $g = getLdapDN($entryDn, array("seeAlso" => "MULTI", "supannCodeEntiteParent" => "MULTI", "up1Flags" => "up1Flags"), 1);
     $affiliation = groupIsStudentsOnly($key) ? 'student' : '';
     $r = array();
-    if ($g && $g["seeAlso"]) {
+    if ($g && isset($g["supannCodeEntiteParent"]) && getAndUnset($g, "up1Flags") === "included") {
+        if (!isset($g["seeAlso"])) $g["seeAlso"] = [];
+        foreach ($g["supannCodeEntiteParent"] as $parent) {
+            $g["seeAlso"][] = groupKey2entryDn("structures-$parent");
+        }
+    }
+    if ($g && isset($g["seeAlso"])) {
 	foreach ($g["seeAlso"] as $seeAlso) {
 	    $r[] = entryDn2groupKey($seeAlso, $affiliation);
 	}
