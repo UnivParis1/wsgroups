@@ -451,7 +451,7 @@ function getSubGroups_one($key) {
       $affiliation = null;
     }
 
-    $groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntiteParent=$supannCodeEntite)"));
+    $groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntiteParent=$supannCodeEntite)"), 0, 'allStructures');
     if ($affiliation)
       $groupsStructures = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
 
