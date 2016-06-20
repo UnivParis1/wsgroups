@@ -187,6 +187,7 @@ params allowed if casified user member of `$LEVEL1_FILTER` & `$LEVEL2_FILTER`:
 
 * `token=`text
 * `maxRows=`number
+* `attrs=`attr,attr2,... (valid attrs: `businessCategory`)
 * `callback=`function name for jsonp
 * `group_filter_attrs=`attr,attr2 (by default, search on diploma is done on `ou` and `description`)
 * `filter_category=`category|...

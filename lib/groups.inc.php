@@ -577,7 +577,7 @@ function echoJsonSimpleGroups($groups) {
 }
 
 
-function searchGroups($token, $maxRows, $restriction) {
+function searchGroups($token, $maxRows, $restriction, $attrs) {
   $category_filter = $restriction['category'];
   $filter_attrs = $restriction['filter_attrs'];
 
@@ -588,7 +588,9 @@ function searchGroups($token, $maxRows, $restriction) {
   $structures = array();
   if (preg_match($category_filter, 'structures')) {
     $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows, $restriction['allStructures']);
-    $structures = remove_businessCategory($structures);
+    if (!in_array('businessCategory', $attrs)) {
+        $structures = remove_businessCategory($structures);
+    }
   }
   $diploma = array();
   if (preg_match($category_filter, 'diploma')) {

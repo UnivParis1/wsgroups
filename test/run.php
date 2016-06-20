@@ -16,7 +16,7 @@ $_SERVER["HTTP_CAS_USER"] = 'prigaux';
 
 function map_obj_attr($l, $attr) {
     $r = array();
-    foreach ($l as $e) $r[] = $e->$attr;
+    foreach ($l as $e) $r[] = @$e->$attr;
     return $r;
 }
 function test($ws, $params) {
@@ -97,17 +97,19 @@ searchUser('99007', '["fbar"]'); // exact search on supannEmpId
 searchUser('Suzie', '["e0g422l021q","e2404567812"]'); // filter person with no eduPersonAffiliation
 
 
-function searchGroup($token, $expected, $opts = []) {
+function searchGroup($token, $attr, $expected, $opts = []) {
     $opts = array_merge(['token' => $token, 'maxRows' => 5], $opts);
     $js = test('searchGroup', $opts);
     $r = json_decode($js);
     if ($r === NULL) fail("searchGroup $token", "invalid response\n$js");
-    $got = map_obj_attr($r, 'key');
+    $got = map_obj_attr($r, $attr);
     expectToBe(json_encode($got), $expected, "searchGroup $token");
 }
 
-searchGroup("dsiun", '["groups-employees.administration.DGH","groups-employees.administration.DGHA"]');
-searchGroup("dsiun", '["structures-DGH","structures-DGHA"]', ['filter_category' => 'structures']);
+searchGroup("dsiun", 'key', '["groups-employees.administration.DGH","groups-employees.administration.DGHA"]');
+searchGroup("dsiun", 'key', '["structures-DGH","structures-DGHA"]', ['filter_category' => 'structures']);
+searchGroup("dsiun-sas", 'businessCategory', '[null]', ['filter_category' => 'structures']);
+searchGroup("dsiun-sas", 'businessCategory', '["administration"]', ['filter_category' => 'structures', 'attrs' => 'businessCategory']);
 
 
 $parents = <<<'EOS'
