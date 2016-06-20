@@ -1,6 +1,6 @@
 <?php
 
-require ('lib/groups.inc.php');
+require_once ('lib/groups.inc.php');
 
 $uid = GET_ldapFilterSafe("uid");
 

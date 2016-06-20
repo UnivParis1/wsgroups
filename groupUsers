@@ -1,7 +1,7 @@
 <?php // -*-PHP-*-
 require_once ('lib/common.inc.php');
 require_once ('config/config-groups.inc.php');
-require ('lib/supannPerson.inc.php');
+require_once ('lib/supannPerson.inc.php');
 
 $key = GET_ldapFilterSafe("key");
 $wantedAttr = GET_or_NULL("attr");

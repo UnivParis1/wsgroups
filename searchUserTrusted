@@ -1,6 +1,6 @@
 <?php // -*-PHP-*-
 
-require ('lib/common.inc.php');
+require_once ('lib/common.inc.php');
 
 if (!ipTrusted())
   exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");   
