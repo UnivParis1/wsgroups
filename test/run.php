@@ -96,6 +96,20 @@ searchUser('99007', '["fbar"]'); // exact search on supannEmpId
 
 searchUser('Suzie', '["e0g422l021q","e2404567812"]'); // filter person with no eduPersonAffiliation
 
+
+function searchGroup($token, $expected, $opts = []) {
+    $opts = array_merge(['token' => $token, 'maxRows' => 5], $opts);
+    $js = test('searchGroup', $opts);
+    $r = json_decode($js);
+    if ($r === NULL) fail("searchGroup $token", "invalid response\n$js");
+    $got = map_obj_attr($r, 'key');
+    expectToBe(json_encode($got), $expected, "searchGroup $token");
+}
+
+searchGroup("dsiun", '["groups-employees.administration.DGH","groups-employees.administration.DGHA"]');
+searchGroup("dsiun", '["structures-DGH","structures-DGHA"]', ['filter_category' => 'structures']);
+
+
 $parents = <<<'EOS'
 {"diploma-L2T101":{"key":"diploma-L2T101","description":"L2T101 - Licence 1\u00e8re ann\u00e9e Droit (FC)","rawKey":"L2T101","name":"L2T101 - Licence 1\u00e8re ann\u00e9e Droit (FC)","category":"diploma","superGroups":["structures-DGH-affiliation-student"]},"structures-DGH-affiliation-student":{"key":"structures-DGH-affiliation-student","name":"DSIUN : Direction du syst\u00e8me d'information et des Usages Num\u00e9riques (\u00e9tudiants)","description":"","category":"structures","superGroups":["affiliation-student"]},"affiliation-student":{"key":"affiliation-student","name":"Tous les \u00e9tudiants","description":"Tous les \u00e9tudiants","category":"affiliation","superGroups":[]}}
 EOS;

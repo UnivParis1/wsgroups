@@ -37,11 +37,18 @@ function seeAlso_filter($cn) {
 }
 
 function GET_extra_group_filter_from_params() {
-  $r = array();
+  $r = array(
+       // default value
+      'allStructures' => false,
+  );
   foreach (array("category") as $attr) {
     $in = GET_or_NULL("filter_$attr");
     $out = GET_or_NULL("filter_not_$attr");
     $r[$attr] = computeFilterRegex($in, $out);
+  }
+  if (GET_or_NULL("filter_category") === "structures") {
+      // special case
+      $r['allStructures'] = true;
   }
   $filter_attrs = GET_or_NULL("group_filter_attrs");
   if ($filter_attrs) {
@@ -580,7 +587,7 @@ function searchGroups($token, $maxRows, $restriction) {
   }
   $structures = array();
   if (preg_match($category_filter, 'structures')) {
-    $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows);
+    $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows, $restriction['allStructures']);
     $structures = remove_businessCategory($structures);
   }
   $diploma = array();
