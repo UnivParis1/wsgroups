@@ -192,19 +192,25 @@
   };
 
   function handleEnterKey(input, disableEnterKey) {
-      input.keydown(function(event){
+      if (disableEnterKey)
+          input.keydown(function(event){
 	      var keyCode = $.ui.keyCode;
       	      switch( event.keyCode ) {
       	      case keyCode.ENTER:
 	      case keyCode.NUMPAD_ENTER:
-                  if (disableEnterKey) {
 		      event.preventDefault();
 		      event.stopPropagation();
-                  } else {
-                      input.autocomplete('close');
-                  }
 	      }
-      });
+          });
+      else
+          input.keyup(function(event){
+              var keyCode = $.ui.keyCode;
+              switch( event.keyCode ) {
+              case keyCode.ENTER:
+              case keyCode.NUMPAD_ENTER:
+                  input.autocomplete('close');
+              }
+          });
   }
 
   function ui_autocomplete_data(input) {
