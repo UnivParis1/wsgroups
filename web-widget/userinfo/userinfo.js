@@ -10,7 +10,7 @@ var helpUrl = 'https://dsidoc.univ-paris1.fr/doku.php?id=refi:userinfo-web#HELP_
 helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://dsidoc.univ-paris1.fr/shibboleth/Shibboleth.sso/SAML/POST&target=' + escape(helpUrl) + '&providerId=https://dsidoc.univ-paris1.fr';
 var impersonateUrl = 'https://ent-test.univ-paris1.fr/ProlongationENT/impersonate.html';
 var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudiant.jsp?config=apoprod&cod_etu=';
-var photoLdapUrl = 'https://photo-ldap.univ-paris1.fr/ldap.php';
+var userphotoUrl = 'https://userphoto-test.univ-paris1.fr/';
 var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&membershipType=immediate&groupName=';
 var showExtendedInfo = undefined; showExtendedInfo = true;
 var currentUser = undefined;
@@ -941,7 +941,7 @@ function formatUserInfo(info, showExtendedInfo) {
 
     if (info.allowExtendedInfo >= 1) fInfo["Mailbox"] = get_mailboxInfo(info);
 
-    if (info.allowExtendedInfo >= 1) fInfo["Photo"] = "<img src='" + photoLdapUrl + "?uid=" + info.uid + "'>";
+    if (info.allowExtendedInfo >= 1) fInfo["Photo"] = "<img src='" + userphotoUrl + "?uid=" + info.uid + "'>";
 
     if (info.accountStatus === "active" && info.allowExtendedInfo >= 1) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
     
