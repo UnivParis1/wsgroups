@@ -104,7 +104,7 @@ var main_attrs_labels = [ [
 
 var sub_attrs_labels = {
     'Identifiers': 
-    [ 'supannEmpId: code harpège'
+    [ 'supannEmpId: numéro agent'
     , 'supannEtuId: code étudiant'
     , 'supannCodeINE: INE'
     , 'uidNumber: UID'
