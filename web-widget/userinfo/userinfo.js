@@ -803,7 +803,7 @@ function compute_Account_and_accountStatus(info, fInfo) {
     if (info.allowExtendedInfo > 1)
 	fInfo.accountStatus.append(get_lastLogins(info));
 
-    if (fInfo.shadowFlag) fInfo.accountStatus.append(" (" + fInfo.shadowFlag + ")");
+    if (fInfo.shadowFlag) fInfo.accountStatus.append(" (").append(fInfo.shadowFlag).append(")");
 }
 
 var role2text = {
