@@ -844,7 +844,8 @@ function format_supannEntiteAffectation(info, showExtendedInfo) {
     var elt = format_supannCodeEntite(l, showExtendedInfo, principale);
     var err;
     if (!principale) {
-	err = important("affectation principale manquante");
+        if (info.eduPersonPrimaryAffiliation !== 'student')
+	    err = important("affectation principale manquante");
     } else if ($.grep(l, function (e) { return e.key === principale }).length === 0) {
 	err = important("affectation principale " + principale + " non listée");
     }
