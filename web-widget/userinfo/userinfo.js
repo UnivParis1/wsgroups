@@ -611,7 +611,7 @@ function formatLastLogins(info, data, div) {
 	lastErrs.push(list.shift());
     }
     if (list.length) {
-	div.text(", dernier login " + formatDateTime(list[0].time));
+	div.text(", dernier login CAS " + formatDateTime(list[0].time));
 	if (lastErrs.length)
 	    div.append(important(", " + lastErrs.length + " échecs depuis"));
     } else if (lastErrs.length) {
