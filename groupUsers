@@ -14,7 +14,8 @@ if (ipTrusted()) {
   $maxRows = 5;
 }
 $filter = groupKey2filter($key);
-$attrs = $wantedAttr ? array($wantedAttr => $wantedAttr) : array('uid' => 'uid');
+$attrs = array('uid' => 'uid');
+if ($wantedAttr) $attrs[$wantedAttr] = $wantedAttr;
 $users = searchPeople(array($filter), $attrRestrictions, $attrs, 'uid', $maxRows);
 
 if ($wantedAttr) {
