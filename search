@@ -4,7 +4,7 @@ require_once ('lib/groups.inc.php');
 require_once ('lib/supannPerson.inc.php');
 
 $token = GET_ldapFilterSafe("token");
-$maxRows = min(max(1, GET_or_NULL("maxRows")), 10);
+$maxRows = GET_uid() ? GET_or("maxRows", 0) : min(max(1, GET_or_NULL("maxRows")), 10);
 $restriction = GET_extra_people_filter_from_params();
 $groupRestriction = GET_extra_group_filter_from_params();
 

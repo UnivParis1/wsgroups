@@ -4,7 +4,7 @@ require_once ('lib/supannPerson.inc.php');
 
 $token = GET_ldapFilterSafe_or("token", '');
 $attrs = GET_or_NULL("attrs");
-$maxRows = @$isTrustedIp ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 10);
+$maxRows = @$isTrustedIp || GET_uid() ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
