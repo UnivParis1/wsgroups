@@ -4,6 +4,101 @@ require_once ('lib/common.inc.php');
 require_once ('gen/tables.inc.php');
 require_once ('config/config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
+global $USER_KEY_FIELD, $USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS;
+$USER_KEY_FIELD = 'uid';
+$USER_ALLOWED_MONO_ATTRS = 
+  array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
+	'postalAddress', 'eduPersonPrincipalName',
+	'sn', 'givenName',
+    'supannEntiteAffectationPrincipale',
+	//'up1AltGivenName',
+
+
+	// below are restricted or internal attributes.
+	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
+	'accountStatus', 'shadowFlag', 'shadowExpire', 'shadowLastChange',
+
+	'supannCivilite', 
+	'supannListeRouge',
+	'supannEmpCorps', 
+
+	'supannAliasLogin',
+	'uidNumber', 'gidNumber',
+	'supannEmpId', 'supannEtuId', 'supannCodeINE',
+	'employeeNumber',
+
+	'homeDirectory', 'gecos',
+	'sambaAcctFlags', 'sambaSID', 'sambaHomePath',
+	'createTimestamp', 'modifyTimestamp',
+
+	'up1BirthName',
+	'up1BirthDay',
+
+	'homePhone', 'homePostalAddress', 'pager',
+	'supannMailPerso',
+	);
+$USER_ALLOWED_MULTI_ATTRS = 
+  array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'supannEntiteAffectation-all',
+	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'description', 'info',
+	'supannEtablissement', 'supannActivite', 'supannActivite-all',
+	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
+	'supannRoleEntite', 'supannRoleEntite-all',
+	'supannEtuInscription', 'supannEtuInscription-all',
+	'memberOf', 'memberOf-all',
+	'supannRoleGenerique',
+
+	'up1KrbPrincipal',
+	'roomNumber', 'up1FloorNumber',
+
+	'telephoneNumber', 
+	'facsimileTelephoneNumber', 
+	'supannAutreTelephone', 'mobile',
+
+	'objectClass',
+	'labeledURI',
+
+	// below are restricted or internal attributes.
+	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
+	'mailForwardingAddress', 'mailDeliveryOption', 'mailAlternateAddress',
+	'up1Profile',
+	);
+global $UP1_ROLES_DN;
+if (@$UP1_ROLES_DN) $USER_ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
+
+function people_attrs($attrs, $allowExtendedInfo = 0) {
+    global $USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS;
+    if (!$attrs) $attrs = implode(',', array_merge($USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS));
+    $wanted_attrs = array();
+    foreach (explode(',', $attrs) as $attr) {
+        if (in_array($attr, $USER_ALLOWED_MONO_ATTRS)) {
+            $wanted_attrs[$attr] = $attr;
+        } else if (in_array($attr, $USER_ALLOWED_MULTI_ATTRS)) {
+            $wanted_attrs[$attr] = 'MULTI';
+        } else {
+            error("unknown attribute $attr. allowed attributes: " . join(",", array_merge($USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS)));
+            exit;
+        }
+    }
+    global $USER_KEY_FIELD;
+    if (!isset($wanted_attrs[$USER_KEY_FIELD]))
+        $wanted_attrs[$USER_KEY_FIELD] = $USER_KEY_FIELD;
+
+    // employeeType is only allowed on some eduPersonPrimaryAffiliation
+    // departmentNumber is only useful for some eduPersonPrimaryAffiliation
+    if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumber']))
+        $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
+
+    // most attributes visibility are enforced using ACLs on LDAP bind
+    // here are a few special cases
+    if ($allowExtendedInfo < 1) {
+        foreach (array('memberOf', 'memberOf-all') as $attr) {
+            unset($wanted_attrs[$attr]);
+        }
+    }
+    
+    return $wanted_attrs;
+}
+
 function people_filters($token, $restriction = [], $allowInvalidAccounts = false) {
     if (!$allowInvalidAccounts) $restriction[] = '(eduPersonAffiliation=*)';
 
