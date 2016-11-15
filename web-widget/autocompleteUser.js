@@ -522,6 +522,96 @@
       });
   };
 
+  function myRenderUserOrGroupItem(ul, item) {
+      if (item && item.category === 'users')
+          myRenderUserItem(ul, item);          
+      else
+          myRenderGroupItem()(ul, item);
+  }
+
+  $.fn.autocompleteUserAndGroup = function (searchUserAndGroupURL, options) {
+      if (!searchUserAndGroupURL) throw "missing param searchUserAndGroupURL";
+
+      var settings = $.extend( 
+	  { 'user_minLength' : 2,
+	    'user_minLengthFullSearch' : 4,
+	    'user_attrs' : attrs,
+	    'maxRows' : 10,
+            'group_minLength' : 2,
+	    'disableEnterKey': false,
+	  }, options);
+
+      var wsParams = $.extend({ 
+	  maxRows: settings.maxRows,
+	  user_attrs: settings.user_attrs
+      }, settings.wsParams);
+
+      var input = this;
+
+      var source = function( request, response ) {
+	  wsParams.token = request.term;
+	    $.ajax({
+		url: searchUserAndGroupURL,
+		dataType: "jsonp",
+		crossDomain: true, // needed if searchGroupURL is CAS-ified or on a different host than application using autocompleteUser
+		data: wsParams,
+		error: function () {
+		    // we should display on error. but we do not have a nice error to display
+		    // the least we can do is to show the user the request is finished!
+		    response([ { warning: true, wsError: true } ]);
+		},
+		success: function (data) {
+                    if (options.onSearchSuccess) data = options.onSearchSuccess(data);
+                    var users = $.grep(data.users, function (item, i) {
+			return item.displayName !== "supannListeRouge"; 
+		    });
+		    var nbListeRouge = users.length - data.users.length;
+
+                    $.each(users, function (i, item) { item.category = 'users'; });                    
+		    users = transformItems(users, 'uid', request.term);
+		    transformGroupItems(data.groups, 'key', request.term);
+
+		    warning = { warning: true }
+                    var l = data.groups.concat(users);
+		    l.push(warning);
+		    if (users.length >= settings.maxRows || data.groups.length >= settings.maxRows) {
+			warning.partialResults = settings.maxRows;;
+		    } else if (request.term.length < settings.user_minLengthFullSearch) {
+			warning.partialResultsNoFullSearch = 1;
+		    }
+		    warning.nbListeRouge = nbListeRouge;
+                   
+		    response(l);
+		}
+	    });
+      };
+
+      var params = {
+	  minLength: settings.minLength,
+	  source: source,
+	  open: myOpen
+      };
+
+      if (settings.select) {
+	  params.select = settings.select;
+	  params.focus = function () {
+	    // prevent update of <input>
+	    return false;
+	  };
+      }
+
+      handleEnterKey(input, settings.disableEnterKey);
+
+      input.autocomplete(params);
+
+      ui_autocomplete_data(input)._renderItem = myRenderUserOrGroupItem;
+
+      // below is useful when going back on the search values
+      input.click(function () {
+      	  input.autocomplete("search");
+      });
+  };
+    
 
   $.fn.handlePlaceholderOnIE = function () {
 
