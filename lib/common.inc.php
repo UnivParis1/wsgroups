@@ -20,6 +20,11 @@ function GET_or_NULL($name) {
     return GET_or($name, NULL);
 }
 
+function GET_bool($name) {
+    $v = GET_or($name, "false");
+    return $v && $v !== "false";
+}
+
 function GET_uid() {
   return isset($_SERVER["HTTP_CAS_USER"]) ? $_SERVER["HTTP_CAS_USER"] : ''; // CAS-User
 }
