@@ -162,7 +162,9 @@
   };
 
   var transformItems = function (items, wantedAttr, searchedToken) {
-      var items_by_affiliation = groupByAttr(data, 'eduPersonPrimaryAffiliation');
+      items = sortByAffiliation(items);
+
+      var items_by_affiliation = groupByAttr(items, 'eduPersonPrimaryAffiliation');
 
       var searchedTokenL = searchedToken.toLowerCase();
       var odd_even;
@@ -265,7 +267,6 @@
 		    });
 		    nbListeRouge = dataAll.length - data.length;
 
-		    data = sortByAffiliation(data);
 		    data = transformItems(data, settings.wantedAttr, request.term);
 
 		    warning = { warning: true }
