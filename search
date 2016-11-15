@@ -3,14 +3,33 @@
 require_once ('lib/groups.inc.php');
 require_once ('lib/supannPerson.inc.php');
 
+if (GET_bool("CAS")) forceCASAuthentication();
+
 $token = GET_ldapFilterSafe("token");
+$user_attrs = GET_or_NULL("user_attrs");
+$group_attrs = explode(',', GET_or_NULL("group_attrs"));
 $maxRows = GET_uid() ? GET_or("maxRows", 0) : min(max(1, GET_or_NULL("maxRows")), 10);
+$type = GET_or_NULL("type");
 $restriction = GET_extra_people_filter_from_params();
 $groupRestriction = GET_extra_group_filter_from_params();
 
-$users = searchPeople(people_filters($token, $restriction), array(), $PEOPLE_ATTRS, "uid", $maxRows);
+if ($type === 'supannRoleGenerique' || $type === 'eduPersonAffiliation') {
+    $filter = "($type=*)";
+    if ($token) $filter = ldapAnd([$filter, ldapOr(["(displayName=*$token*)", "(cn=*$token*)"])]);
+    echoJson(array($type => getLdapInfoMultiFilters("ou=$type,ou=tables,$BASE_DN", array($filter), array($type => "key", "displayName" => "name"), "key")));
+    exit;
+} else if ($type) {
+    exit("invalid type $type\n");
+}
 
-$all_groups = searchGroups($token, $maxRows, $groupRestriction);
+$wanted_user_attrs = people_attrs($user_attrs);
+
+$attrRestrictions = attrRestrictions();
+
+global $USER_KEY_FIELD;
+$users = searchPeople(people_filters($token, $restriction), $attrRestrictions, $wanted_user_attrs, $USER_KEY_FIELD, $maxRows);
+
+$all_groups = searchGroups($token, $maxRows, $groupRestriction, $group_attrs);
 
 echoJson(array("users" => $users, "groups" => $all_groups));
 
