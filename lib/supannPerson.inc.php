@@ -115,9 +115,16 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
         $l[] = "(uid=$token)";
         $l[] = "(sn=$token)";
 
-        if (strlen($token) > 3) 
+        if (strlen($token) > 3) {
             // too short strings are useless
             $l[] = "(|(displayName=*$token*)(cn=*$token*)(up1BirthName=*$token*))";
+            $tokens = preg_split("/[\s']+/", $token);
+            if (sizeof($tokens) === 2) {
+                $tokens = array($tokens[1], $tokens[0]);
+                $search = implode('*', $tokens);
+                $l[] = "(|(displayName=*$search*)(cn=*$search*))";
+            }
+        }
     }
 
     $r = array();
