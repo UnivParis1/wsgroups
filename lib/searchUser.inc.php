@@ -4,12 +4,13 @@ require_once ('lib/supannPerson.inc.php');
 
 $token = GET_ldapFilterSafe_or("token", '');
 $attrs = GET_or_NULL("attrs");
-$maxRows = @$isTrustedIp || GET_uid() ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 10);
+$anonymous = !(@$isTrustedIp || GET_uid());
+$maxRows = !$anonymous ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
 
-$allowExtendedInfo = 0;
+$allowExtendedInfo = $anonymous ? -1 : 0;
 if (isset($showExtendedInfo) && GET_uid()) {
   global $LEVEL1_FILTER, $LEVEL2_FILTER;
   if (isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER)) {

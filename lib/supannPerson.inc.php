@@ -95,6 +95,9 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
             unset($wanted_attrs[$attr]);
         }
     }
+    if ($allowExtendedInfo < 0) {
+        unset($wanted_attrs['mobile']);
+    }
     
     return $wanted_attrs;
 }
