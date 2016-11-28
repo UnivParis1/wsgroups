@@ -124,6 +124,10 @@ function structurePedagogyResearch($map) {
   return $map["businessCategory"] === 'pedagogy' || $map["businessCategory"] === "research" || $map["businessCategory"] === 'library';
 }
 
+function removeStructureOrganization($map) {  
+  return $map["businessCategory"] !== 'organization';
+}
+
 function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0, $timelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
   $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit, $timelimit);
@@ -143,7 +147,9 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
 
 function getGroupsFromStructuresDn($filters, $sizelimit = 0, $all = false, $attrs = array()) {
   $r = getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs);
-  if (!$all) {
+  if ($all) {
+      $r = array_filter($r, 'removeStructureOrganization');
+  } else {
       $r = array_filter($r, 'structurePedagogyResearch');
   }
   return $r;
