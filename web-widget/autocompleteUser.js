@@ -533,7 +533,7 @@
       if (!searchUserAndGroupURL) throw "missing param searchUserAndGroupURL";
 
       var settings = $.extend( 
-	  { 'user_minLength' : 2,
+	  { 'minLength' : 2,
 	    'user_minLengthFullSearch' : 4,
 	    'user_attrs' : attrs,
 	    'maxRows' : 10,
