@@ -273,11 +273,6 @@ function normalizeNameGroupFromStructuresDn(&$map) {
 
     $name = preg_replace("/^UFR(\d+)/", "UFR $1", $name); // normalize UFRXX into "UFR XX"
 
-    if ($shortName && $shortName != $name && !preg_match("/^[^:]*" . preg_quote($shortName, '/') . "\s*:/", $name)) {
-	//echo "adding $shortName to $name\n";
-	$name = "$shortName : $name";
-    }
-
     //if ($shortName !== groupNameToShortname($name))
     //  echo "// different shortnames for $name: " . $shortName . " vs " . groupNameToShortname($name) . "\n";
 
