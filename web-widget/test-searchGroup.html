@@ -1,21 +1,36 @@
 <html>
+<head>	
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+  <meta name="viewport" content="initial-scale=1.0">
+</head>
 <body>
   <div class="ui-widget">
     <label for="foo">Cherchez un groupe</label>
-    <input id="foo" placeholder="xxx" />
+    <input id="foo" />
+  </div>
+
+  <div class="ui-widget">
+    <label for="diploma">Cherchez une étape</label>
+    <input id="diploma" />
   </div>
 
   <script src="autocompleteUser-resources.html.js"></script>
 
 <script>
-    var searchGroupURL = "http://wsgroups-test.univ-paris1.fr/searchGroup";
-    var subAndSuperGroupsURL = "http://wsgroups-test.univ-paris1.fr/getSubAndSuperGroups";
+    var searchGroupURL = "//wsgroups-test.univ-paris1.fr/searchGroup";
+    var subAndSuperGroupsURL = "//wsgroups-test.univ-paris1.fr/getSubAndSuperGroups";
 
     $( "#foo" ).autocompleteGroup(searchGroupURL, {
        subAndSuperGroupsURL: subAndSuperGroupsURL,
        wantedAttr: 'name',
        wsParams: { Xfilter_category: 'diploma', Xgroup_filter_attrs: 'ou,displayName' }
     }); 
+
+    $( "#diploma" ).autocompleteGroup(searchGroupURL, {
+       wantedAttr: 'name',
+       wsParams: { filter_category: 'diploma' }
+    }); 
+
 </script>
 </body>
 </html>
