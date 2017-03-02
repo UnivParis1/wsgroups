@@ -86,6 +86,7 @@ var main_attrs_labels = [ [
     'supannListeRouge: ' + important('Liste rouge'),
     'createTimestamp: createTimestamp',
     'modifyTimestamp: modifyTimestamp',
+    "up1TermsOfUse: Conditions d'utilisation",
 ],
 [
 			  
