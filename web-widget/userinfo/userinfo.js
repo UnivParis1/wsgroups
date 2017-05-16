@@ -81,6 +81,7 @@ var main_attrs_labels = [ [
 [
     'up1Roles: Courriel(s) de fonction',
     'sambaHomePath: Dossier de travail',
+    'Folder: ',
 
     //'supannRefID: RefId',
     'supannListeRouge: ' + important('Liste rouge'),
@@ -671,7 +672,7 @@ function format_kerberosInfo(info, auth, div) {
     });
 }
 
-function format_mailboxQuota(quota) {
+function format_quota(quota) {
     var size = quota.size;
     var txt = '';
     var grace = size.grace && size.grace /24 / 3600;
@@ -700,14 +701,23 @@ function format_mailboxFilters(filter) {
     }
 }
     
-function format_mailboxInfo(info, mailboxes, infoDiv) {
+function format_mailboxInfo(mailboxes, infoDiv) {
     infoDiv.empty();
     $.each(mailboxes, function (server, mailbox) {
-	if (mailbox.quota) infoDiv.append(format_mailboxQuota(mailbox.quota));
+	if (mailbox.quota) infoDiv.append(format_quota(mailbox.quota));
 	infoDiv.append("<br>" + format_mailboxINBOX(mailbox.status && mailbox.status.INBOX));
 	infoDiv.append("<br>" + format_mailboxFilters(mailbox.filter));
 	if (mailbox.filter && mailbox.filter.vacation) infoDiv.append("<br>Répondeur activé");
     });
+}
+
+function format_folderInfo(folder, infoDiv) {
+    infoDiv.empty();
+    if (!folder) {
+        infoDiv.appendText("aucun");
+    } else if (folder.quota) {
+        infoDiv.append(format_quota(folder.quota));
+    }
 }
     
 function get_lastLogins(info) {
@@ -755,17 +765,18 @@ function get_Responsable(info) {
     return infoDiv;
 }
 
-function get_mailboxInfo(info) {
-    var infoDiv = $("<div>...</div>");
-    asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "mailbox" }, infoDiv, function (data) {
+function get_mailbox_folder_Info(info, fInfo) {
+    var infoDiv = fInfo.Mailbox = $("<div>...</div>");
+    fInfo.Folder = $("<div>...</div>");
+    asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "mailbox,folder" }, infoDiv, function (data) {
 	    var moreInfo = data[info.uid];
 	    if (!moreInfo) {
 		infoDiv.text("user not found (??)");
 	    } else {
-		format_mailboxInfo(info, moreInfo.mailbox, infoDiv);
+		format_mailboxInfo(moreInfo.mailbox, infoDiv);
+		format_folderInfo(moreInfo.folder, fInfo.Folder);
 	    }
     });
-    return infoDiv;
 }
     
 function asyncInfoRaw(url, params, infoDiv, success) {
@@ -941,7 +952,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	if (info[attr]) fInfo[attr] = format_mail(info[attr], info.displayName);
     });
 
-    if (info.allowExtendedInfo >= 1) fInfo["Mailbox"] = get_mailboxInfo(info);
+    if (info.allowExtendedInfo >= 1) get_mailbox_folder_Info(info, fInfo);
 
     if (info.allowExtendedInfo >= 1) fInfo["Photo"] = "<img src='" + userphotoUrl + "?uid=" + info.uid + "'>";
 
