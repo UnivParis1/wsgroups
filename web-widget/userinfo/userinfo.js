@@ -821,19 +821,20 @@ function compute_Account_and_accountStatus(info, fInfo) {
 var role2text = {
     "manager": "responsable",
     "roleOccupant": "titulaire",
+    "member": "membre",
     "secretary": "suppléant"
 };
 
 function format_up1Roles(info) {
     var mail2roles = {};
-    var mail2seeAlso = {}
+    var mail2descr = {}
     $.each(info.up1Roles, function (i, e) {
 	if (!mail2roles[e.mail]) mail2roles[e.mail] = []
 	mail2roles[e.mail].push(role2text[e.role] || e.role);
-	mail2seeAlso[e.mail] = e.seeAlso;
+	mail2descr[e.mail] = e.seeAlso || e.description;
     });
     return spanFromList($.map(mail2roles, function (roles, mail) {
-	return $("<span>", { title: mail2seeAlso[mail] })
+	return $("<span>", { title: mail2descr[mail] })
 	    .append(format_mail(mail))
 	    .appendText(" (" + roles.join(", ") + ")");
     }), "<br>");

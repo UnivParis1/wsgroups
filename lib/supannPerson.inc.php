@@ -532,13 +532,15 @@ function get_up1Roles(&$user) {
 }
 
 function get_up1Roles_raw($user) {
-  global $UP1_ROLES_DN, $PEOPLE_DN;
-  
+  global $BASE_DN, $PEOPLE_DN;
+
   $roles = array();
   $rdn = "uid=" . $user['uid'] . ",$PEOPLE_DN";
-  foreach (array('manager', 'roleOccupant', 'secretary') as $role) {
-    $filter = "(&(objectClass=up1Role)($role=$rdn))";
-    foreach (getLdapInfo($UP1_ROLES_DN, $filter, array("mail" => "mail", "seeAlso" => "seeAlso")) as $e) {
+  foreach (array('manager', 'roleOccupant', 'secretary', 'member') as $role) {
+    $filter = "($role=$rdn)";
+    if ($role === 'manager') $filter = "(|$filter(supannGroupeLecteurDN=$rdn))";
+    $filter = "(&(objectClass=up1Role)$filter)";
+    foreach (getLdapInfo($BASE_DN, $filter, array("mail" => "mail", "seeAlso" => "seeAlso", "description" => "description")) as $e) {
       $e['role'] = $role;
       $roles[] = $e;
     }
