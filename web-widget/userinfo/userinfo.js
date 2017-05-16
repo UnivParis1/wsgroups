@@ -85,8 +85,8 @@ var main_attrs_labels = [ [
 
     //'supannRefID: RefId',
     'supannListeRouge: ' + important('Liste rouge'),
-    'createTimestamp: createTimestamp',
-    'modifyTimestamp: modifyTimestamp',
+    'createTimestamp: Compte créé',
+    'modifyTimestamp: Dernière modification',
     "up1TermsOfUse: Conditions d'utilisation",
 ],
 [
