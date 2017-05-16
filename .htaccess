@@ -9,12 +9,11 @@ RewriteRule ^(.*\.html\.js)$ $1.php [NC,L]
 </FilesMatch>
 
 <FilesMatch "\.inc\.php$">
-    Order allow,deny
+    Require all denied
 </FilesMatch>
 
 <FilesMatch "^(annuaire.html)$">
-    Order allow,deny
-    Allow from all
+    Require all granted
     AuthType CAS
     require valid-user
 </FilesMatch>
