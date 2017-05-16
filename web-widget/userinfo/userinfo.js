@@ -74,19 +74,19 @@ var main_attrs_labels = [ [
     'accountStatus: Etat du compte',
     'Account: Compte',
     'shadowExpire: Expire le',
+    'createTimestamp: Compte créé',
+    'modifyTimestamp: Dernière modification',
 ],
 [
     'Mailbox: Boîte mail',
+    'sambaHomePath: Dossier de travail',
+    'Folder: ',
 ],
 [
     'up1Roles: Courriel(s) de fonction',
-    'sambaHomePath: Dossier de travail',
-    'Folder: ',
 
     //'supannRefID: RefId',
     'supannListeRouge: ' + important('Liste rouge'),
-    'createTimestamp: Compte créé',
-    'modifyTimestamp: Dernière modification',
     "up1TermsOfUse: Conditions d'utilisation",
 ],
 [
