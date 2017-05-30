@@ -703,6 +703,10 @@ function format_mailboxFilters(filter) {
     
 function format_mailboxInfo(mailboxes, infoDiv) {
     infoDiv.empty();
+    if (!mailboxes) {
+        infoDiv.appendText("aucune");
+        return;
+    }
     $.each(mailboxes, function (server, mailbox) {
 	if (mailbox.quota) infoDiv.append(format_quota(mailbox.quota));
 	infoDiv.append("<br>" + format_mailboxINBOX(mailbox.status && mailbox.status.INBOX));
@@ -736,7 +740,7 @@ function get_lastLogins(info) {
     
 function get_kerberosInfo(info, infoDiv) {
     asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "auth" }, infoDiv, function (data) {
-	    var moreInfo = data[info.uid];
+	    var moreInfo = data && data[info.uid];
 	    if (!moreInfo) {
 		infoDiv.text("user not found (??)");
 	    } else {
@@ -769,7 +773,7 @@ function get_mailbox_folder_Info(info, fInfo) {
     var infoDiv = fInfo.Mailbox = $("<div>...</div>");
     fInfo.Folder = $("<div>...</div>");
     asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "mailbox,folder" }, infoDiv, function (data) {
-	    var moreInfo = data[info.uid];
+	    var moreInfo = data && data[info.uid];
 	    if (!moreInfo) {
 		infoDiv.text("user not found (??)");
 	    } else {
