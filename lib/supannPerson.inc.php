@@ -107,6 +107,13 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
     if (!$allowInvalidAccounts) $restriction[] = '(eduPersonAffiliation=*)';
 
     $l = array();
+
+    // MIFARE?
+    if (preg_match('/^[0-9A-F]{14}$/', $token) || // DESFire
+        preg_match('/^[0-9A-F]{8}$/', $token)) { // Classic
+        $l[] = "(supannRefId={MIFARE}$token)";
+    }
+    
     if ($token === '') {
         $l[] = '(supannRoleGenerique={SUPANN}D*)'; // important people first!
         $l[] = '(supannRoleGenerique={SUPANN}*)'; // then other important people
@@ -115,6 +122,11 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
         $l[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
     } else if (preg_match('/^\d+$/', $token, $matches)) {
         $l[] = "(|(supannEmpId=$token)(supannEtuId=$token))";
+
+        // barcode?
+        if (strlen($token) === 12) { // codification unique UNPIdF, used at Paris1
+            $l[] = "(employeeNumber=$token)";
+        }
     } else {
         $l[] = "(uid=$token)";
         $l[] = "(sn=$token)";
