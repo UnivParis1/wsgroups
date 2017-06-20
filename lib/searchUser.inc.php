@@ -11,7 +11,7 @@ $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
-if (isset($showExtendedInfo) && GET_uid()) {
+if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && GET_uid()) {
   global $LEVEL1_FILTER, $LEVEL2_FILTER;
   if (isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER)) {
     if (isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
