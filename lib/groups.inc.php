@@ -609,11 +609,30 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
 function structureRoles($supannCodeEntite) {
     $maxRows = 10;
     $filter = "(supannRoleEntite=*[code=$supannCodeEntite]*)";
-    $wanted_attrs = array("uid" => "uid", "displayName" => "displayName", "supannRoleGenerique" => "MULTI");
+    $wanted_attrs = array("uid" => "uid", "displayName" => "displayName", "supannRoleEntite" => "MULTI");
     require_once('lib/supannPerson.inc.php');
     isCasAuthenticated();
     $all = searchPeople(array($filter), attrRestrictions(), $wanted_attrs, 'uid', $maxRows);    
+    foreach ($all as &$user) {
+        _transform_supannRoleEntite_into_supannRoleGenerique($user, $supannCodeEntite);
+    }
     return $all;
+}
+
+function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCodeEntite) {
+    $l = @$user['supannRoleEntite'];
+    unset($user['supannRoleEntite']);
+    if ($l) {
+        $roles = [];
+        foreach ($l as $e) {
+            $r = parse_composite_value($e);
+            if (@$r["code"] == $supannCodeEntite) {
+                global $roleGeneriqueKeyToShortname;
+                $roles[] = $roleGeneriqueKeyToShortname[$r['role']];
+            }
+        }
+        $user['supannRoleGenerique'] = $roles;
+    }
 }
 
 ?>
