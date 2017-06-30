@@ -179,6 +179,7 @@ function initPhpCAS_raw($host, $port, $context, $CA_certificate_file) {
 }
 
 function initPhpCAS() {
+  if (class_exists('phpCAS')) return;
   require_once 'CAS.php';
   global $CAS_HOST, $CAS_CONTEXT, $CA_certificate_file;
   initPhpCAS_raw($CAS_HOST, '443', $CAS_CONTEXT, $CA_certificate_file);
