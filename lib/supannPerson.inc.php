@@ -382,7 +382,7 @@ function supannEtuInscriptionAll($supannEtuInscription) {
   if (@$r['cursusann']) {
     $r['cursusann'] = removePrefix($r['cursusann'], '{SUPANN}');
   }
-  if (@$r['typedip']) {
+  if (@$r['typedip'] && $r['typedip'] !== '{INCONNU}') {
     // http://infocentre.pleiade.education.fr/bcn/workspace/viewTable/n/N_TYPE_DIPLOME_SISE
     $to_name = array(
 		     '01' => "DIPLOME UNIVERSITE GENERIQUE",
