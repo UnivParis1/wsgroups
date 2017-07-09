@@ -5,11 +5,11 @@ require_once ('config/config-groups.inc.php');
 
 $structures = getLdapInfoMultiFilters($STRUCTURES_DN, array("(supannCodeEntite=*)"), $STRUCTURES_ATTRS, "key");
 
-$roles = getLdapInfoMultiFilters($ROLE_GENERIQUE_DN, array("(supannRoleGenerique=*)"), $ROLE_GENERIQUE_ATTRS, "key");
+$roles = getLdapInfoMultiFilters($ROLE_GENERIQUE_DN, array("(up1TableKey=*)"), $ROLE_GENERIQUE_ATTRS, "key");
 
-$activites = getLdapInfoMultiFilters($ACTIVITE_TABLE_DN, array("(supannActivite=*)"), $ACTIVITE_TABLE_ATTRS, "key");
+$activites = getLdapInfoMultiFilters($ACTIVITE_TABLE_DN, array("(up1TableKey=*)"), $ACTIVITE_TABLE_ATTRS, "key");
 
-$etablissements = getLdapInfoMultiFilters($ETABLISSEMENT_TABLE_DN, array("(&(supannEtablissement=*)(!(cn=ECOLE MATERNELLE*))(!(cn=ECOLE PRIMAIRE*))(!(cn=ECOLE ELEMENTAIRE*))(!(cn=COLLEGE*)))"), $ETABLISSEMENT_TABLE_ATTRS, "key");
+$etablissements = getLdapInfoMultiFilters($ETABLISSEMENT_TABLE_DN, array("(&(up1TableKey=*)(!(cn=ECOLE MATERNELLE*))(!(cn=ECOLE PRIMAIRE*))(!(cn=ECOLE ELEMENTAIRE*))(!(cn=COLLEGE*)))"), $ETABLISSEMENT_TABLE_ATTRS, "key");
 
 gen(array('structureKeyToAll' => $structures),
     array('roleGeneriqueKeyToShortname' => $roles,

@@ -17,9 +17,9 @@ $ACTIVITE_TABLE_DN = "ou=supannActivite,ou=tables,".$BASE_DN;
 
 $GROUPS_ATTRS = array("cn" => "key", "description" => "name", "modifyTimestamp" => "modifyTimestamp", "seeAlso" => "MULTI");
 $STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description", "businessCategory" => "businessCategory", "labeledURI" => "labeledURI", "modifyTimestamp" => "modifyTimestamp");
-$ROLE_GENERIQUE_ATTRS = array("supannRoleGenerique" => "key", "displayName" => "name");
-$ETABLISSEMENT_TABLE_ATTRS = array("supannEtablissement" => "key", "displayName" => "name");
-$ACTIVITE_TABLE_ATTRS = array("supannActivite" => "key", "displayName" => "name");
+$ROLE_GENERIQUE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
+$ETABLISSEMENT_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
+$ACTIVITE_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
 
 $AFFILIATION2TEXT = array("faculty" => "enseignants", 
 			  "teacher" => "enseignants et chargés d'enseignement", 
