@@ -46,15 +46,31 @@ function expect($name, $wanted, $ws, $params) {
     expectToBe($got, $wanted, $name);
 }
 
+function expect_js($test_name, $ws, $params, $wanted, $remap) {
+    $js = test($ws, $params);
+    $r = json_decode($js);
+    if ($r === NULL) fail($test_name, "invalid response\n$js");
+    $got = $remap($r);
+    expectToBe(json_encode($got), $wanted, $test_name);
+}
+
+function test_js_list_attr($test_name, $ws, $attr, $params, $wanted) {
+    expect_js($test_name, $ws, $params, $wanted, function ($r) use ($attr) {
+        return map_obj_attr($r, $attr);
+    });
+}
+
+function test_js_attr($test_name, $ws, $attr, $params, $wanted) {
+    expect_js($test_name, $ws, $params, $wanted, function ($r) use ($attr) {
+        return $r[0]->$attr;
+    });
+}
+
 function Xexpect() {}
 
-function checkUserAttr($attr, $expected, $opts = []) {
-    $opts = array_merge($opts, ['token' => 'fbar', 'attrs' => $attr]);
-    $js = test('searchUser', $opts);
-    $r = json_decode($js);
-    if ($r === NULL) fail("checkUserAttr $attr", "invalid response\n$js");
-    $got = $r[0]->$attr;
-    expectToBe(json_encode($got), $expected, "checkUserAttr $attr");
+function checkUserAttr($attr, $expected, $params = []) {
+    $params = array_merge($params, ['token' => 'fbar', 'attrs' => $attr]);
+    test_js_attr("checkUserAttr $attr", "searchUser", $attr, $params, $expected);
 }
 checkUserAttr('displayName', '"Fooo Bar"');
 checkUserAttr('memberOf', '["cn=grp1,ou=groups,dc=univ-paris1,dc=fr"]', ['showExtendedInfo' => 1]);
@@ -72,13 +88,9 @@ EOS;
 expect('simple searchUser all attrs', $full_fbar,
        'searchUser', ['token' => 'fbar']);
 
-function searchUser($token, $expected, $opts = []) {
-    $opts = array_merge(['token' => $token, 'attrs' => 'uid', 'maxRows' => 5], $opts);
-    $js = test('searchUser', $opts);
-    $r = json_decode($js);
-    if ($r === NULL) fail("searchUser $token", "invalid response\n$js");
-    $got = map_obj_attr($r, 'uid');
-    expectToBe(json_encode($got), $expected, "searchUser $token");
+function searchUser($token, $expected, $params = []) {
+    $params = array_merge(['token' => $token, 'attrs' => 'uid', 'maxRows' => 5], $params);
+    test_js_list_attr("searchUser $token", 'searchUser', 'uid', $params, $expected);
 }
 
 searchUser('Fooo Bar', '["fbar"]');
@@ -97,13 +109,9 @@ searchUser('99007', '["fbar"]'); // exact search on supannEmpId
 searchUser('Suzie', '["e0g422l021q","e2404567812"]'); // filter person with no eduPersonAffiliation
 
 
-function searchGroup($token, $attr, $expected, $opts = []) {
-    $opts = array_merge(['token' => $token, 'maxRows' => 5], $opts);
-    $js = test('searchGroup', $opts);
-    $r = json_decode($js);
-    if ($r === NULL) fail("searchGroup $token", "invalid response\n$js");
-    $got = map_obj_attr($r, $attr);
-    expectToBe(json_encode($got), $expected, "searchGroup $token");
+function searchGroup($token, $attr, $expected, $params = []) {
+    $params = array_merge(['token' => $token, 'maxRows' => 5], $params);
+    test_js_list_attr("searchGroup $token", 'searchGroup', $attr, $params, $expected);
 }
 
 searchGroup("dsiun", 'key', '["groups-employees.administration.DGH","groups-employees.administration.DGHA"]');
