@@ -120,6 +120,19 @@ searchGroup("dsiun-sas", 'businessCategory', '[null]', ['filter_category' => 'st
 searchGroup("dsiun-sas", 'businessCategory', '["administration"]', ['filter_category' => 'structures', 'attrs' => 'businessCategory']);
 
 
+function searchUserAndGroup($token, $attr, $expected, $params = []) {
+    $params = array_merge(['token' => $token, 'maxRows' => 5], $params);
+    expect_js("searchUserAndGroup $token", 'search', $params, $expected, function ($r) use ($attr) {
+        return map_obj_attr($r->groups, $attr);
+    });
+}
+
+searchUserAndGroup("dsiun", 'key', '["groups-employees.administration.DGH","groups-employees.administration.DGHA"]');
+searchUserAndGroup("dsiun", 'key', '["structures-DGH","structures-DGHA"]', ['filter_category' => 'structures']);
+searchUserAndGroup("dsiun-sas", 'businessCategory', '[null]', ['filter_category' => 'structures']);
+searchUserAndGroup("dsiun-sas", 'businessCategory', '["administration"]', ['filter_category' => 'structures', 'group_attrs' => 'businessCategory']);
+
+
 $parents = <<<'EOS'
 {"diploma-L2T101":{"key":"diploma-L2T101","description":"L2T101 - Licence 1\u00e8re ann\u00e9e Droit (FC)","rawKey":"L2T101","name":"L2T101 - Licence 1\u00e8re ann\u00e9e Droit (FC)","category":"diploma","superGroups":["structures-DGH-affiliation-student"]},"structures-DGH-affiliation-student":{"key":"structures-DGH-affiliation-student","name":"DSIUN : Direction du syst\u00e8me d'information et des Usages Num\u00e9riques (\u00e9tudiants)","description":"","category":"structures","superGroups":["affiliation-student"]},"affiliation-student":{"key":"affiliation-student","name":"Tous les \u00e9tudiants","description":"Tous les \u00e9tudiants","category":"affiliation","superGroups":[]}}
 EOS;
