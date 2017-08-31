@@ -9,28 +9,35 @@ $token = GET_ldapFilterSafe("token");
 $user_attrs = GET_or_NULL("user_attrs");
 $group_attrs = explode(',', GET_or_NULL("group_attrs"));
 $maxRows = GET_uid() ? GET_or("maxRows", 0) : min(max(1, GET_or_NULL("maxRows")), 10);
-$type = GET_or_NULL("type");
+$kinds = explode(',', GET_or("kinds", "users,groups"));
 $restriction = GET_extra_people_filter_from_params();
 $groupRestriction = GET_extra_group_filter_from_params();
 
-if ($type === 'supannRoleGenerique' || $type === 'eduPersonAffiliation') {
-    $filter = "($type=*)";
-    if ($token) $filter = ldapAnd([$filter, ldapOr(["(displayName=*$token*)", "(cn=*$token*)"])]);
-    echoJson(array($type => getLdapInfoMultiFilters("ou=$type,ou=tables,$BASE_DN", array($filter), array($type => "key", "displayName" => "name"), "key")));
-    exit;
-} else if ($type) {
-    exit("invalid type $type\n");
+$r = [];
+
+foreach (['supannRoleGenerique', 'eduPersonAffiliation'] as $table) {
+  if (in_array($table, $kinds)) {
+    $filters = ["($table=*)"];
+    if ($table === 'supannRoleGenerique') $filters[] = '(supannRefId={HARPEGE.FCSTR}*)'; // only "important" ones
+    if ($token) $filters[] = ldapOr(["(displayName=*$token*)", "(cn=*$token*)"]);    
+    $filter = array_merge($token ? ["($table=$token)"] : [], [ldapAnd($filters)]);
+    $r[$table] = getLdapInfoMultiFilters("ou=$table,ou=tables,$BASE_DN", $filter, array($table => "key", "displayName" => "name"), "key", $maxRows === 1 ? 1 : 0);
+  }
 }
 
+if (in_array('users', $kinds)) {
 $wanted_user_attrs = people_attrs($user_attrs);
 
 $attrRestrictions = attrRestrictions();
 
 global $USER_KEY_FIELD;
-$users = searchPeople(people_filters($token, $restriction), $attrRestrictions, $wanted_user_attrs, $USER_KEY_FIELD, $maxRows);
+$r['users'] = searchPeople(people_filters($token, $restriction), $attrRestrictions, $wanted_user_attrs, $USER_KEY_FIELD, $maxRows);
+}
 
-$all_groups = searchGroups($token, $maxRows, $groupRestriction, $group_attrs);
+if (in_array('groups', $kinds)) {
+$r['groups'] = searchGroups($token, $maxRows, $groupRestriction, $group_attrs);
+}
 
-echoJson(array("users" => $users, "groups" => $all_groups));
+echoJson($r);
 
 ?>
