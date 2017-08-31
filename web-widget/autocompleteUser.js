@@ -325,6 +325,16 @@
 	});
   };
 
+  var transformRoleGeneriqueItems = function (items, searchedToken) {
+      transformItems(items, 'key', 'name', searchedToken);
+      $.each(items, function ( i, item ) {
+        if (i === 0) {
+            item.pre = 'Fonctions';
+        }
+        item.category = 'supannRoleGenerique';
+      });
+  }
+
   function object_values(o) {
       return $.map(o, function (e) { return e; })
   }
@@ -569,8 +579,12 @@
 		    users = transformUserItems(users, 'uid', request.term);
 		    transformGroupItems(data.groups, 'key', request.term);
 
+            if (!data.supannRoleGenerique) data.supannRoleGenerique = [];
+            transformRoleGeneriqueItems(data.supannRoleGenerique, 'key', request.term);
+            
+            
 		    warning = { warning: true }
-                    var l = data.groups.concat(users);
+                    var l = users.concat(data.supannRoleGenerique, data.groups);
 		    l.push(warning);
 		    if (users.length >= settings.maxRows || data.groups.length >= settings.maxRows) {
 			warning.partialResults = settings.maxRows;;
