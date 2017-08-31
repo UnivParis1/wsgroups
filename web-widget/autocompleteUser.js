@@ -161,23 +161,29 @@
 	return r;
   };
 
-  var transformItems = function (items, wantedAttr, searchedToken) {
+  var transformItems = function (items, idAttr, displayAttr, searchedToken) {
+    var searchedTokenL = searchedToken.toLowerCase();
+    var odd_even;
+    $.each(items, function ( i, item ) {
+	    item.label = item[displayAttr];
+	    item.value = item[idAttr] || 'unknown';
+	    item.searchedTokenL = searchedTokenL;
+	    item.odd_even = odd_even = !odd_even;
+    });
+  };
+
+  var transformUserItems = function (items, wantedAttr, searchedToken) {
       items = sortByAffiliation(items);
 
       var items_by_affiliation = groupByAttr(items, 'eduPersonPrimaryAffiliation');
 
-      var searchedTokenL = searchedToken.toLowerCase();
-      var odd_even;
+      transformItems(items, wantedAttr, 'displayName', searchedToken);
       var r = [];
       $.each(items_by_affiliation, function (i, items) {
 	// nb: "cn" is easer to compare since there is no accents. Two "displayName"s could be equal after removing accents.
 	var cnOccurences = countOccurences($.map(items, function (item) { return item.cn }));
 	var displayNameOccurences = countOccurences($.map(items, function (item) { return item.displayName }));
 	$.each(items, function ( i, item ) {
-	    item.label = item.displayName;
-	    item.value = item[wantedAttr] || 'unknown';
-	    item.searchedTokenL = searchedTokenL;
-
 	    if (i === 0) {
 		var affiliation = item.eduPersonPrimaryAffiliation;
 		item.pre = affiliation2text[affiliation] || "Divers" ;
@@ -185,8 +191,6 @@
 
 	    if (displayNameOccurences[item.displayName] > 1 || cnOccurences[item.cn] > 1)
 		item.duplicateDisplayName = true;
-
-	    item.odd_even = odd_even = !odd_even;
 	});
 	$.merge(r, items);
       });
@@ -267,7 +271,7 @@
 		    });
 		    nbListeRouge = dataAll.length - data.length;
 
-		    data = transformItems(data, settings.wantedAttr, request.term);
+		    data = transformUserItems(data, settings.wantedAttr, request.term);
 
 		    warning = { warning: true }
 		    data.unshift(warning);
@@ -311,19 +315,13 @@
 
 
   var transformGroupItems = function (items, wantedAttr, searchedToken) {
-      var searchedTokenL = searchedToken.toLowerCase();
+      transformItems(items, wantedAttr, 'name', searchedToken);
       var category;
-      var odd_even;
       $.each(items, function ( i, item ) {
-	    item.label = item.name;
-	    item.value = item[wantedAttr];
-	    item.searchedTokenL = searchedTokenL;
-
 	    if (category != item.category) {
 		category = item.category;
 		item.pre = category2text[category || ""] || 'Autres types de groupes';
 	    }
-	    item.odd_even = odd_even = !odd_even;
 	});
   };
 
@@ -568,7 +566,7 @@
 		    var nbListeRouge = users.length - data.users.length;
 
                     $.each(users, function (i, item) { item.category = 'users'; });                    
-		    users = transformItems(users, 'uid', request.term);
+		    users = transformUserItems(users, 'uid', request.term);
 		    transformGroupItems(data.groups, 'key', request.term);
 
 		    warning = { warning: true }
