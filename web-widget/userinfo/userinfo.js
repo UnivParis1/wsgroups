@@ -126,6 +126,8 @@ var eduPersonAffiliation_valnames = {
 	'emeritus': "professeur émérite",
 	'retired': "retraité",
 	'employee': "employé",
+	'registered-reader': "lecteur externe",
+	'library-walk-in': "visiteur bibliothèque",
 	'internal': "compte interne",
 };
 
