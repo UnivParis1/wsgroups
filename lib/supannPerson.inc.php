@@ -264,6 +264,7 @@ function attrRestrictions($allowExtendedInfo = 0) {
     global $isTrustedIp;
     return
         array('allowListeRouge' => $allowExtendedInfo > 0 || @$isTrustedIp || GET_uid() && isStaffOrFaculty(GET_uid()),
+        'allowAccountStatus' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowEmployeeType' => $allowExtendedInfo > 1,
         );
@@ -277,6 +278,8 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
       // we want to hide 'mail' when accountStatus is unset
       if (@$user['mail'] && !@$user['accountStatus'])
         unset($user['mail']);
+      if (!@$attrRestrictions['allowAccountStatus'])
+	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowEmployeeType'])
 	  userHandleSpecialAttributePrivacy($user);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
