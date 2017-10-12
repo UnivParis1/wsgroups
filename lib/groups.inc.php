@@ -46,7 +46,7 @@ function GET_extra_group_filter_from_params() {
     $out = GET_or_NULL("filter_not_$attr");
     $r[$attr] = computeFilterRegex($in, $out);
   }
-  if (GET_or_NULL("filter_category") === "structures") {
+  if (preg_match("/structures/", GET_or("filter_category", ""))) {
       // special case
       $r['allStructures'] = true;
   }
