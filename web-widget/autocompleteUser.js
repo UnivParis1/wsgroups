@@ -93,13 +93,16 @@
       return $("<li></li>").addClass("warning").append(msg).appendTo(ul);
   };
 
-  var renderWarningItem = function(ul, item) {
+  var defaultWarningMsgs = {
+    listeRouge_plural: "NB : des r&eacute;sultats ont &eacute;t&eacute; cach&eacute;s<br>&agrave; la demande des personnes.",
+    listeRouge_one:    "NB : un r&eacute;sultat a &eacute;t&eacute; cach&eacute;<br>&agrave; la demande de la personne.",
+}
+
+  var renderWarningItem = function(ul, item, warningMsgs) {
       var li = $();
       if (item.nbListeRouge)
 	  li = renderOneWarning(ul, 
-	      item.nbListeRouge > 1 ?
-		  "NB : des r&eacute;sultats ont &eacute;t&eacute; cach&eacute;s<br>&agrave; la demande des personnes." :
-		  "NB : un r&eacute;sultat a &eacute;t&eacute; cach&eacute;<br>&agrave; la demande de la personne."
+	      item.nbListeRouge > 1 ? warningMsgs.listeRouge_plural : warningMsgs.listeRouge_one
 	  );
 
       if (item.partialResults)
@@ -112,9 +115,9 @@
 
       return li;
   };
-  var myRenderItemRaw = function(ul, item, moreClass, renderItemContent) {
+  var myRenderItemRaw = function(ul, item, moreClass, warningMsgs, renderItemContent) {
 	if (item.warning) 
-	    return renderWarningItem(ul, item);
+	    return renderWarningItem(ul, item, warningMsgs);
 
 	if (item.pre)
 	    $("<li class='kind ui-menu-divider'><span>" + item.pre + "</span></li>").appendTo(ul);
@@ -126,10 +129,12 @@
 	    .appendTo(ul);
 
   };
-  var myRenderUserItem = function (ul, item) {
-      return myRenderItemRaw(ul, item, 'userItem', function (item) {
+  var myRenderUserItem = function (warningMsgs) {
+    return function (ul, item) {
+      return myRenderItemRaw(ul, item, 'userItem', warningMsgs, function (item) {
 	  return getNiceDisplayName(item) + getDetails(item);
       });
+    };
   };
 
   var countOccurences = function (list) {
@@ -246,6 +251,8 @@
 	    'attrs' : attrs
 	  }, options);
 
+      var warningMsgs = $.extend(defaultWarningMsgs, options.warningMsgs);
+
       var wsParams = $.extend({ 
 	  maxRows: settings.maxRows, 
 	  attrs: settings.attrs + "," + settings.wantedAttr
@@ -305,7 +312,7 @@
 
       input.autocomplete(params);
 
-      ui_autocomplete_data(input)._renderItem = myRenderUserItem;
+      ui_autocomplete_data(input)._renderItem = myRenderUserItem(warningMsgs);
 
       // below is useful when going back on the search values
       input.click(function () {
@@ -427,10 +434,10 @@
       };
     };
 
-  var myRenderGroupItem = function (navigate) {
+  var myRenderGroupItem = function (warningMsgs, navigate) {
      return function (ul, item) {
 	if (item.warning) 
-	     return renderWarningItem(ul, item);
+	     return renderWarningItem(ul, item, warningMsgs);
 
 	if (item.pre)
 	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
@@ -471,6 +478,8 @@
 	    'disableEnterKey': false
 	  }, options);
 
+      var warningMsgs = $.extend(defaultWarningMsgs, options.warningMsgs);    
+      
       var wsParams = $.extend({ 
 	  maxRows: settings.maxRows
       }, settings.wsParams);
@@ -522,7 +531,7 @@
       input.autocomplete(params);
 
       var navigate = settings.subAndSuperGroupsURL && onNavigate(input, settings);
-      ui_autocomplete_data(input)._renderItem = myRenderGroupItem(navigate);
+      ui_autocomplete_data(input)._renderItem = myRenderGroupItem(warningMsgs, navigate);
 
       // below is useful when going back on the search values
       input.click(function () {
@@ -530,11 +539,13 @@
       });
   };
 
-  function myRenderUserOrGroupItem(ul, item) {
+  function myRenderUserOrGroupItem(warningMsgs) {
+      return function (ul, item) {
       if (item && item.category === 'users')
-          myRenderUserItem(ul, item);          
+          myRenderUserItem(warningMsgs)(ul, item);
       else
-          myRenderGroupItem()(ul, item);
+          myRenderGroupItem(warningMsgs)(ul, item);
+      }
   }
 
   $.fn.autocompleteUserAndGroup = function (searchUserAndGroupURL, options) {
@@ -549,6 +560,8 @@
 	    'disableEnterKey': false,
 	  }, options);
 
+      var warningMsgs = $.extend(defaultWarningMsgs, options.warningMsgs);     
+      
       var wsParams = $.extend({ 
 	  maxRows: settings.maxRows,
 	  user_attrs: settings.user_attrs
@@ -616,7 +629,7 @@
 
       input.autocomplete(params);
 
-      ui_autocomplete_data(input)._renderItem = myRenderUserOrGroupItem;
+      ui_autocomplete_data(input)._renderItem = myRenderUserOrGroupItem(warningMsgs);
 
       // below is useful when going back on the search values
       input.click(function () {
