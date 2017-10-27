@@ -6,9 +6,9 @@
   var category2order = { structures: 5, affiliation: 5, diploma: 1, elp: 2, gpelp: 3, gpetp: 4 };
 
   var category2text = {
-      structures: 'Groupes &Eacute;tablissement',
-      affiliation: 'Groupes &Eacute;tablissement',
-      diploma: 'Groupes &Eacute;tapes',
+      structures: 'Directions / Composantes / Laboratoires',
+      affiliation: 'Directions / Composantes / Laboratoires',
+      diploma: 'Dipl&ocirc;mes / &Eacute;tapes',
       elp: 'Groupes Mati&egrave;res',
       gpelp: 'Groupes TD'
   };
