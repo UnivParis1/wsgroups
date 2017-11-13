@@ -169,7 +169,13 @@ function GET_extra_people_filter_from_params() {
     else if ($val === "no") $filters_not["eduPersonAffiliation"] = $attr;
     else if ($val === "only") $filters["eduPersonAffiliation"] = $attr;
     else exit("invalid filter_$attr value $val");
-  }  
+  }
+  foreach (array("mail") as $attr) {
+    $val = GET_or_NULL("filter_$attr");
+    if ($val === null) continue;
+    else if ($val === "*") $filters[$attr] = "*";
+    else exit("invalid filter_$attr value $val");
+  }
   return array_merge(
       computeFilter($filters, false),
       computeFilter($filters_not, true),

@@ -159,6 +159,7 @@ The first part of a group key is the *category*.
 * `filter_not_supannEntiteAffectation=`affectation|...
 * `filter_not_member_of_group=`group|...
 * `filter_not_description=`text|... (exact search)
+* `filter_mail=`*
 * `filter_student=no` (equivalent to filter_not_supannEntiteAffectation=student)
 * `filter_student=only` (equivalent to filter_supannEntiteAffectation=student)
 
