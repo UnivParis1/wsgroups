@@ -79,7 +79,7 @@
 	  displayName = highlightMatched(item.cn, searchedTokenL);
       else {
 	  displayName = highlightMatched(item.displayName, searchedTokenL);
-	  if (!displayName) displayName = highlightMatched(item.mail, searchedTokenL);
+	  if (!displayName && item.mail) displayName = highlightMatched(item.mail, searchedTokenL);
 	  if (!displayName) displayName = item.displayName;
       }
 
