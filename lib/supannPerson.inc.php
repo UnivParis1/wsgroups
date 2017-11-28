@@ -48,7 +48,7 @@ $USER_ALLOWED_MULTI_ATTRS =
 	'supannRoleGenerique',
 
 	'up1KrbPrincipal',
-	'roomNumber', 'up1FloorNumber',
+	'roomNumber', 'up1FloorNumber', 'up1RoomAccess',
 
 	'telephoneNumber', 
 	'facsimileTelephoneNumber', 

@@ -66,6 +66,7 @@ var main_attrs_labels = [ [
     'buildingName: Site',
     'roomNumber: Bureau',
     'up1FloorNumber: Etage',
+    'up1RoomAccess: Précision du lieu',
     'postalAddress: Adresse professionnelle',
 ],
 [
