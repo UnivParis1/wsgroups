@@ -962,7 +962,7 @@ function formatUserInfo(info, showExtendedInfo) {
 
     if (info.allowExtendedInfo >= 1) get_mailbox_folder_Info(info, fInfo);
 
-    if (info.allowExtendedInfo >= 1) fInfo["Photo"] = "<img src='" + userphotoUrl + "?uid=" + info.uid + "'>";
+    if (info.allowExtendedInfo >= 1) fInfo["Photo"] = "<img src='" + userphotoUrl + "?app-cli=userinfo&uid=" + info.uid + "'>";
 
     if (info.accountStatus === "active" && info.allowExtendedInfo >= 1) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
     
