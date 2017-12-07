@@ -465,7 +465,7 @@ function compute_Affiliation(info, showExtendedInfo) {
 	var other = arraySubstraction(info.eduPersonAffiliation, notWanted);
 	var fv = formatValues(valnames, other);
 	if (fv) jqueryAppendMany(Affiliation, [" (secondaires: ", fv, ")"]);
-	if (info.eduPersonPrimaryAffiliation === 'student' && $.inArray('member', info.eduPersonAffiliation) === -1)
+	if ($.inArray('member', info.eduPersonAffiliation) === -1)
 	    Affiliation.appendText(" (non membre)");
     }
     return Affiliation;
