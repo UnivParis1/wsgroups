@@ -433,8 +433,11 @@ function supannEtuInscriptionAll($supannEtuInscription) {
 function supannRoleEntiteAll($e) {
   $r = parse_composite_value($e);
   if (@$r['role']) {
-    global $roleGeneriqueKeyToShortname;
-    $r['role'] = $roleGeneriqueKeyToShortname[$r['role']];
+    global $roleGeneriqueKeyToAll;
+    if ($role = $roleGeneriqueKeyToAll[$r['role']]) {
+        $r['role'] = $role['name'];
+        if (isset($role['weight'])) $r['role_weight'] = $role['weight'];
+    }
   }
   if (@$r['code']) {
     $r['structure'] = array_shift(structureAll(array($r['code'])));
