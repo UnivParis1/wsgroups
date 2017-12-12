@@ -342,6 +342,16 @@
       });
   }
 
+  var transformActiviteItems = function (items, searchedToken) {
+    transformItems(items, 'key', 'name', searchedToken);
+    $.each(items, function ( i, item ) {
+      if (i === 0) {
+          item.pre = 'Activités';
+      }
+      item.category = 'supannActivite';
+    });
+  }
+
   function object_values(o) {
       return $.map(o, function (e) { return e; })
   }
@@ -595,9 +605,11 @@
             if (!data.supannRoleGenerique) data.supannRoleGenerique = [];
             transformRoleGeneriqueItems(data.supannRoleGenerique, 'key', request.term);
             
+            if (!data.supannActivite) data.supannActivite = [];
+            transformActiviteItems(data.supannActivite, 'key', request.term);
             
 		    warning = { warning: true }
-                    var l = users.concat(data.supannRoleGenerique, data.groups);
+                    var l = users.concat(data.supannRoleGenerique, data.supannActivite, data.groups);
 		    l.push(warning);
 		    if (users.length >= settings.maxRows || data.groups.length >= settings.maxRows) {
 			warning.partialResults = settings.maxRows;;
