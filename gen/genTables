@@ -11,7 +11,8 @@ $activites = getLdapInfoMultiFilters($ACTIVITE_TABLE_DN, array("(up1TableKey=*)"
 
 $etablissements = getLdapInfoMultiFilters($ETABLISSEMENT_TABLE_DN, array("(&(up1TableKey=*)(!(cn=ECOLE MATERNELLE*))(!(cn=ECOLE PRIMAIRE*))(!(cn=ECOLE ELEMENTAIRE*))(!(cn=COLLEGE*)))"), $ETABLISSEMENT_TABLE_ATTRS, "key");
 
-gen(array('structureKeyToAll' => $structures),
+gen(array('structureKeyToAll' => $structures,
+          'roleGeneriqueKeyToAll' => $roles),
     array('roleGeneriqueKeyToShortname' => $roles,
 	  'activiteKeyToShortname' => $activites,
 	  'etablissementKeyToShortname' => $etablissements,

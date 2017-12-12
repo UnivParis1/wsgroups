@@ -613,26 +613,35 @@ function structureRoles($supannCodeEntite) {
     require_once('lib/supannPerson.inc.php');
     isCasAuthenticated();
     $all = searchPeople(array($filter), attrRestrictions(), $wanted_attrs, 'uid', $maxRows);    
+    $r = [];
     foreach ($all as &$user) {
-        _transform_supannRoleEntite_into_supannRoleGenerique($user, $supannCodeEntite);
+        $weight = _transform_supannRoleEntite_into_supannRoleGenerique($user, $supannCodeEntite);
+        $r[$weight . ":" . $user['uid']] = $user;
     }
-    return $all;
+    ksort($r);
+    return array_values($r);
 }
 
 function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCodeEntite) {
     $l = @$user['supannRoleEntite'];
     unset($user['supannRoleEntite']);
     if ($l) {
+        $weights = [];
         $roles = [];
         foreach ($l as $e) {
             $r = parse_composite_value($e);
             if (@$r["code"] == $supannCodeEntite) {
-                global $roleGeneriqueKeyToShortname;
-                $roles[] = $roleGeneriqueKeyToShortname[$r['role']];
+                global $roleGeneriqueKeyToAll;
+                $role = $roleGeneriqueKeyToAll[$r['role']];
+                $roles[] = $role['name'];
+                if (isset($role['weight'])) $weights[$role['weight']] = 1;
             }
         }
         $user['supannRoleGenerique'] = $roles;
+        ksort($weights);
+        return implode('-', array_keys($weights));
     }
+    return '';
 }
 
 ?>
