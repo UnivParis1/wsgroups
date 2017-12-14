@@ -1046,7 +1046,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	    .append($("<div class='ui-widget'></div>")
 		    .append($("<label for='all'>Saisissez le nom et/ou prénom d'un étudiant ou d'un personnel</label>"))
 		    .append($("<span class='token-autocomplete'></span>")
-			    .append($("<input id='all' name='all' placeholder='Nom prénom' />")))
+			    .append($("<input id='all' name='all' autofocus placeholder='Nom prénom' />")))
 		    .append($("<label class='checkbox'>")
 			    .append($("<input type='checkbox' id='showExtendedInfo' name='showExtendedInfo'>"))
 			    .append("Informations détaillées"))
