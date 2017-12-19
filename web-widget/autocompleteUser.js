@@ -332,25 +332,22 @@
 	});
   };
 
-  var transformRoleGeneriqueItems = function (items, searchedToken) {
+  var transformRoleGeneriqueItems = function (roles, activites, searchedToken) {
+      $.each(roles, function ( i, item ) {
+        item.category = 'supannRoleGenerique';
+      });
+      $.each(activites, function ( i, item ) {
+        item.category = 'supannActivite';
+      });
+      var items = roles.concat(activites);
       items.sort(function (a, b) { return a.name.localeCompare(b.name) });
       transformItems(items, 'key', 'name', searchedToken);
       $.each(items, function ( i, item ) {
         if (i === 0) {
             item.pre = 'Fonctions';
         }
-        item.category = 'supannRoleGenerique';
       });
-  }
-
-  var transformActiviteItems = function (items, searchedToken) {
-    transformItems(items, 'key', 'name', searchedToken);
-    $.each(items, function ( i, item ) {
-      if (i === 0) {
-          item.pre = 'Activités';
-      }
-      item.category = 'supannActivite';
-    });
+      return items;
   }
 
   function object_values(o) {
@@ -603,14 +600,10 @@
 		    users = transformUserItems(users, 'uid', request.term);
 		    transformGroupItems(data.groups, 'key', request.term);
 
-            if (!data.supannRoleGenerique) data.supannRoleGenerique = [];
-            transformRoleGeneriqueItems(data.supannRoleGenerique, 'key', request.term);
-            
-            if (!data.supannActivite) data.supannActivite = [];
-            transformActiviteItems(data.supannActivite, 'key', request.term);
+            var roles = transformRoleGeneriqueItems(data.supannRoleGenerique || [], data.supannActivite || [], 'key', request.term);
             
 		    warning = { warning: true }
-                    var l = users.concat(data.supannRoleGenerique, data.supannActivite, data.groups);
+                    var l = users.concat(roles, data.groups);
 		    l.push(warning);
 		    if (users.length >= settings.maxRows || data.groups.length >= settings.maxRows) {
 			warning.partialResults = settings.maxRows;;
