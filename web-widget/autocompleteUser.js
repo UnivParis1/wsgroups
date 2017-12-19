@@ -333,6 +333,7 @@
   };
 
   var transformRoleGeneriqueItems = function (items, searchedToken) {
+      items.sort(function (a, b) { return a.name.localeCompare(b.name) });
       transformItems(items, 'key', 'name', searchedToken);
       $.each(items, function ( i, item ) {
         if (i === 0) {
