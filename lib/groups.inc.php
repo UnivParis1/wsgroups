@@ -9,7 +9,7 @@ function groups_filters($token) {
 }
 function structures_filters($token) {
   $words_filter = wordsFilter(array('description', 'ou'), $token);
-  return array("(supannCodeEntite=$token)", "(&" . $words_filter . "(supannCodeEntite=*))");
+  return array("(supannCodeEntite=$token)", "(&(ou=$token)(supannCodeEntite=*))", "(&" . $words_filter . "(supannCodeEntite=*))");
 }
 function diploma_filters($token, $filter_attrs) {
   $r = array();
