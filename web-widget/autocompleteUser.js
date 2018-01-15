@@ -251,7 +251,7 @@
 	    'attrs' : attrs
 	  }, options);
 
-      var warningMsgs = $.extend(defaultWarningMsgs, options.warningMsgs);
+      var warningMsgs = $.extend(defaultWarningMsgs, settings.warningMsgs);
 
       var wsParams = $.extend({ 
 	  maxRows: settings.maxRows, 
@@ -486,7 +486,7 @@
 	    'disableEnterKey': false
 	  }, options);
 
-      var warningMsgs = $.extend(defaultWarningMsgs, options.warningMsgs);    
+      var warningMsgs = $.extend(defaultWarningMsgs, settings.warningMsgs);    
       
       var wsParams = $.extend({ 
 	  maxRows: settings.maxRows
@@ -568,7 +568,7 @@
 	    'disableEnterKey': false,
 	  }, options);
 
-      var warningMsgs = $.extend(defaultWarningMsgs, options.warningMsgs);     
+      var warningMsgs = $.extend(defaultWarningMsgs, settings.warningMsgs);     
       
       var wsParams = $.extend({ 
 	  maxRows: settings.maxRows,
@@ -590,7 +590,7 @@
 		    response([ { warning: true, wsError: true } ]);
 		},
 		success: function (data) {
-                    if (options.onSearchSuccess) data = options.onSearchSuccess(data);
+                    if (settings.onSearchSuccess) data = settings.onSearchSuccess(data);
                     var users = $.grep(data.users, function (item, i) {
 			return item.displayName !== "supannListeRouge"; 
 		    });
