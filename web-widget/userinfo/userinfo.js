@@ -562,7 +562,7 @@ function compute_Person(info, showExtendedInfo) {
 
     var Person = $("<span>").text(person); 
     if (showExtendedInfo) {
-	Person.attr('title', 'Prénom : ' + info.givenName + ", Nom : " + info.sn + ", Complet : " + info.cn);
+	Person.attr('title', 'Prénom : ' + info.givenName + (info.up1AltGivenName ? " (" + info.up1AltGivenName.join(' ') + ")" : '') + ", Nom : " + info.sn + ", Complet : " + info.cn);
     }
     return Person;
 }
