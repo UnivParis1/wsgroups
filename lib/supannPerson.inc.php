@@ -11,8 +11,6 @@ $USER_ALLOWED_MONO_ATTRS =
 	'postalAddress', 'eduPersonPrincipalName',
 	'sn', 'givenName',
     'supannEntiteAffectationPrincipale',
-	//'up1AltGivenName',
-
 
 	// below are restricted or internal attributes.
 	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
@@ -47,6 +45,7 @@ $USER_ALLOWED_MULTI_ATTRS =
 	'memberOf', 'memberOf-all',
 	'supannRoleGenerique',
 
+    'up1AltGivenName',
 	'up1KrbPrincipal',
 	'roomNumber', 'up1FloorNumber', 'up1RoomAccess',
 
