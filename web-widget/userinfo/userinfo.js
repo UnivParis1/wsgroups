@@ -38,6 +38,7 @@ var main_attrs_labels = [ [
     'Responsable: Responsable',
 
     'eduPersonOrgUnitDN: Formation(s)',
+    'eduPersonEntitlement: Formation spéciale',
 
     //les attributs renvoyant des DN
     'seeAlso: Rattachement',

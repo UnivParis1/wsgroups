@@ -44,6 +44,7 @@ $USER_ALLOWED_MULTI_ATTRS =
 	'supannEtuInscription', 'supannEtuInscription-all',
 	'memberOf', 'memberOf-all',
 	'supannRoleGenerique',
+    'eduPersonEntitlement',
 
     'up1AltGivenName',
 	'up1KrbPrincipal',
