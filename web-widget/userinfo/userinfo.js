@@ -12,7 +12,8 @@ var impersonateUrl = 'https://ent-test.univ-paris1.fr/EsupUserApps/impersonate.h
 var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudiant.jsp?config=apoprod&cod_etu=';
 var userphotoUrl = 'https://userphoto-test.univ-paris1.fr/';
 var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&membershipType=immediate&groupName=';
-var showExtendedInfo = undefined; showExtendedInfo = true;
+var allowInvalidAccounts = undefined;
+var showExtendedInfo = 1;
 var currentUser = undefined;
 
 function parse_attrs_text(l) {
@@ -1017,6 +1018,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	       } else if (data.length > 1) {
 		   infoDiv.text("internal error (multiple user found)");
 	       } else {
+		   set_allowExtendedInfo(data[0].allowExtendedInfo);
 		   infoDiv.empty().append(formatUserInfo(data[0], showExtendedInfo));
 	       }
        });
@@ -1032,12 +1034,12 @@ function formatUserInfo(info, showExtendedInfo) {
         return false;
     };
 
-   var install_autocompleteUser = function (showExtendedInfo) {
+   var install_autocompleteUser = function (allowInvalidAccounts) {
        var input = $("#all");
        input.autocompleteUser(searchUserURL, { 
 	   select: select, disableEnterKey: true, 
 	   wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
-	   wsParams: { showErrors: showExtendedInfo, allowInvalidAccounts: showExtendedInfo, showExtendedInfo: showExtendedInfo } } );
+	   wsParams: { showErrors: allowInvalidAccounts, allowInvalidAccounts: allowInvalidAccounts } } );
        input.attr('placeholder', 'Nom prénom');
        input.handlePlaceholderOnIE();
    };
@@ -1047,11 +1049,29 @@ function formatUserInfo(info, showExtendedInfo) {
 	    .append($("<div class='ui-widget'></div>")
 		    .append($("<label for='all'>Saisissez le nom et/ou prénom d'un étudiant ou d'un personnel</label>"))
 		    .append($("<span class='token-autocomplete'></span>")
-			    .append($("<input id='all' name='all' autofocus placeholder='Nom prénom' />")))
+		    .append($("<input id='all' name='all' autofocus placeholder='Nom prénom' />")))
+		            .append($("<select id='allowExtendedInfo'></select>"))
 		    .append($("<label class='checkbox'>")
-			    .append($("<input type='checkbox' id='showExtendedInfo' name='showExtendedInfo'>"))
-			    .append("Informations détaillées"))
+			    .append($("<input type='checkbox' id='allowInvalidAccounts' name='allowInvalidAccounts'>"))
+			    .append("Chercher des comptes non actifs"))
 		    );
+    }
+
+    function set_allowExtendedInfo(allowExtendedInfo) {
+        var select = $('#allowExtendedInfo');
+        select.empty();
+        if (allowExtendedInfo >= 2) {
+            select.append($("<option value='2'>Niveau 2</option>"));
+        }
+        if (allowExtendedInfo >= 1) {
+            select.append($("<option value='1'>Niveau 1</option>"));
+            select.append($("<option value='0'>Niveau 0</option>"));
+        }
+        select.val(showExtendedInfo);
+        select[0].onchange = function() {
+            showExtendedInfo = this.value;
+            asyncInfo(currentUser);
+        }
     }
 
     function useHashParam() {
@@ -1064,14 +1084,14 @@ function formatUserInfo(info, showExtendedInfo) {
     function init() {
 	$("#annuaire").append(searchForm()).append(infoDiv);
 
-	install_autocompleteUser(showExtendedInfo);
+	install_autocompleteUser(allowInvalidAccounts);
 
-	$("#showExtendedInfo").change(function () {
-	    showExtendedInfo = $(this).attr('checked');
-	    install_autocompleteUser(showExtendedInfo);
+	$("#allowInvalidAccounts").change(function () {
+	    allowInvalidAccounts = $(this).attr('checked');
+	    install_autocompleteUser(allowInvalidAccounts);
 	    asyncInfo(currentUser);
 	});
-	$("#showExtendedInfo").attr('checked', showExtendedInfo ? 'checked' : false);
+	$("#allowInvalidAccounts").attr('checked', allowInvalidAccounts ? 'checked' : false);
 
 	$(window).on('hashchange', useHashParam);
     }

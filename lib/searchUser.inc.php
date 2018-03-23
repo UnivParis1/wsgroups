@@ -22,18 +22,22 @@ if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && GET_uid()) {
   }
 }
 
+$extendedInfo = $allowExtendedInfo;
 if ($allowExtendedInfo >= 1) {
+  if (is_numeric($showExtendedInfo)) {
+      $extendedInfo = min($extendedInfo, $showExtendedInfo);
+  }
   global $LDAP_CONNECT_LEVEL1, $LDAP_CONNECT_LEVEL2;
-  $LDAP_CONNECT = $allowExtendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
+  $LDAP_CONNECT = $extendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
   global_ldap_open('reOpen');
 }
 
 $restriction = GET_extra_people_filter_from_params();
-$wanted_attrs = people_attrs($attrs, $allowExtendedInfo);
+$wanted_attrs = people_attrs($attrs, $extendedInfo);
 
-if ($allowInvalidAccounts) $allowInvalidAccounts = $allowExtendedInfo >= 1;
+if ($allowInvalidAccounts) $allowInvalidAccounts = $extendedInfo >= 1;
 
-$attrRestrictions = attrRestrictions($allowExtendedInfo);
+$attrRestrictions = attrRestrictions($extendedInfo);
 
 global $USER_KEY_FIELD;
 $users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts), $attrRestrictions, $wanted_attrs, $USER_KEY_FIELD, $maxRows);

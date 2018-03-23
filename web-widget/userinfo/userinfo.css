@@ -84,3 +84,7 @@ span[title], a[title] {
 .info-block td:first-child {
     width: 15em;
 }
+
+select:empty {
+    display: none;
+}
