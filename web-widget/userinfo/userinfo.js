@@ -531,9 +531,12 @@ function format_memberOf(all) {
     all = all.sort(function (a, b) { 
 	return a.key.toLowerCase().localeCompare(b.key.toLowerCase());
     });
+    var moreInfo = get_groupsMoreInfo(all);
     return spanFromList($.map(all, function (e) {
-	return $("<span>").append(a_or_span(e.name && e.name.match(/:/) && (grouperUrl + e.key.replace(/\./g, ":")), e.key))
+	    var span = $("<span>").append(a_or_span(e.name && e.name.match(/:/) && (grouperUrl + e.key.replace(/\./g, ":")), e.key))
                 .appendText(" : " + (e.description || ''));
+        if (moreInfo[e.key]) span.append(moreInfo[e.key]);
+        return span;
     }), "<br>");
 }
 
@@ -728,6 +731,13 @@ function format_folderInfo(folder, infoDiv) {
         infoDiv.append(format_quota(folder.quota));
     }
 }
+
+function format_groupMoreInfo(info) {
+    if (!info) return "";
+    var s = info.path + (info.quota ? "\n" + format_quota(info.quota) : '');
+    console.log(s);
+    return s;
+}
     
 function get_lastLogins(info) {
     var infoDiv = $("<span>");
@@ -786,6 +796,26 @@ function get_mailbox_folder_Info(info, fInfo) {
 		format_folderInfo(moreInfo.folder, fInfo.Folder);
 	    }
     });
+}
+
+function get_groupsMoreInfo(groups) {
+    var r = {};
+    groups.forEach(function (group) {
+        if (group.key.match(/collab\..*/)) {
+            r[group.key] = $("<span title='en cours...'>📁</span>");
+        }
+    });
+    var needed_ids = Object.keys(r);
+    if (needed_ids.length) {
+      var forError = r[needed_ids[0]];
+      asyncInfoRaw(baseURL + "/groupMoreInfo", { ids: needed_ids.join(',') }, forError, function (data) {
+        $.each(data, function (id, info) {
+            var elt = r[id];
+            elt.prop('title', format_groupMoreInfo(info.folder));
+        });
+      });
+    }
+    return r;
 }
     
 function asyncInfoRaw(url, params, infoDiv, success) {
