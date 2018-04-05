@@ -211,6 +211,12 @@ function ipTrusted() {
     return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
 }
 
+function ipTrustedOrExit() {
+    if (!ipTrusted()) {
+        exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");       
+    }
+}
+
 function echoJson($o) {
   ensure_ldap_close();
   header('Content-type: application/json; charset=UTF-8');
