@@ -2,6 +2,12 @@
 
 require_once ('lib/groups.inc.php');
 
+if (GET_bool("CAS")) {
+    forceCASAuthentication();
+} else {
+    ipTrustedOrExit();
+}
+
 $uid = GET_ldapFilterSafe("uid");
 
 $groups = getUserGroups($uid);

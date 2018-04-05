@@ -261,6 +261,7 @@ with `attr=mail`:
 ## /userGroupsId
 
 ### params
+* client IP or `CAS=`true and casified
 * `uid=`xxx
 
 ### result example
@@ -283,6 +284,7 @@ with `attr=mail`:
 ## /userGroupsAndRoles
 
 ### params
+* client IP or `CAS=`true and casified
 * `uid=`xxx
 
 ### result example
