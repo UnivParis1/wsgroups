@@ -8,7 +8,7 @@ if (GET_bool("CAS")) {
     ipTrustedOrExit();
 }
 
-$uid = GET_ldapFilterSafe("uid");
+$uid = GET_ldapFilterSafe_or("uid", GET_uid());
 
 $groups = getUserGroups($uid);
 foreach ($groups as &$g) {

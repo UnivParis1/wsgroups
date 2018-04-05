@@ -262,7 +262,7 @@ with `attr=mail`:
 
 ### params
 * client IP or `CAS=`true and casified
-* `uid=`xxx
+* `uid=`xxx (default: CAS user)
 
 ### result example
 
@@ -285,7 +285,7 @@ with `attr=mail`:
 
 ### params
 * client IP or `CAS=`true and casified
-* `uid=`xxx
+* `uid=`xxx (default: CAS user)
 
 ### result example
 
