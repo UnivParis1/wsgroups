@@ -152,9 +152,6 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
       $r[] = ldapAnd(array_merge([$cond], $restriction));    
     return $r;
 }
-function staffFaculty_filter() {
-    return "(|(eduPersonAffiliation=staff)(eduPersonAffiliation=faculty))";
-}
 
 function GET_extra_people_filter_from_params() {
   $filters = array();
@@ -227,8 +224,13 @@ function isPersonMatchingFilter($uid, $filter) {
     return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . $filter . ")");
 }
 
-function isStaffOrFaculty($uid) {
-    return isPersonMatchingFilter($uid, staffFaculty_filter());
+function allowListeRouge($allowExtendedInfo) {
+    if ($allowExtendedInfo > 0 || @$isTrustedIp) {
+        return true;
+    } else {
+        $uid = GET_uid();
+        return $uid && isPersonMatchingFilter($uid, "(|(eduPersonAffiliation=staff)(eduPersonAffiliation=faculty))");
+    }
 }
 
 function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
@@ -269,7 +271,7 @@ function wanted_attrs_raw($wanted_attrs) {
 function attrRestrictions($allowExtendedInfo = 0) {
     global $isTrustedIp;
     return
-        array('allowListeRouge' => $allowExtendedInfo > 0 || @$isTrustedIp || GET_uid() && isStaffOrFaculty(GET_uid()),
+        array('allowListeRouge' => allowListeRouge($allowExtendedInfo),
         'allowAccountStatus' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowEmployeeType' => $allowExtendedInfo > 1,
