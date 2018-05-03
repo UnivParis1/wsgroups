@@ -229,7 +229,7 @@ function allowListeRouge($allowExtendedInfo) {
         return true;
     } else {
         $uid = GET_uid();
-        return $uid && isPersonMatchingFilter($uid, "(|(eduPersonAffiliation=staff)(eduPersonAffiliation=faculty))");
+        return $uid && isPersonMatchingFilter($uid, "(|(eduPersonAffiliation=staff)(eduPersonAffiliation=faculty)(eduPersonAffiliation=teacher))");
     }
 }
 
