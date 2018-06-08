@@ -801,7 +801,7 @@ function get_mailbox_folder_Info(info, fInfo) {
 function get_groupsMoreInfo(groups) {
     var r = {};
     groups.forEach(function (group) {
-        if (group.key.match(/collab\..*/)) {
+        if ($.inArray('up1NasGroup', group.objectClass) !== -1) {
             r[group.key] = $("<span title='en cours...'>📁</span>");
         }
     });

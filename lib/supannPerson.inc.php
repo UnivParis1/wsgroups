@@ -465,7 +465,7 @@ function supannRoleEntitesAll($l) {
 }
 
 function memberOfAll($l) {
-  $attrs = array("cn" => "key", "ou" => "name", "description" => "description");
+  $attrs = array("cn" => "key", "ou" => "name", "description" => "description", "objectClass" => "MULTI");
 
   $r = [];
   foreach ($l as $dn) $r[] = getLdapDN($dn, $attrs);
