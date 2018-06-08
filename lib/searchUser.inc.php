@@ -9,6 +9,7 @@ $maxRows = !$anonymous ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 
 $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
+$allowNoAffiliationAccounts = GET_or_NULL("allowNoAffiliationAccounts");
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
 if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && GET_uid()) {
@@ -40,7 +41,7 @@ if ($allowInvalidAccounts) $allowInvalidAccounts = $extendedInfo >= 1;
 $attrRestrictions = attrRestrictions($extendedInfo);
 
 global $USER_KEY_FIELD;
-$users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts), $attrRestrictions, $wanted_attrs, $USER_KEY_FIELD, $maxRows);
+$users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts, $allowNoAffiliationAccounts), $attrRestrictions, $wanted_attrs, $USER_KEY_FIELD, $maxRows);
 
 if ($allowExtendedInfo) {
   foreach ($users as &$u) $u["allowExtendedInfo"] = $allowExtendedInfo;

@@ -1069,7 +1069,7 @@ function formatUserInfo(info, showExtendedInfo) {
        input.autocompleteUser(searchUserURL, { 
 	   select: select, disableEnterKey: true, 
 	   wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
-	   wsParams: { showErrors: allowInvalidAccounts, allowInvalidAccounts: allowInvalidAccounts } } );
+	   wsParams: { showErrors: allowInvalidAccounts, allowNoAffiliationAccounts: true, allowInvalidAccounts: allowInvalidAccounts } } );
        input.attr('placeholder', 'Nom prénom');
        input.handlePlaceholderOnIE();
    };

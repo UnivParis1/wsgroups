@@ -107,8 +107,8 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
     return $wanted_attrs;
 }
 
-function people_filters($token, $restriction = [], $allowInvalidAccounts = false) {
-    if (!$allowInvalidAccounts) $restriction[] = '(eduPersonAffiliation=*)';
+function people_filters($token, $restriction = [], $allowInvalidAccounts = false, $allowNoAffiliationAccounts = false) {
+    if (!$allowInvalidAccounts) $restriction[] = $allowNoAffiliationAccounts ? '(|(accountStatus=active)(!(accountStatus=*)))' : '(eduPersonAffiliation=*)';
 
     $l = array();
 
