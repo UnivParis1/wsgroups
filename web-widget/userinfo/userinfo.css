@@ -25,7 +25,7 @@ body { font-size: 12px; }
     text-decoration: none;
 }
 
-.showExtendedInfo span.important {
+span.important {
     color: red;
     font-weight: bold;
 }
@@ -34,7 +34,7 @@ a.help {
     display: none;
 }
 
-.showExtendedInfo a.help {
+a.help {
     color: white;
     background-color: red;
     border-radius: 30%;
