@@ -351,6 +351,16 @@ function structureAll($keys) {
     return empty($r) ? NULL : $r;
 }
 
+function activiteUP1All($descriptions) {
+  global $descriptionToActivityKey;
+  $r = [];
+  foreach ($descriptions as $description) {
+      $key = @$descriptionToActivityKey[$description];
+      if ($key) $r[] = ['key' => $key, 'name' => $description];
+  }
+  return $r;
+}
+
 function supannActiviteAll($keys) {
   global $activiteKeyToShortname;
   $r = array();
@@ -542,6 +552,9 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
         $user['supannActivite'] = supannActiviteShortnames($user['supannActivite']);
     else
         unset($user['supannActivite']);
+  }
+  if (isset($user['description']) && isset($wanted_attrs['supannActivite-all'])) {
+	$user['supannActivite-all'] = array_merge((array) $user['supannActivite-all'], activiteUP1All($user['description']));
   }
   if (isset($user['supannEtablissement'])) {
     // only return interesting supannEtablissement (ie not Paris1)
