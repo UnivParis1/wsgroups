@@ -831,6 +831,10 @@ function asyncInfoRaw(url, params, infoDiv, success) {
     });
 }
 
+function dn2uid(dn) {
+    return dn.replace(/uid=(.*?),.*/, "$1");
+}
+
 function compute_Account_and_accountStatus(info, fInfo) {
     if (info.up1KrbPrincipal) {
 	fInfo.Account = spanFromList($.map(info.up1KrbPrincipal, function (principal) {
@@ -854,7 +858,17 @@ function compute_Account_and_accountStatus(info, fInfo) {
     if (info.allowExtendedInfo > 1)
 	fInfo.accountStatus.append(get_lastLogins(info));
 
-    if (fInfo.shadowFlag) fInfo.accountStatus.append(" (").append(fInfo.shadowFlag).append(")");
+    if (fInfo.shadowFlag) {
+        fInfo.accountStatus.append(" (").append(fInfo.shadowFlag);
+        if (info.seeAlso) {
+            fInfo.accountStatus.append(" de ");
+            info.seeAlso.forEach(function (dn) {
+                var uid = dn2uid(dn);
+                fInfo.accountStatus.append($("<a>", { href: '#' + encodeURIComponent(uid) }).text(uid));
+            });
+        }
+        fInfo.accountStatus.append(")");
+    }
 }
 
 var role2text = {

@@ -56,6 +56,7 @@ $USER_ALLOWED_MULTI_ATTRS =
 
 	'objectClass',
 	'labeledURI',
+	'seeAlso',
 
 	// below are restricted or internal attributes.
 	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
