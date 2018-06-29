@@ -23,6 +23,9 @@ $attrs_by_kind = [
     'shadowFlag', 'shadowExpire', 'shadowLastChange',    
 	'homeDirectory', 'gecos',
     'sambaAcctFlags', 'sambaSID', 'sambaHomePath',
+
+    // from up1Profile
+    'up1Source', 'up1Priority', 'up1StartDate', 'up1EndDate',
   ],
   "MONO 2" => [
 	'supannEmpCorps',    
@@ -289,6 +292,7 @@ function attrRestrictions($allowExtendedInfo = 0) {
         'allowAccountStatus' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowEmployeeType' => $allowExtendedInfo > 1,
+        'allowExtendedInfo' => $allowExtendedInfo,
         );
 }
 
@@ -307,6 +311,8 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
       userAttributesKeyToText($user, $wanted_attrs);
+      if (isset($user['up1Profile']))
+        $user['up1Profile'] = parse_up1Profile($user['up1Profile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
       userHandle_postalAddress($user);
       if (@$wanted_attrs['up1Roles']) get_up1Roles($user);
     }
@@ -408,6 +414,39 @@ function parse_composite_value($s) {
 
 function parse_supannEtuInscription($s) {
   return parse_composite_value($s);
+}
+
+# inverse échappement les caractères spéciaux d'attributs composites pour une liste de valeurs
+function unescape_sharpFF($attr_value) {
+    return preg_replace_callback('/#([0-9A-F]{2})/', function ($xx) { return chr(hexdec($xx)); }, $attr_value);
+}
+
+function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs) {
+    global $up1Profile_rename, $USER_ALLOWED_ATTRS;
+    $r = [];
+    while (preg_match('/^\[([^\[\]=]+)=((?:[^\[\]]|\[[^\[\]]*\])*)\](.*)/', $up1Profile, $m)) {
+        $key = $m[1]; $val = $m[2]; $up1Profile = $m[3];
+        $key = unescape_sharpFF($key);
+        $attr_kinds = @$USER_ALLOWED_ATTRS[$key];
+        if (!$attr_kinds || $allowExtendedInfo < $attr_kinds['LEVEL']) {
+            // ignore
+        } else if ($attr_kinds['MULTI']) {
+            $r[$key] = array_map('unescape_sharpFF', explode(';', $val));
+        } else {
+            $r[$key] = unescape_sharpFF($val);
+        }
+    }
+    if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
+    userAttributesKeyToText($r, $wanted_attrs);
+    return $r;
+}
+
+function parse_up1Profile($up1Profile_s, $allowExtendedInfo, $wanted_attrs) {
+    $r = [];
+    foreach ($up1Profile_s as $profile) {
+       $r[] = parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs);
+    }
+    return $r;
 }
 
 function supannEtuInscriptionAll($supannEtuInscription) {
