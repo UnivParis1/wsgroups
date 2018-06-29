@@ -1,4 +1,3 @@
-(function ($) {
 "use strict";
 
 var baseURL = "https://wsgroups-test.univ-paris1.fr";
@@ -12,9 +11,6 @@ var impersonateUrl = 'https://ent-test.univ-paris1.fr/EsupUserApps/impersonate.h
 var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudiant.jsp?config=apoprod&cod_etu=';
 var userphotoUrl = 'https://userphoto-test.univ-paris1.fr/';
 var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&membershipType=immediate&groupName=';
-var allowInvalidAccounts = undefined;
-var showExtendedInfo = 1;
-var currentUser = undefined;
 
 function parse_attrs_text(l) {
     return $.map(l, function (attr_text) {
@@ -1040,116 +1036,126 @@ function formatUserInfo(info, showExtendedInfo) {
     return div;
 }
 
-   var infoDiv = $("<div class='annuaireResult'>");
+new Vue({
+    el: '#annuaire',
+    data: {
+        allowInvalidAccounts: false,
+        currentUser: undefined,
+        allowExtendedInfo: undefined,
+        showExtendedInfo: 1,
+    },
+    mounted: function() {
+        this.install_autocompleteUser();
+        this.install_clickedTitle();
+        
+        var that = this;
+        this.useHashParam();
+        $(window).on('hashchange', function () { that.useHashParam() });
 
-   function asyncInfo(user) {
-       currentUser = user;
-       infoDiv.text("Vous avez selectionné " + user.label + ". Veuillez patienter...");
-       // to be able to bookmark users
-       window.location.hash = '#' + user.value;
-
-       infoDiv.toggleClass('showExtendedInfo', showExtendedInfo);
-       
-       var wsParams = {
-	   token: user.value,
-	   showErrors: showExtendedInfo,
-	   allowInvalidAccounts: true,
-	   showExtendedInfo: showExtendedInfo
-       };
-       asyncInfoRaw(searchUserURL, wsParams, infoDiv, function (data) {
-	       if (data.length == 0) {
-		   infoDiv.text("user not found (??)");
-	       } else if (data.length > 1) {
-		   infoDiv.text("internal error (multiple user found)");
-	       } else {
-		   set_allowExtendedInfo(data[0].allowExtendedInfo);
-		   infoDiv.empty().append(formatUserInfo(data[0], showExtendedInfo));
-	       }
-       });
-   }
-
-   var select = function (event, ui) {
-        $(this).blur(); // important to close virtual keyboard on mobile phones
-        if (ui.item.value === 'unknown') {
-	   // gasp, no mail, forcing wantedAttr "uid"
-	   ui.item.value = ui.item.uid;
+    },
+    watch: {
+        'allowInvalidAccounts': function () {
+            this.install_autocompleteUser();
+            this.asyncInfo();
+        },
+        'currentUser': function () {
+            console.log('currentUser is now ', this.currentUser.value);
+            this.asyncInfo();
+        },
+        'showExtendedInfo': function () {
+            console.log('showExtendedInfo is now ', this.showExtendedInfo);
+            this.asyncInfo();
+        },
+        'allowExtendedInfo': function () {
+            this.set_allowExtendedInfo();
         }
-        asyncInfo(ui.item);
-        return false;
-    };
+    },
+    methods: {
+        useHashParam: function () {
+            var value = document.location.hash && document.location.hash.replace(/^#/, '');
+            if (value && (!this.currentUser || this.currentUser.value != value)) {
+                this.currentUser = { label: value, value: value };
+            }
+        },
+        set_allowExtendedInfo: function () {
+            var that = this;
+            var select = $('#allowExtendedInfo');
+            select.empty();
+            if (this.allowExtendedInfo >= 2) {
+                select.append($("<option value='2'>Niveau 2</option>"));
+            }
+            if (this.allowExtendedInfo >= 1) {
+                select.append($("<option value='1'>Niveau 1</option>"));
+                select.append($("<option value='0'>Niveau 0</option>"));
+            }
+            select.val(this.showExtendedInfo);
+            select[0].onchange = function() {
+                that.showExtendedInfo = this.value;
+            }
+        },
+        asyncInfo: function () {
+            var user = this.currentUser;
+            console.log('asyncInfo', user.label);
+            var infoDiv = $(".annuaireResult");
+            infoDiv.text("Vous avez selectionné " + user.label + ". Veuillez patienter...");
+            // to be able to bookmark users
+            window.location.hash = '#' + user.value;
+     
+            infoDiv.toggleClass('showExtendedInfo', this.showExtendedInfo);
+            
+            var wsParams = {
+                token: user.value,
+                showErrors: this.showExtendedInfo,
+                allowInvalidAccounts: true,
+                showExtendedInfo: this.showExtendedInfo
+            };
+            var that = this;
+            asyncInfoRaw(searchUserURL, wsParams, infoDiv, function (data) {
+                if (data.length == 0) {
+                    infoDiv.text("user not found (??)");
+                } else if (data.length > 1) {
+                    infoDiv.text("internal error (multiple user found)");
+                } else {
+                    that.allowExtendedInfo = data[0].allowExtendedInfo;
+                    infoDiv.empty().append(formatUserInfo(data[0], that.showExtendedInfo));
+                }
+            });
+        },
+        install_autocompleteUser: function () {
+            console.log("install_autocompleteUser", this.allowInvalidAccounts);
+            var that = this;
+            var select = function (event, ui) {
+                $(this).blur(); // important to close virtual keyboard on mobile phones
+                if (ui.item.value === 'unknown') {
+                    // gasp, no mail, forcing wantedAttr "uid"
+                    ui.item.value = ui.item.uid;
+                }
+                that.currentUser = ui.item;
+                return false;
+            };
+            var input = $("#all");
 
-   var install_autocompleteUser = function (allowInvalidAccounts) {
-       var input = $("#all");
-       input.autocompleteUser(searchUserURL, { 
-	   select: select, disableEnterKey: true, 
-	   wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
-	   wsParams: { showErrors: allowInvalidAccounts, allowNoAffiliationAccounts: true, allowInvalidAccounts: allowInvalidAccounts } } );
-       input.attr('placeholder', 'Nom prénom');
-       input.handlePlaceholderOnIE();
-   };
+            // remove previous
+            input.autocomplete("destroy");
+            input.removeData('autocomplete');
 
-    function searchForm() {
-	return $("<form method='get' action='/foo' class='welcomeAutocompleteSearch'></form>")
-	    .append($("<div class='ui-widget'></div>")
-		    .append($("<label for='all'>Saisissez le nom et/ou prénom d'un étudiant ou d'un personnel</label>"))
-		    .append($("<span class='token-autocomplete'></span>")
-		    .append($("<input id='all' name='all' autofocus placeholder='Nom prénom' />")))
-		            .append($("<select id='allowExtendedInfo'></select>"))
-		    .append($("<label class='checkbox'>")
-			    .append($("<input type='checkbox' id='allowInvalidAccounts' name='allowInvalidAccounts'>"))
-			    .append("Chercher des comptes non actifs"))
-		    );
-    }
-
-    function set_allowExtendedInfo(allowExtendedInfo) {
-        var select = $('#allowExtendedInfo');
-        select.empty();
-        if (allowExtendedInfo >= 2) {
-            select.append($("<option value='2'>Niveau 2</option>"));
-        }
-        if (allowExtendedInfo >= 1) {
-            select.append($("<option value='1'>Niveau 1</option>"));
-            select.append($("<option value='0'>Niveau 0</option>"));
-        }
-        select.val(showExtendedInfo);
-        select[0].onchange = function() {
-            showExtendedInfo = this.value;
-            asyncInfo(currentUser);
-        }
-    }
-
-    function useHashParam() {
-	var value = document.location.hash && document.location.hash.replace(/^#/, '');
-	if (value && (!currentUser || currentUser.value != value)) {
-	    asyncInfo({ label: value, value: value });
-	}
-    }
-
-    function init() {
-	$("#annuaire").append(searchForm()).append(infoDiv);
-
-	install_autocompleteUser(allowInvalidAccounts);
-
-	$("#allowInvalidAccounts").change(function () {
-	    allowInvalidAccounts = $(this).attr('checked');
-	    install_autocompleteUser(allowInvalidAccounts);
-	    asyncInfo(currentUser);
-	});
-	$("#allowInvalidAccounts").attr('checked', allowInvalidAccounts ? 'checked' : false);
-
-	$(window).on('hashchange', useHashParam);
-    }
-
-    init();
-    useHashParam();
-
-    infoDiv.on('click', "span[title]", function () {
-	var $title = $(this).find(".clickedTitle");
-	if (!$title.length) {
-	    $(this).append($('<span>', { 'class': "clickedTitle" }).text($(this).attr("title")));
-	} else {
-	    $title.remove();
-	}
-    });
-
-})(jQuery);
+            input.autocompleteUser(searchUserURL, { 
+                select: select, disableEnterKey: true, 
+                wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
+                wsParams: { showErrors: this.allowInvalidAccounts, allowNoAffiliationAccounts: true, allowInvalidAccounts: this.allowInvalidAccounts || undefined },
+            });
+            input.attr('placeholder', 'Nom prénom'); // why?
+            input.handlePlaceholderOnIE();
+        },
+        install_clickedTitle: function () {
+            $(".annuaireResult").on('click', "span[title]", function () {
+                var $title = $(this).find(".clickedTitle");
+                if (!$title.length) {
+                    $(this).append($('<span>', { 'class': "clickedTitle" }).text($(this).attr("title")));
+                } else {
+                    $title.remove();
+                }
+            });        
+        },
+    },
+});

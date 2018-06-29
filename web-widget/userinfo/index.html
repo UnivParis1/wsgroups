@@ -9,9 +9,25 @@
 <script>window.prolongation_ENT_args = { current: 'userinfo', delegateAuth: true };</script>
 <script src="https://ent.univ-paris1.fr/ProlongationENT/loader.js"></script>
 
-<div id="annuaire"> </div>
 <link href="userinfo.css" type="text/css" rel="stylesheet">
 <script src="../autocompleteUser-resources.html.js"></script>
+<script src="../vue.min.js"></script>
+<div id="annuaire">
+    <form method='get' action='/foo' class='welcomeAutocompleteSearch'>
+	    <div class='ui-widget'>
+		    <label for='all'>Saisissez le nom et/ou prénom d'un étudiant ou d'un personnel</label>
+		    <span class='token-autocomplete'>
+                <input id='all' name='all' autofocus placeholder='Nom prénom'>
+            </span>
+            <select id='allowExtendedInfo'></select>
+		    <label class='checkbox'>
+			    <input type='checkbox' v-model='allowInvalidAccounts'>
+                Chercher des comptes non actifs
+            </label>
+        </div>
+    </form>    
+    <div class='annuaireResult'></div>
+</div>
 <script src="userinfo.js"></script>
 
 </body>
