@@ -74,7 +74,7 @@ function checkUserAttr($attr, $expected, $params = []) {
 }
 checkUserAttr('displayName', '"Fooo Bar"');
 checkUserAttr('memberOf', '["cn=grp1,ou=groups,dc=univ-paris1,dc=fr"]', ['showExtendedInfo' => 1]);
-checkUserAttr('memberOf-all', '[{"key":"grp1","name":"GRP1","description":"Utilisateurs GRP1"}]', ['showExtendedInfo' => 1]);
+checkUserAttr('memberOf-all', '[{"key":"grp1","name":"GRP1","description":"Utilisateurs GRP1","objectClass":["groupOfNames","labeledURIObject","supannGroupe","top","posixGroup"]}]', ['showExtendedInfo' => 1]);
 checkUserAttr('supannParrainDN', '["ou=DGEP,ou=structures,o=Paris1,dc=univ-paris1,dc=fr"]');
 checkUserAttr('supannParrainDN-all', '[{"key":"DGEP","name":"DRH-SP BIATSS","description":"DRH-SP BIATSS : service des personnels des biblioth\u00e8ques, ing\u00e9nieurs, administratifs, techniques, sociaux et de sant\u00e9","businessCategory":"administration"}]');
 checkUserAttr('supannEntiteAffectation', '["DSIUN-SAS"]'); // deprecated
