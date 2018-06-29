@@ -4,40 +4,42 @@ require_once ('lib/common.inc.php');
 require_once ('gen/tables.inc.php');
 require_once ('config/config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
-global $USER_KEY_FIELD, $USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS;
+global $USER_KEY_FIELD, $USER_ALLOWED_ATTRS;
 $USER_KEY_FIELD = 'uid';
-$USER_ALLOWED_MONO_ATTRS = 
-  array('uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
+$attrs_by_kind = [
+  "MONO -1" => [
+    'uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
 	'postalAddress', 'eduPersonPrincipalName',
 	'sn', 'givenName',
     'supannEntiteAffectationPrincipale',
-
-	// below are restricted or internal attributes.
-	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
-	'accountStatus', 'shadowFlag', 'shadowExpire', 'shadowLastChange',
-
 	'supannCivilite', 
 	'supannListeRouge',
-	'supannEmpCorps', 
-
 	'supannAliasLogin',
 	'uidNumber', 'gidNumber',
-	'supannEmpId', 'supannEtuId', 'supannCodeINE',
-	'employeeNumber',
-
+	'accountStatus', 
+  ],
+  "MONO 1" => [
+    'supannEmpId', 'supannEtuId', 'supannCodeINE',
+    'shadowFlag', 'shadowExpire', 'shadowLastChange',    
 	'homeDirectory', 'gecos',
-	'sambaAcctFlags', 'sambaSID', 'sambaHomePath',
+    'sambaAcctFlags', 'sambaSID', 'sambaHomePath',
+  ],
+  "MONO 2" => [
+	'supannEmpCorps',    
+	'employeeNumber', // (NB: search allowed in level 1)
+    
 	'createTimestamp', 'modifyTimestamp',
 
 	'up1BirthName',
 	'up1BirthDay',
 
-	'homePhone', 'homePostalAddress', 'pager',
+    'homePhone', 'homePostalAddress', 'pager',
 	'supannMailPerso',
-	);
-$USER_ALLOWED_MULTI_ATTRS = 
-  array('supannEntiteAffectation', 'supannEntiteAffectation-ou', 'supannEntiteAffectation-all',
-	'employeeType', 'eduPersonAffiliation', 'departmentNumber', 'buildingName', 'description', 'info',
+  ],
+  "MULTI -1" => [
+    'supannEntiteAffectation', 'supannEntiteAffectation-ou', 'supannEntiteAffectation-all',
+    'eduPersonAffiliation', 
+    'buildingName', 'description', 'info',
 	'supannEtablissement', 'supannActivite', 'supannActivite-all',
 	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
 	'supannRoleEntite', 'supannRoleEntite-all',
@@ -56,30 +58,41 @@ $USER_ALLOWED_MULTI_ATTRS =
 
 	'objectClass',
 	'labeledURI',
-	'seeAlso',
-
+    'seeAlso',
+    
+    'up1Profile', // will be filtered
+  ],
+  "MULTI 2" => [
+    'employeeType', 'departmentNumber',
+  ],
+  "MULTI 1" => [
 	// below are restricted or internal attributes.
-	// restricted attributes should only be accessible through $LDAP_CONNECT_LEVEL1 or $LDAP_CONNECT_LEVEL2
 	'mailForwardingAddress', 'mailDeliveryOption', 'mailAlternateAddress',
-	'up1Profile',
     'up1TermsOfUse',
-	);
+  ],
+];
+$USER_ALLOWED_ATTRS = [];
+foreach ($attrs_by_kind as $kind => $attrs) {
+    $kind_ = explode(' ', $kind);
+    $tags = [ "MULTI" => $kind_[0] === 'MULTI', "LEVEL" => (int) $kind_[1] ];
+    foreach ($attrs as $attr) $USER_ALLOWED_ATTRS[$attr] = $tags;
+}
 global $UP1_ROLES_DN;
-if (@$UP1_ROLES_DN) $USER_ALLOWED_MULTI_ATTRS[] = 'up1Roles'; // computed
+if (@$UP1_ROLES_DN) {
+    $USER_ALLOWED_ATTRS['up1Roles'] = [ "MULTI" => true, "LEVEL" => -1 ]; // computed
+}
 
 function people_attrs($attrs, $allowExtendedInfo = 0) {
-    global $USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS;
-    if (!$attrs) $attrs = implode(',', array_merge($USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS));
+    global $USER_ALLOWED_ATTRS;
+    if (!$attrs) $attrs = implode(',', array_keys($USER_ALLOWED_ATTRS));
     $wanted_attrs = array();
     foreach (explode(',', $attrs) as $attr) {
-        if (in_array($attr, $USER_ALLOWED_MONO_ATTRS)) {
-            $wanted_attrs[$attr] = $attr;
-        } else if (in_array($attr, $USER_ALLOWED_MULTI_ATTRS)) {
-            $wanted_attrs[$attr] = 'MULTI';
-        } else {
-            error("unknown attribute $attr. allowed attributes: " . join(",", array_merge($USER_ALLOWED_MONO_ATTRS, $USER_ALLOWED_MULTI_ATTRS)));
+        $attr_kinds = @$USER_ALLOWED_ATTRS[$attr];
+        if (!$attr_kinds) {
+            error("unknown attribute $attr. allowed attributes: " . join(",", array_keys($USER_ALLOWED_ATTRS)));
             exit;
         }
+        $wanted_attrs[$attr] = $attr_kinds['MULTI'] ? 'MULTI' : $attr;
     }
     global $USER_KEY_FIELD;
     if (!isset($wanted_attrs[$USER_KEY_FIELD]))
