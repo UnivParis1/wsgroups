@@ -1122,7 +1122,7 @@ new Vue({
                 that.currentUser = ui.item;
                 return false;
             };
-            var input = $("#all");
+            var input = $(".token-autocomplete input");
 
             // remove previous
             input.autocomplete("destroy");
