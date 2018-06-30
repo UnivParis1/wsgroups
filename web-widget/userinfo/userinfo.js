@@ -947,7 +947,7 @@ function formatUserInfo(info) {
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo);
     if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo);
 	// if we have up1BirthDay, we have full power
-	compute_Account_and_accountStatus(info, fInfo);
+	if (!info.up1Source) compute_Account_and_accountStatus(info, fInfo);
     if (info.supannEntiteAffectationPrincipale) fInfo.Responsable = get_Responsable(info);
     fInfo.Fonctions = compute_Fonctions(info);
 
