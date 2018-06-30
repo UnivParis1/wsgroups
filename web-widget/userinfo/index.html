@@ -31,12 +31,23 @@
         </div>
     </form>    
     <div class='annuaireResult'>
-        <table class='info-block' v-for="attrs_labels in main_attrs_labels">
-            <tr v-for="e in attrs_labels" v-if="e.attr in result.fInfo ? result.fInfo[e.attr] : result.info[e.attr]">
-                <td v-html="e.text"></td>
-                <td><finfo :val="result.info[e.attr]" :elt="result.fInfo[e.attr]"></finfo></td>
-            </tr>
-        </table>
+        <div v-if="result.msg">
+            {{result.msg}}
+        </div>
+        <div v-else-if="result.info">
+            <select v-model="selectedProfile" v-if="showExtendedInfo >= 1 && result.info.up1Profile">
+                <option value="">Profiles fusionnés</option>
+                <option v-for="profile in result.info.up1Profile" :value="profile.up1Source">
+                    {{profile.up1Source}}
+                </option>
+            </select>
+            <table class='info-block' v-for="attrs_labels in main_attrs_labels">
+                <tr v-for="e in attrs_labels" v-if="e.attr in user_fInfo ? user_fInfo[e.attr] : user_info[e.attr]" :key="e.attr + JSON.stringify(user_info[e.attr])">
+                    <td v-html="e.text"></td>
+                    <td><finfo :val="user_info[e.attr]" :elt="user_fInfo[e.attr]"></finfo></td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 <script src="userinfo.js"></script>

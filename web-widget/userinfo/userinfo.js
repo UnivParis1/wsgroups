@@ -996,7 +996,9 @@ new Vue({
         currentUser: undefined,
         allowExtendedInfo: undefined,
         showExtendedInfo: 1,
-        result: { msg: undefined, info: {}, fInfo: {} },
+        result: { msg: undefined, info: {} },
+        selectedProfile: undefined,
+        user_fInfo: {},
     },
     mounted: function() {
         this.install_autocompleteUser();
@@ -1010,7 +1012,11 @@ new Vue({
     computed: {
         main_attrs_labels: function () {
             return main_attrs_labels.map(parse_attrs_text)
-        },     
+        },
+        user_info: function () {
+            var that = this;
+            return this.selectedProfile ? this.result.info.up1Profile.find(function (profile) { return profile.up1Source === that.selectedProfile }) : this.result.info; 
+        },
     },
     watch: {
         'allowInvalidAccounts': function () {
@@ -1025,6 +1031,9 @@ new Vue({
             console.log('showExtendedInfo is now ', this.showExtendedInfo);
             this.asyncInfo();
         },
+        'user_info': function () {
+            this.user_fInfo = this.user_info ? formatUserInfo(this.user_info) : {};
+        },
     },
     methods: {
         useHashParam: function () {
@@ -1033,8 +1042,8 @@ new Vue({
                 this.currentUser = { label: value, value: value };
             }
         },
-        text: function (msg, info, fInfo) {
-            this.result = { msg: msg, info: info || {}, fInfo: fInfo || {} };
+        text: function (msg, info) {
+            this.result = { msg: msg, info: info };
         },
         asyncInfo: function () {
             var user = this.currentUser;
@@ -1042,6 +1051,7 @@ new Vue({
             this.text("Vous avez selectionné " + user.label + ". Veuillez patienter...");
             // to be able to bookmark users
             window.location.hash = '#' + user.value;
+            this.selectedProfile = '';
      
             var wsParams = {
                 token: user.value,
@@ -1057,7 +1067,7 @@ new Vue({
                     that.text("internal error (multiple user found)");
                 } else {
                     that.allowExtendedInfo = data[0].allowExtendedInfo;
-                    that.text('', data[0], formatUserInfo(data[0]));
+                    that.text('', data[0]);
                 }
             });
         },
