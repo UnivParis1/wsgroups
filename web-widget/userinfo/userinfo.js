@@ -954,7 +954,7 @@ function format_link(link) {
     return a_or_span(link, link);
 }
 
-function formatUserInfo(info, showExtendedInfo) {
+function formatUserInfo_raw(info, showExtendedInfo) {
     //if (info.roomNumber) info.postalAddress = info.roomNumber + ", " + info.postalAddress;
     if (!showExtendedInfo) {
 	delete info.up1Roles; // TODO, handle it in web-service?
@@ -1007,8 +1007,13 @@ function formatUserInfo(info, showExtendedInfo) {
     if (info.allowExtendedInfo >= 1) fInfo["Photo"] = "<img src='" + userphotoUrl + "?app-cli=userinfo&uid=" + info.uid + "'>";
 
     if (info.accountStatus === "active" && info.allowExtendedInfo >= 1) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
-    
-       var div = $("<div></div>");
+
+    return fInfo;
+}
+
+function formatUserInfo(info, showExtendedInfo) {
+    var fInfo = formatUserInfo_raw(info, showExtendedInfo);
+    var div = $("<div></div>");
        $.each(main_attrs_labels, function (i, sections) {
 	   var attrs_labels = parse_attrs_text(sections);
 	   var table = $("<table class='info-block'></table>").appendTo(div);
