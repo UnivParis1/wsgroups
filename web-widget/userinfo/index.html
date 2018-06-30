@@ -30,7 +30,14 @@
             </label>
         </div>
     </form>    
-    <div class='annuaireResult'></div>
+    <div class='annuaireResult' :class='{ showExtendedInfo: showExtendedInfo }'>
+        <table class='info-block' v-for="attrs_labels in main_attrs_labels">
+            <tr v-for="e in attrs_labels" v-if="e.attr in result.fInfo ? result.fInfo[e.attr] : result.info[e.attr]">
+                <td v-html="e.text"></td>
+                <td><finfo :val="result.info[e.attr]" :elt="result.fInfo[e.attr]"></finfo></td>
+            </tr>
+        </table>
+    </div>
 </div>
 <script src="userinfo.js"></script>
 

@@ -98,7 +98,7 @@ var main_attrs_labels = [ [
     'Photo: Photo',
 ],
 [
-    'memberOf: Groupes',
+    'memberOf-all: Groupes',
     'Applications: Applications',
 ]
 ];
@@ -200,6 +200,17 @@ var attr2valnames = {
 	'up1Person': 'Personne',
 	'up1Role': 'Compte de fonction',
     }    
+};
+
+var simple_formatters = {
+    supannListeRouge: function (val) { return val === "TRUE" && important("oui") },
+    shadowExpire: format_shadowExpire,   
+    createTimestamp: format_timestamp,
+    modifyTimestamp: format_timestamp,
+    up1Roles: format_up1Roles,
+    buildingName: format_buildingName,
+    labeledURI: format_link,
+    'memberOf-all': format_memberOf,
 };
 
 if (!Array.prototype.indexOf) {
@@ -536,10 +547,10 @@ function format_memberOf(all) {
     }), "<br>");
 }
 
-function format_shadowExpire(info) {
+function format_shadowExpire(val) {
     var today = todayEpochDay();
-    var delta = info.shadowExpire <= today ? important("EXPIRE") : "dans " + formadelai(today, info.shadowExpire);
-    return formadate(info.shadowExpire) + " (" + delta + ")";
+    var delta = val <= today ? important("EXPIRE") : "dans " + formadelai(today, val);
+    return formadate(val) + " (" + delta + ")";
 }
 
 function compute_Person(info, showExtendedInfo) {
@@ -874,10 +885,10 @@ var role2text = {
     "secretary": "suppléant"
 };
 
-function format_up1Roles(info) {
+function format_up1Roles(val) {
     var mail2roles = {};
     var mail2descr = {}
-    $.each(info.up1Roles, function (i, e) {
+    $.each(val, function (i, e) {
 	if (!mail2roles[e.mail]) mail2roles[e.mail] = []
 	mail2roles[e.mail].push(role2text[e.role] || e.role);
 	mail2descr[e.mail] = e.seeAlso || e.description;
@@ -975,10 +986,9 @@ function formatUserInfo_raw(info, showExtendedInfo) {
 
     
     fInfo.Person = compute_Person(info, showExtendedInfo);
-    if (info.supannListeRouge) fInfo.supannListeRouge = info.supannListeRouge === "TRUE" && important("oui");
-    if (info.shadowExpire) fInfo.shadowExpire = format_shadowExpire(info);   
-    if (info.createTimestamp) fInfo.createTimestamp = format_timestamp(info.createTimestamp);   
-    if (info.modifyTimestamp) fInfo.modifyTimestamp = format_timestamp(info.modifyTimestamp);   
+    $.each(simple_formatters, function (attr, formatter) {
+        if (info[attr]) fInfo[attr] = formatter(info[attr]);
+    });
     if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo, showExtendedInfo);
     if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo, showExtendedInfo);
@@ -989,12 +999,8 @@ function formatUserInfo_raw(info, showExtendedInfo) {
     if (info.supannEntiteAffectationPrincipale) fInfo.Responsable = get_Responsable(info);
     fInfo.Fonctions = compute_Fonctions(info, showExtendedInfo);
 
-    if (info.up1Roles) fInfo.up1Roles = format_up1Roles(info);
-    if (info['memberOf-all']) fInfo.memberOf = format_memberOf(info['memberOf-all']);
     if (info.supannParrainDN) fInfo['supannParrainDN-all'] = format_supannParrainDN(info, showExtendedInfo);
     if (info.supannEntiteAffectation) fInfo['supannEntiteAffectation-all'] = format_supannEntiteAffectation(info, showExtendedInfo);
-    if (info.buildingName) fInfo.buildingName = format_buildingName(info.buildingName);
-    if (info.labeledURI) fInfo.labeledURI = format_link(info.labeledURI);
     $.each(['telephoneNumber', 'facsimileTelephoneNumber', 'supannAutreTelephone', 'mobile', 'pager'], function (i, attr) {
 	if (info[attr]) fInfo[attr] = format_telephoneNumber(info[attr], attr, showExtendedInfo);
     });
@@ -1013,33 +1019,24 @@ function formatUserInfo_raw(info, showExtendedInfo) {
 
 function formatUserInfo(info, showExtendedInfo) {
     var fInfo = formatUserInfo_raw(info, showExtendedInfo);
-    var div = $("<div></div>");
-       $.each(main_attrs_labels, function (i, sections) {
-	   var attrs_labels = parse_attrs_text(sections);
-	   var table = $("<table class='info-block'></table>").appendTo(div);
-	   $.each(attrs_labels, function (i, e) {
-	       var fv = fInfo[e.attr];
-	       var v = !(e.attr in fInfo) && info[e.attr];
-	       if (!fv && !v) return;
-
-	       var td_v = $("<td></td>");
-	       if (fv)
-		   td_v.append(fv);
-	       else if (typeof v === "string") 
-		   appendWrappedText(td_v, v);
-	       else if ($.isArray(v))
-		   appendWrappedText(td_v, v.join(', '));
-	       else
-		   throw "InternalError";
-	       
-	       $("<tr></tr>")
-		   .append($("<td></td>").html(e.text))
-		   .append(td_v)
-		   .appendTo(table);
-	   });
-       });
-    return div;
+    return fInfo;
 }
+
+Vue.component('finfo', {
+    props: [ 'val', 'elt' ],
+    template: '<span></span>',
+    mounted: function () {
+        if (this.elt) {
+            $(this.$el).append(this.elt);
+        } else if (typeof this.val === "string") {
+            $(this.$el).text(this.val);
+        } else if ($.isArray(this.val)) {
+            $(this.$el).text(this.val.join(', '));
+        } else {
+            throw "InternalError";	       
+        }
+    },
+});
 
 new Vue({
     el: '#annuaire',
@@ -1048,6 +1045,7 @@ new Vue({
         currentUser: undefined,
         allowExtendedInfo: undefined,
         showExtendedInfo: 1,
+        result: { msg: undefined, info: {}, fInfo: {} },
     },
     mounted: function() {
         this.install_autocompleteUser();
@@ -1057,6 +1055,11 @@ new Vue({
         this.useHashParam();
         $(window).on('hashchange', function () { that.useHashParam() });
 
+    },
+    computed: {
+        main_attrs_labels: function () {
+            return main_attrs_labels.map(parse_attrs_text)
+        },     
     },
     watch: {
         'allowInvalidAccounts': function () {
@@ -1079,16 +1082,16 @@ new Vue({
                 this.currentUser = { label: value, value: value };
             }
         },
+        text: function (msg, info, fInfo) {
+            this.result = { msg: msg, info: info || {}, fInfo: fInfo || {} };
+        },
         asyncInfo: function () {
             var user = this.currentUser;
             console.log('asyncInfo', user.label);
-            var infoDiv = $(".annuaireResult");
-            infoDiv.text("Vous avez selectionné " + user.label + ". Veuillez patienter...");
+            this.text("Vous avez selectionné " + user.label + ". Veuillez patienter...");
             // to be able to bookmark users
             window.location.hash = '#' + user.value;
      
-            infoDiv.toggleClass('showExtendedInfo', this.showExtendedInfo);
-            
             var wsParams = {
                 token: user.value,
                 showErrors: this.showExtendedInfo,
@@ -1096,14 +1099,14 @@ new Vue({
                 showExtendedInfo: this.showExtendedInfo
             };
             var that = this;
-            asyncInfoRaw(searchUserURL, wsParams, infoDiv, function (data) {
+            asyncInfoRaw(searchUserURL, wsParams, this, function (data) {
                 if (data.length == 0) {
-                    infoDiv.text("user not found (??)");
+                    that.text("user not found (??)");
                 } else if (data.length > 1) {
-                    infoDiv.text("internal error (multiple user found)");
+                    that.text("internal error (multiple user found)");
                 } else {
                     that.allowExtendedInfo = data[0].allowExtendedInfo;
-                    infoDiv.empty().append(formatUserInfo(data[0], that.showExtendedInfo));
+                    that.text('', data[0], formatUserInfo(data[0], that.showExtendedInfo));
                 }
             });
         },
