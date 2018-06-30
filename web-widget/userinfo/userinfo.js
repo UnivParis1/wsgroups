@@ -521,12 +521,8 @@ function format_shadowExpire(val) {
 }
 
 function compute_Person(info) {
-    var person;
-       if ($.isArray(info.objectClass) && $.grep(info.objectClass, function (v) { return v === "up1Person" })) {
-	   person = (info.supannCivilite ? (info.supannCivilite + " " + info.displayName) : info.displayName) || "<INCONNU>";
-       }
-
-    if (!person) return undefined;
+    var displayName = info.displayName || info.sn && info.givenName && info.givenName + " " + info.sn || "<INCONNU>";
+    var person = (info.supannCivilite ? info.supannCivilite + " " : '') + displayName;
 
 	var birthName = info.up1BirthName;
 	if (birthName === info.sn) birthName = '';
