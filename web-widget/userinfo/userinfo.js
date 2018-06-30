@@ -211,6 +211,8 @@ var simple_formatters = {
     buildingName: format_buildingName,
     labeledURI: format_link,
     'memberOf-all': format_memberOf,
+    'supannParrainDN-all': format_supannCodeEntite,
+    'supannEntiteAffectation-all': format_supannEntiteAffectation,
 };
 
 var diacriticsMap = [
@@ -872,9 +874,8 @@ function format_supannCodeEntite(l, principale) {
 	    return null;
     })), ", ");
 }
-function format_supannEntiteAffectation(info) {
+function format_supannEntiteAffectation(l, info) {
     var principale = info['supannEntiteAffectationPrincipale'];
-    var l = info['supannEntiteAffectation-all'];
     var elt = format_supannCodeEntite(l, principale);
     var err;
     if (!principale) {
@@ -885,9 +886,6 @@ function format_supannEntiteAffectation(info) {
     }
     if (err) elt.appendText(l && l.length ? ", " : '').append(err);
     return elt;
-}
-function format_supannParrainDN(info) {
-    return format_supannCodeEntite(info['supannParrainDN-all']);
 }
 
 function format_mail(mail, displayName) {
@@ -941,7 +939,7 @@ function formatUserInfo(info) {
     
     fInfo.Person = compute_Person(info);
     $.each(simple_formatters, function (attr, formatter) {
-        if (info[attr]) fInfo[attr] = formatter(info[attr]);
+        if (info[attr]) fInfo[attr] = formatter(info[attr], info);
     });
     if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info);
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo);
@@ -951,8 +949,6 @@ function formatUserInfo(info) {
     if (info.supannEntiteAffectationPrincipale) fInfo.Responsable = get_Responsable(info);
     fInfo.Fonctions = compute_Fonctions(info);
 
-    if (info.supannParrainDN) fInfo['supannParrainDN-all'] = format_supannParrainDN(info);
-    if (info.supannEntiteAffectation) fInfo['supannEntiteAffectation-all'] = format_supannEntiteAffectation(info);
     $.each(['telephoneNumber', 'facsimileTelephoneNumber', 'supannAutreTelephone', 'mobile', 'pager'], function (i, attr) {
 	if (info[attr]) fInfo[attr] = format_telephoneNumber(info[attr], attr);
     });
