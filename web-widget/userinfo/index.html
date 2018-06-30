@@ -19,7 +19,11 @@
 		    <span class='token-autocomplete'>
                 <input id='all' name='all' autofocus placeholder='Nom prénom'>
             </span>
-            <select id='allowExtendedInfo'></select>
+            <select id='allowExtendedInfo' v-model="showExtendedInfo" v-if="allowExtendedInfo >= 1">
+                <option value='2' v-if="allowExtendedInfo >= 2">Niveau 2</option>"
+                <option value='1' v-if="allowExtendedInfo >= 1">Niveau 1</option>
+                <option value='0' v-if="allowExtendedInfo >= 1">Niveau 0</option>
+            </select>
 		    <label class='checkbox'>
 			    <input type='checkbox' v-model='allowInvalidAccounts'>
                 Chercher des comptes non actifs

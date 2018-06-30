@@ -1066,31 +1066,12 @@ new Vue({
             console.log('showExtendedInfo is now ', this.showExtendedInfo);
             this.asyncInfo();
         },
-        'allowExtendedInfo': function () {
-            this.set_allowExtendedInfo();
-        }
     },
     methods: {
         useHashParam: function () {
             var value = document.location.hash && document.location.hash.replace(/^#/, '');
             if (value && (!this.currentUser || this.currentUser.value != value)) {
                 this.currentUser = { label: value, value: value };
-            }
-        },
-        set_allowExtendedInfo: function () {
-            var that = this;
-            var select = $('#allowExtendedInfo');
-            select.empty();
-            if (this.allowExtendedInfo >= 2) {
-                select.append($("<option value='2'>Niveau 2</option>"));
-            }
-            if (this.allowExtendedInfo >= 1) {
-                select.append($("<option value='1'>Niveau 1</option>"));
-                select.append($("<option value='0'>Niveau 0</option>"));
-            }
-            select.val(this.showExtendedInfo);
-            select[0].onchange = function() {
-                that.showExtendedInfo = this.value;
             }
         },
         asyncInfo: function () {
