@@ -432,15 +432,13 @@ function compute_MailDelivery(info) {
 	(fwd[0] === 'supannListeRouge' ? "une adresse mail" : fwd.join(", "));
 }
 
-function compute_Affiliation(info, showExtendedInfo) {
+function compute_Affiliation(info) {
     var valnames = eduPersonAffiliation_valnames;
     var Affiliation = info.eduPersonPrimaryAffiliation === 'member' && important('member', 'no-precise-affiliation') ||
 	formatValues(valnames, info.eduPersonPrimaryAffiliation)
 	|| spanFromList([important(info.eduPersonPrimaryAffiliation ? info.eduPersonPrimaryAffiliation : 'MANQUANTE')]);
     if (info.eduPersonAffiliation) {	
-	var notWanted = $.merge([info.eduPersonPrimaryAffiliation],
-				showExtendedInfo ? [] : [ 'employee', 'member' ]);
-	var other = arraySubstraction(info.eduPersonAffiliation, notWanted);
+	var other = arraySubstraction(info.eduPersonAffiliation, [info.eduPersonPrimaryAffiliation]);
 	var fv = formatValues(valnames, other);
 	if (fv) jqueryAppendMany(Affiliation, [" (secondaires: ", fv, ")"]);
 	if ($.inArray('member', info.eduPersonAffiliation) === -1)
@@ -449,7 +447,7 @@ function compute_Affiliation(info, showExtendedInfo) {
     return Affiliation;
 }
 
-function compute_Fonctions(info, showExtendedInfo) {
+function compute_Fonctions(info) {
     var span = $("<span>");
     var done = {};
     if (info['supannRoleEntite-all']) {
@@ -457,7 +455,7 @@ function compute_Fonctions(info, showExtendedInfo) {
 	    if (!$.isEmptyObject(done)) span.append("<br>");
 	    done[role.role] = true;
 	    span.appendText(role.role + " (");
-	    span.append(format_supannCodeEntite([role['structure']], showExtendedInfo));
+	    span.append(format_supannCodeEntite([role['structure']]));
 	    span.appendText(")");
 	});
     }
@@ -472,7 +470,7 @@ function compute_Fonctions(info, showExtendedInfo) {
     return !$.isEmptyObject(done) && span;
 }
 
-function format_supannActivite(all, fInfo, showExtendedInfo) {
+function format_supannActivite(all, fInfo) {
     var format_it = function (e) {
 	return $("<span>", { title: e.key }).text(e.name);
     };
@@ -483,23 +481,23 @@ function format_supannActivite(all, fInfo, showExtendedInfo) {
 	fInfo['supannActivite-other'] = spanFromList($.map(ll[1], format_it), '<br>');
 }
 
-function format_supannEtuInscriptionAll(all, fInfo, showExtendedInfo) {
+function format_supannEtuInscriptionAll(all, fInfo) {
 
     var anneeinsc = Math.max.apply(null, $.map(all, function (e) { return e.anneeinsc }));
     var ll = partition(all, function (e) { return e.anneeinsc == anneeinsc });
     var curr = ll[0], prev = ll[1];
 
     var format_it = function (e) { 
-	var text = showExtendedInfo ? e.etape + " (" + e.anneeinsc + ")" : e.etape;
+	var text = e.etape + " (" + e.anneeinsc + ")";
 	var title = [];
 	$.each(e, function (k,v) { 
-	    if (showExtendedInfo ? k !== 'etape' : k === 'regimeinsc' || k === 'anneeinsc') title.push(k + ": " + v);
+	    if (k !== 'etape') title.push(k + ": " + v);
 	});
 	return $("<span>", { title: title.join(" ,  ") }).text(text); 
     };
     if (curr.length)
 	fInfo['supannEtuInscription-all'] = spanFromList($.map(curr, format_it), "<br>");
-    if (prev.length && showExtendedInfo) 
+    if (prev.length) 
 	fInfo['supannEtuInscription-prev'] = spanFromList($.map(prev, format_it), "<br>");
 }
 
@@ -522,7 +520,7 @@ function format_shadowExpire(val) {
     return formadate(val) + " (" + delta + ")";
 }
 
-function compute_Person(info, showExtendedInfo) {
+function compute_Person(info) {
     var person;
        if ($.isArray(info.objectClass) && $.grep(info.objectClass, function (v) { return v === "up1Person" })) {
 	   person = (info.supannCivilite ? (info.supannCivilite + " " + info.displayName) : info.displayName) || "<INCONNU>";
@@ -542,9 +540,7 @@ function compute_Person(info, showExtendedInfo) {
 	}
 
     var Person = $("<span>").text(person); 
-    if (showExtendedInfo) {
 	Person.attr('title', 'Prénom : ' + info.givenName + (info.up1AltGivenName ? " (" + info.up1AltGivenName.join(' ') + ")" : '') + ", Nom : " + info.sn + ", Complet : " + info.cn);
-    }
     return Person;
 }
 
@@ -869,10 +865,10 @@ function format_up1Roles(val) {
     }), "<br>");
 }
 
-function format_supannCodeEntite(l, showExtendedInfo, principale) {
+function format_supannCodeEntite(l, principale) {
     return spanFromList(rejectEmpty($.map(l, function (e) {
 	if (e.name) {
-	    var title = e.description + (showExtendedInfo ? " (" + e.key + ")" : "");
+	    var title = e.description + " (" + e.key + ")";
 	    var elt = a_or_span(e.labeledURI, e.name).attr('title', title);
 	    if (principale && e.key === principale && l.length > 1) elt = $("<b>").append(elt);
 	    return elt;
@@ -880,10 +876,10 @@ function format_supannCodeEntite(l, showExtendedInfo, principale) {
 	    return null;
     })), ", ");
 }
-function format_supannEntiteAffectation(info, showExtendedInfo) {
+function format_supannEntiteAffectation(info) {
     var principale = info['supannEntiteAffectationPrincipale'];
     var l = info['supannEntiteAffectation-all'];
-    var elt = format_supannCodeEntite(l, showExtendedInfo, principale);
+    var elt = format_supannCodeEntite(l, principale);
     var err;
     if (!principale) {
         if (info.eduPersonPrimaryAffiliation !== 'student')
@@ -894,8 +890,8 @@ function format_supannEntiteAffectation(info, showExtendedInfo) {
     if (err) elt.appendText(l && l.length ? ", " : '').append(err);
     return elt;
 }
-function format_supannParrainDN(info, showExtendedInfo) {
-    return format_supannCodeEntite(info['supannParrainDN-all'], showExtendedInfo);
+function format_supannParrainDN(info) {
+    return format_supannCodeEntite(info['supannParrainDN-all']);
 }
 
 function format_mail(mail, displayName) {
@@ -903,13 +899,13 @@ function format_mail(mail, displayName) {
     return $("<a>", { href: 'mailto:' + encodeURIComponent(dest) }).text(mail);
 }
 
-function format_telephoneNumber(number, attr, showExtendedInfo) {
+function format_telephoneNumber(number, attr) {
     var linkName = attr == 'facsimileTelephoneNumber' ? 'fax' : 'tel';
     var format_it = function (number) {
 	var number_ = number.replace(/^0([67])(\d\d)(\d\d)(\d\d)(\d\d)$/, '+33 $1 $2 $3 $4 $5');
 	var link = number_.replace(/[^0-9+]/g, '');
 	var a = $("<a>", { href: linkName + ':' + link }).text(number_);
-	if (showExtendedInfo) a.attr('title', attr + ": " + number);
+	a.attr('title', attr + ": " + number);
 	return a;
     };
     if ($.isArray(number)) {
@@ -934,44 +930,35 @@ function format_link(link) {
     return a_or_span(link, link);
 }
 
-function formatUserInfo_raw(info, showExtendedInfo) {
+function formatUserInfo(info) {
     //if (info.roomNumber) info.postalAddress = info.roomNumber + ", " + info.postalAddress;
-    if (!showExtendedInfo) {
-	delete info.up1Roles; // TODO, handle it in web-service?
-	delete info.supannParrainDN;
-	delete info.memberOf; delete info['memberOf-all'];
-    }
-
+    
     if (info.mailForwardingAddress) info.MailDelivery = compute_MailDelivery(info);
 
     var fInfo = {};
 
     formatSomeUserValues(info, fInfo);
 
-    if (showExtendedInfo) {
 	fInfo.Identifiers = info.supannAliasLogin && info.supannAliasLogin !== info.uid ? info.supannAliasLogin + ", uid: " + important(info.uid) : info.uid;
 	fInfo.OtherIdentifiers = compute_Identifiers(info);
-    }
 
     
-    fInfo.Person = compute_Person(info, showExtendedInfo);
+    fInfo.Person = compute_Person(info);
     $.each(simple_formatters, function (attr, formatter) {
         if (info[attr]) fInfo[attr] = formatter(info[attr]);
     });
-    if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info, showExtendedInfo);
-    if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo, showExtendedInfo);
-    if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo, showExtendedInfo);
-    if (showExtendedInfo) {
+    if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info);
+    if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo);
+    if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo);
 	// if we have up1BirthDay, we have full power
 	compute_Account_and_accountStatus(info, fInfo);
-    }
     if (info.supannEntiteAffectationPrincipale) fInfo.Responsable = get_Responsable(info);
-    fInfo.Fonctions = compute_Fonctions(info, showExtendedInfo);
+    fInfo.Fonctions = compute_Fonctions(info);
 
-    if (info.supannParrainDN) fInfo['supannParrainDN-all'] = format_supannParrainDN(info, showExtendedInfo);
-    if (info.supannEntiteAffectation) fInfo['supannEntiteAffectation-all'] = format_supannEntiteAffectation(info, showExtendedInfo);
+    if (info.supannParrainDN) fInfo['supannParrainDN-all'] = format_supannParrainDN(info);
+    if (info.supannEntiteAffectation) fInfo['supannEntiteAffectation-all'] = format_supannEntiteAffectation(info);
     $.each(['telephoneNumber', 'facsimileTelephoneNumber', 'supannAutreTelephone', 'mobile', 'pager'], function (i, attr) {
-	if (info[attr]) fInfo[attr] = format_telephoneNumber(info[attr], attr, showExtendedInfo);
+	if (info[attr]) fInfo[attr] = format_telephoneNumber(info[attr], attr);
     });
     $.each(['mail', 'mailAlternateAddress', 'supannAutreMail', 'supannMailPerso'], function (i, attr) {
 	if (info[attr]) fInfo[attr] = format_mail(info[attr], info.displayName);
@@ -983,11 +970,6 @@ function formatUserInfo_raw(info, showExtendedInfo) {
 
     if (info.accountStatus === "active" && info.allowExtendedInfo >= 1) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
 
-    return fInfo;
-}
-
-function formatUserInfo(info, showExtendedInfo) {
-    var fInfo = formatUserInfo_raw(info, showExtendedInfo);
     return fInfo;
 }
 
@@ -1075,7 +1057,7 @@ new Vue({
                     that.text("internal error (multiple user found)");
                 } else {
                     that.allowExtendedInfo = data[0].allowExtendedInfo;
-                    that.text('', data[0], formatUserInfo(data[0], that.showExtendedInfo));
+                    that.text('', data[0], formatUserInfo(data[0]));
                 }
             });
         },
