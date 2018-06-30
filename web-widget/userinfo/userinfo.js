@@ -91,7 +91,7 @@ var main_attrs_labels = [ [
 [
 			  
     'supannMailPerso: Courriel personnel',
-    'MailDelivery: Messagerie',
+    'mailForwardingAddress: Messagerie',
 
     'mobile: Tél mobile',
     'pager: Tél mobile',
@@ -213,6 +213,7 @@ var simple_formatters = {
     'memberOf-all': format_memberOf,
     'supannParrainDN-all': format_supannCodeEntite,
     'supannEntiteAffectation-all': format_supannEntiteAffectation,
+    mailForwardingAddress: compute_MailDelivery,
 };
 
 var diacriticsMap = [
@@ -427,8 +428,7 @@ function format_timestamp(timestamp) {
     return $("<span>", { title: timestamp }).text(text);
 }
 
-function compute_MailDelivery(info) {
-    var fwd = info.mailForwardingAddress;
+function compute_MailDelivery(fwd, info) {
     var is_copy = $.inArray('mailbox', info.mailDeliveryOption) != -1;
     return (is_copy ? "copies vers " : "redirigée vers ") + 
 	(fwd[0] === 'supannListeRouge' ? "une adresse mail" : fwd.join(", "));
@@ -927,8 +927,6 @@ function format_link(link) {
 function formatUserInfo(info) {
     //if (info.roomNumber) info.postalAddress = info.roomNumber + ", " + info.postalAddress;
     
-    if (info.mailForwardingAddress) info.MailDelivery = compute_MailDelivery(info);
-
     var fInfo = {};
 
     formatSomeUserValues(info, fInfo);
