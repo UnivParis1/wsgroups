@@ -88,3 +88,7 @@ span[title], a[title] {
 select:empty {
     display: none;
 }
+
+tbody:empty {
+    display: none;
+}
