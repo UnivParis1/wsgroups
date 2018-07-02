@@ -866,7 +866,7 @@ function format_up1Roles(val) {
 function format_supannCodeEntite(l, principale) {
     return spanFromList(rejectEmpty($.map(l, function (e) {
 	if (e.name) {
-	    var title = e.description + " (" + e.key + ")";
+	    var title = (e.description || '') + " (" + e.key + ")";
 	    var elt = a_or_span(e.labeledURI, e.name).attr('title', title);
 	    if (principale && e.key === principale && l.length > 1) elt = $("<b>").append(elt);
 	    return elt;

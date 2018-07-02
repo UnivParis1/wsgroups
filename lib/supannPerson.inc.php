@@ -535,6 +535,23 @@ function memberOfAll($l) {
   return $r;
 }
 
+function getDNs($l) {
+  $attrs = array("ou" => "name", "displayName" => "name", "description" => "description", "labeledURI" => "labeledURI");
+
+  $r = [];
+  foreach ($l as $dn) $r[] = getLdapDN_with_DN_as_key($dn, $attrs);
+  return $r;
+}
+
+function replace_old_structures_DN($l) {
+    global $ALT_STRUCTURES_DN, $STRUCTURES_DN;
+    $r = [];
+    foreach ($l as $dn) {
+        $r[] = preg_replace('/^ou=(.*?),' . preg_quote($ALT_STRUCTURES_DN, '/') . '/', "supannCodeEntite=$1,$STRUCTURES_DN", $dn);
+    }
+    return $r;
+}
+
 function rdnToSupannCodeEntites($l) {
   $codes = array();
   foreach ($l as $rdn) {
@@ -568,7 +585,7 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
   }
   if (isset($user['supannParrainDN'])) {
       if (isset($wanted_attrs['supannParrainDN-all']))
-	$user['supannParrainDN-all'] = structureAll(rdnToSupannCodeEntites($user['supannParrainDN']));
+	$user['supannParrainDN-all'] = getDNs(replace_old_structures_DN($user['supannParrainDN']));
       else if (isset($wanted_attrs['supannParrainDN-ou']))
 	$user['supannParrainDN-ou'] = structureShortnames(rdnToSupannCodeEntites($user['supannParrainDN']));
       if (!isset($wanted_attrs['supannParrainDN']))

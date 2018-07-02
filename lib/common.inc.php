@@ -95,6 +95,11 @@ function getLdapDN($dn, $attributes_map, $timelimit = 0) {
   return $r ? $r[0] : NULL;
 }
 
+function getLdapDN_with_DN_as_key($dn, $attributes_map, $timelimit = 0) {
+    $r = getLdapDN($dn, $attributes_map, $timelimit);
+    return $r ? array_merge(["key" => $dn], $r) : NULL;
+}
+  
 function existsLdap($base, $filter) {
   $r = getLdapInfo($base, $filter, array(), 1);
   return (bool) $r;
