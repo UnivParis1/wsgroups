@@ -10,6 +10,7 @@ $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
 $allowNoAffiliationAccounts = GET_or_NULL("allowNoAffiliationAccounts");
+$allowRoles = GET_or_NULL("allowRoles");
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
 if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && GET_uid()) {
@@ -39,6 +40,7 @@ $wanted_attrs = people_attrs($attrs, $extendedInfo);
 if ($allowInvalidAccounts) $allowInvalidAccounts = $extendedInfo >= 1;
 
 $attrRestrictions = attrRestrictions($extendedInfo);
+$attrRestrictions['allowRoles'] = $allowRoles;
 
 global $USER_KEY_FIELD;
 $users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts, $allowNoAffiliationAccounts), $attrRestrictions, $wanted_attrs, $USER_KEY_FIELD, $maxRows);

@@ -164,6 +164,7 @@ The first part of a group key is the *category*.
 * `filter_mail=`*
 * `filter_student=no` (equivalent to filter_not_supannEntiteAffectation=student)
 * `filter_student=only` (equivalent to filter_supannEntiteAffectation=student)
+* `allowRoles=true`
 
 params allowed if casified user member of `$LEVEL1_FILTER` & `$LEVEL2_FILTER`:
 * `showExtendedInfo=true`
@@ -429,6 +430,7 @@ with `attr=mail`:
 * casified, user must be member of `$LEVEL1_FILTER` or `$LEVEL2_FILTER`
 * `uid=`xxx
 * `info=`xxx (optional, values: `auth`, `mailbox`, `folder`)
+* `type=`xxx (optional, values: `user`, `role`)
 
 ### usages
 * userinfo

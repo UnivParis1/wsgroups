@@ -145,7 +145,9 @@ function _ldap_entry_remap($entry, $attributes_map) {
       $ldap_attr_ = strtolower($ldap_attr);
       if (isset($entry[$ldap_attr_])) {
 	$vals = $entry[$ldap_attr_];
-	if ($attr == "MULTI") {
+	if ($ldap_attr === 'dn') {
+	  $map[$attr] = $vals;
+	} else if ($attr == "MULTI") {
 	  // no remapping, but is multi-valued attr
 	  unset($vals["count"]);
 	  $map[$ldap_attr] = $vals;

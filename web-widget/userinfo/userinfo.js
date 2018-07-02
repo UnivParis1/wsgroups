@@ -597,7 +597,7 @@ function formatLastLogins(info, data, div) {
     } else if (lastErrs.length) {
 	div.append(", " + important(lastErrs.length + " login en échecs depuis " + formatDateTime(lastErrs.reverse()[0].time)));
     } else {
-	if (info.accountStatus === "active") 
+	if (info.accountStatus === "active" && !info.isRole) 
 	    div.text(", aucune tentative de login depuis " + formatDateTime(since));
     }
     if (data.list.length) {
@@ -757,7 +757,7 @@ function get_Responsable(info) {
 function get_mailbox_folder_Info(info, fInfo) {
     var infoDiv = fInfo.Mailbox = $("<div>...</div>");
     fInfo.Folder = $("<div>...</div>");
-    asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "mailbox,folder" }, infoDiv, function (data) {
+    asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "mailbox,folder", type: info.isRole ? "role" : "user" }, infoDiv, function (data) {
 	    var moreInfo = data && data[info.uid];
 	    if (!moreInfo) {
 		infoDiv.text("user not found (??)");
@@ -818,11 +818,13 @@ function compute_Account_and_accountStatus(info, fInfo) {
 	    fInfo.accountStatus = spanFromList([important('NON ACTIVE', 'status-non-active')]);
 	}
 	if (info.shadowLastChange) {
-	    fInfo.Account = important("LDAP", 'non-kerberos') + ", mot de passe changé le " + formadate(info.shadowLastChange);
-	}
+	    fInfo.Account = (info.isRole ? '' : important("LDAP", 'non-kerberos') + ", ") + "mot de passe changé le " + formadate(info.shadowLastChange);
+	} else if (info.isRole) {
+        fInfo.Account = "pas de mot de passe";
+    }
     }
     if (!info.accountStatus || info.accountStatus === "active") {
-	if (!info.eduPersonAffiliation)
+	if (!info.eduPersonAffiliation && !info.isRole)
 	    fInfo.accountStatus.append(" (" + important('il manque eduPersonAffiliation', 'no-affiliation') + ")");
     }
     if (info.allowExtendedInfo > 1)
@@ -858,7 +860,7 @@ function format_up1Roles(val) {
     });
     return spanFromList($.map(mail2roles, function (roles, mail) {
 	return $("<span>", { title: mail2descr[mail] })
-	    .append(format_mail(mail))
+	    .append($("<a>", { href: "#" + mail }).text(mail))
 	    .appendText(" (" + roles.join(", ") + ")");
     }), "<br>");
 }
@@ -956,9 +958,9 @@ function formatUserInfo(info) {
 
     if (info.allowExtendedInfo >= 1) get_mailbox_folder_Info(info, fInfo);
 
-    if (info.allowExtendedInfo >= 1) fInfo["Photo"] = "<img src='" + userphotoUrl + "?app-cli=userinfo&uid=" + info.uid + "'>";
+    if (info.allowExtendedInfo >= 1 && !info.isRole) fInfo["Photo"] = "<img src='" + userphotoUrl + "?app-cli=userinfo&uid=" + info.uid + "'>";
 
-    if (info.accountStatus === "active" && info.allowExtendedInfo >= 1) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
+    if (info.accountStatus === "active" && info.allowExtendedInfo >= 1 && !info.isRole) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
 
     return fInfo;
 }
@@ -1033,6 +1035,9 @@ new Vue({
             }
         },
         text: function (msg, info) {
+            if (info) {
+                info.isRole = (info.dn || '').match(/,ou=roles,/);
+            }
             this.result = { msg: msg, info: info };
         },
         asyncInfo: function () {
@@ -1047,6 +1052,7 @@ new Vue({
                 token: user.value,
                 showErrors: this.showExtendedInfo,
                 allowInvalidAccounts: true,
+                allowRoles: true,
                 showExtendedInfo: this.showExtendedInfo
             };
             var that = this;

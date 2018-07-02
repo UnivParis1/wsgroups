@@ -250,13 +250,14 @@ function allowListeRouge($allowExtendedInfo) {
     }
 }
 
-function searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs, $KEY_FIELD, $maxRows) {
-    global $PEOPLE_DN, $SEARCH_TIMELIMIT;
+function searchPeopleRaw($filter, $allowListeRouge, $allowRoles, $wanted_attrs, $KEY_FIELD, $maxRows) {
+    global $BASE_DN, $PEOPLE_DN, $SEARCH_TIMELIMIT;
     if (!$allowListeRouge) {
 	// we need the attr to anonymize people having supannListeRouge=TRUE
 	$wanted_attrs['supannListeRouge'] = 'supannListeRouge';
     }
-    $r = getLdapInfoMultiFilters($PEOPLE_DN, $filter, $wanted_attrs, $KEY_FIELD, $maxRows, $SEARCH_TIMELIMIT);
+    if ($allowRoles) $wanted_attrs['dn'] = 'dn';
+    $r = getLdapInfoMultiFilters($allowRoles ? $BASE_DN : $PEOPLE_DN, $filter, $wanted_attrs, $KEY_FIELD, $maxRows, $SEARCH_TIMELIMIT);
     if (!$allowListeRouge) {
       foreach ($r as &$e) {
 	if (!isset($e["supannListeRouge"])) continue;
@@ -299,7 +300,7 @@ function attrRestrictions($allowExtendedInfo = 0) {
 function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $maxRows) {
     $allowListeRouge = @$attrRestrictions['allowListeRouge'];
     $wanted_attrs_raw = wanted_attrs_raw($wanted_attrs);
-    $r = searchPeopleRaw($filter, $allowListeRouge, $wanted_attrs_raw, $KEY_FIELD, $maxRows);
+    $r = searchPeopleRaw($filter, $allowListeRouge, @$attrRestrictions['allowRoles'], $wanted_attrs_raw, $KEY_FIELD, $maxRows);
     foreach ($r as &$user) {
       // we want to hide 'mail' when accountStatus is unset
       if (@$user['mail'] && !@$user['accountStatus'])
