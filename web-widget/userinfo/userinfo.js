@@ -75,6 +75,8 @@ var main_attrs_labels = [ [
     'shadowExpire: Expire le',
     'createTimestamp: Compte créé',
     'modifyTimestamp: Dernière modification',
+    'up1Source: Profile',
+    'up1Profile: Profiles',
 ],
 [
     'Mailbox: Boîte mail',
@@ -214,6 +216,8 @@ var simple_formatters = {
     'supannParrainDN-all': format_supannCodeEntite,
     'supannEntiteAffectation-all': format_supannEntiteAffectation,
     mailForwardingAddress: compute_MailDelivery,
+    up1Profile: format_main_profiles_info,
+    up1Source: function (_, info) { return format_main_profile_info(info) },
 };
 
 var diacriticsMap = [
@@ -414,6 +418,10 @@ function formadate(epoch) {
     return formatDateRaw(d);
 }
 
+function format_YYYYmmdd(date) {
+    return date.replace(/^(\d\d\d\d)(\d\d)(\d\d)$/, "$3/$2/$1");
+}
+
 function formadelai(date1, date2) {
     var delai = date2 - date1;
     return delai < 90 ? Math.round(delai) + " jours" :
@@ -432,6 +440,16 @@ function compute_MailDelivery(fwd, info) {
     var is_copy = $.inArray('mailbox', info.mailDeliveryOption) != -1;
     return (is_copy ? "copies vers " : "redirigée vers ") + 
 	(fwd[0] === 'supannListeRouge' ? "une adresse mail" : fwd.join(", "));
+}
+
+function format_main_profile_info(info) {
+    return $("<span>").appendText(
+         (info.up1StartDate ? "du " + format_YYYYmmdd(info.up1StartDate) : '') + (info.up1EndDate ? " au " + format_YYYYmmdd(info.up1EndDate) : '')
+    ).append($("<span>", { title: info.up1Priority }).text(" " + info.up1Source))
+}
+
+function format_main_profiles_info(profiles) {
+    return spanFromList(profiles.map(format_main_profile_info), "<br>");
 }
 
 function compute_Affiliation(info) {
