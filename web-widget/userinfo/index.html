@@ -17,7 +17,7 @@
 	    <div class='ui-widget'>
 		    <label for='all'>Saisissez le nom et/ou prénom d'un étudiant ou d'un personnel</label>
 		    <span class='token-autocomplete'>
-                <input name='all' autofocus placeholder='Nom prénom'>
+                <input name='all' :autofocus="'autofocus'" placeholder='Nom prénom'>
             </span>
             <select v-model="showExtendedInfo" v-if="allowExtendedInfo >= 1">
                 <option value='2' v-if="allowExtendedInfo >= 2">Niveau 2</option>"
