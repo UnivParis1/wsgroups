@@ -839,7 +839,7 @@ function compute_Account_and_accountStatus(info, fInfo) {
 	if (info.shadowLastChange) {
 	    fInfo.Account = (info.isRole ? '' : important("LDAP", 'non-kerberos') + ", ") + "mot de passe changé le " + formadate(info.shadowLastChange);
 	} else if (info.isRole) {
-        fInfo.Account = "pas de mot de passe";
+        fInfo.Account = "accès en délégation seule";
     }
     }
     if (!info.accountStatus || info.accountStatus === "active") {
