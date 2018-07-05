@@ -38,7 +38,7 @@ var main_attrs_labels = [ [
     'eduPersonEntitlement: Formation spéciale',
 
     //les attributs renvoyant des DN
-    'seeAlso: Rattachement',
+    'seeAlso-all: Rattachement',
     'supannParrainDN-all: Parrainé par',
 
     // les attributs faisant appel aux tables de nomenclature LDAP
@@ -213,6 +213,7 @@ var simple_formatters = {
     buildingName: format_buildingName,
     labeledURI: format_link,
     'memberOf-all': format_memberOf,
+    'seeAlso-all': format_supannCodeEntite,
     'supannParrainDN-all': format_supannCodeEntite,
     'supannEntiteAffectation-all': format_supannEntiteAffectation,
     mailForwardingAddress: compute_MailDelivery,
@@ -850,11 +851,11 @@ function compute_Account_and_accountStatus(info, fInfo) {
 
     if (fInfo.shadowFlag) {
         fInfo.accountStatus.append(" (").append(fInfo.shadowFlag);
-        if (info.seeAlso) {
+        if (info['seeAlso-all']) {
             fInfo.accountStatus.append(" de ");
-            info.seeAlso.forEach(function (dn) {
-                var uid = dn2uid(dn);
-                fInfo.accountStatus.append($("<a>", { href: '#' + encodeURIComponent(uid) }).text(uid));
+            info['seeAlso-all'].forEach(function (e) {
+                var uid = dn2uid(e.key);
+                fInfo.accountStatus.append($("<a>", { href: '#' + encodeURIComponent(uid) }).text(e.name));
             });
         }
         fInfo.accountStatus.append(")");

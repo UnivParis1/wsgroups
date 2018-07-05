@@ -61,7 +61,7 @@ $attrs_by_kind = [
 
 	'objectClass',
 	'labeledURI',
-    'seeAlso',
+    'seeAlso', 'seeAlso-all',
     
     'up1Profile', // will be filtered
   ],
@@ -583,6 +583,10 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
       else if (isset($wanted_attrs['supannEntiteAffectation']))
 	  // deprecated
 	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
+  }
+  if (isset($user['seeAlso'])) {
+      if (isset($wanted_attrs['seeAlso-all']))
+        $user['seeAlso-all'] = getDNs(replace_old_structures_DN($user['seeAlso']));
   }
   if (isset($user['supannParrainDN'])) {
       if (isset($wanted_attrs['supannParrainDN-all']))
