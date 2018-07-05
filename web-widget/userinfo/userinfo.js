@@ -715,7 +715,7 @@ function format_mailboxInfo(mailboxes, infoDiv) {
 function format_folderInfo(folder, infoDiv) {
     infoDiv.empty();
     if (!folder) {
-        infoDiv.appendText("aucun");
+        infoDiv.appendText("Taux d'occupation non disponible");
     } else if (folder.quota) {
         infoDiv.append(format_quota(folder.quota));
     }
