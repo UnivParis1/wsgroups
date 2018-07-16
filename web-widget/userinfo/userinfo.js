@@ -110,7 +110,7 @@ var sub_attrs_labels = {
     [ 'supannEmpId: numéro agent'
     , 'supannEtuId: code étudiant'
     , 'supannCodeINE: INE'
-    , 'uidNumber: UID'
+    , 'uidNumber: UID NAS'
     , 'employeeNumber: code-barre'
   //, 'eduPersonPrincipalName: EPPN'
     ]
