@@ -423,7 +423,7 @@ function unescape_sharpFF($attr_value) {
 }
 
 function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs) {
-    global $up1Profile_rename, $USER_ALLOWED_ATTRS;
+    global $USER_ALLOWED_ATTRS;
     $r = [];
     while (preg_match('/^\[([^\[\]=]+)=((?:[^\[\]]|\[[^\[\]]*\])*)\](.*)/', $up1Profile, $m)) {
         $key = $m[1]; $val = $m[2]; $up1Profile = $m[3];
