@@ -154,12 +154,12 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
 
         if (mb_strlen($token) > 3) {
             // too short strings are useless
-            $l[] = "(|(displayName=*$token*)(cn=*$token*)(up1BirthName=*$token*))";
+            $l[] = "(|(displayName=*$token*)(cn=*" . lowercase_and_stripAccents($token) . "*)(up1BirthName=*$token*))";
             $tokens = preg_split("/[\s']+/", $token);
             if (sizeof($tokens) === 2) {
                 $tokens = array($tokens[1], $tokens[0]);
                 $search = implode('*', $tokens);
-                $l[] = "(|(displayName=*$search*)(cn=*$search*))";
+                $l[] = "(|(displayName=*$search*)(cn=*" . lowercase_and_stripAccents($search) . "*))";
             }
         }
     }

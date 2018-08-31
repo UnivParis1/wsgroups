@@ -342,4 +342,23 @@ function getAndUnset(&$a, $prop) {
   }
 }
 
+function lowercase_and_stripAccents($s) {
+    return str_replace([
+        'à', 'â', 'ä', 'á', 'ã', 'å',
+        'î', 'ï', 'ì', 'í',
+        'ô', 'ö', 'ò', 'ó', 'õ', 'ø',
+        'ù', 'û', 'ü', 'ú',
+        'é', 'è', 'ê', 'ë',
+        'ç', 'ÿ', 'ñ',
+    ], [
+        'a', 'a', 'a', 'a', 'a', 'a',
+        'i', 'i', 'i', 'i',
+        'o', 'o', 'o', 'o', 'o', 'o',
+        'u', 'u', 'u', 'u',
+        'e', 'e', 'e', 'e',
+        'c', 'y', 'n',
+    ], mb_strtolower($s, 'UTF-8'));
+}
+
+
 ?>
