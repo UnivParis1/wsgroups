@@ -273,6 +273,9 @@
 		    response([ { warning: true, wsError: true } ]);
 		},
 		success: function (dataAll) {
+                    if (options.modifyResults) {
+                        dataAll = options.modifyResults(dataAll, wsParams.token);
+                    }
 		    data = $.grep(dataAll, function (item, i) { 
 			return item.displayName !== "supannListeRouge"; 
 		    });
