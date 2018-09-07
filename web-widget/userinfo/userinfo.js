@@ -1107,7 +1107,7 @@ new Vue({
             input.autocompleteUser(searchUserURL, { 
                 select: select, disableEnterKey: true, 
                 wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
-                wsParams: { showErrors: this.allowInvalidAccounts, allowNoAffiliationAccounts: true, allowInvalidAccounts: this.allowInvalidAccounts || undefined },
+                wsParams: { showExtendedInfo: true, showErrors: this.allowInvalidAccounts, allowNoAffiliationAccounts: true, allowInvalidAccounts: this.allowInvalidAccounts || undefined },
             });
             input.attr('placeholder', 'Nom prénom'); // why?
             input.handlePlaceholderOnIE();
