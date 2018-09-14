@@ -1076,6 +1076,10 @@ new Vue({
             };
             var that = this;
             asyncInfoRaw(searchUserURL, wsParams, this, function (data) {
+                if (data.length > 1) {
+                    var sub = data.filter(function (u) { return user.value === u.uid });
+                    if (sub.length) data = sub;
+                }
                 if (data.length == 0) {
                     that.text("user not found (??)");
                 } else if (data.length > 1) {
