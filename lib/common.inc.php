@@ -195,6 +195,7 @@ function initPhpCAS() {
 function forceCASAuthentication() {
   initPhpCAS();
   //phpCAS::setNoClearTicketsFromUrl(); // ensure things work without cookies (for safari on cross-domain)
+  phpCAS::handleLogoutRequests(false);
   phpCAS::forceAuthentication();
 
   if (isset($_REQUEST['logout'])) {
