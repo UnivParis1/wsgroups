@@ -159,7 +159,9 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
             if (sizeof($tokens) === 2) {
                 $tokens = array($tokens[1], $tokens[0]);
                 $search = implode('*', $tokens);
-                $l[] = "(|(displayName=*$search*)(cn=*" . lowercase_and_stripAccents($search) . "*))";
+                $short_tokens = array_filter($tokens, function ($s) { return mb_strlen($s) <= 3; });
+                $x = sizeof($short_tokens) === 0 ? '*' : '';
+                $l[] = "(|(displayName=$x$search$x)(cn=$x" . lowercase_and_stripAccents($search) . "$x))";
             }
         }
     }
