@@ -124,6 +124,14 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
     return $wanted_attrs;
 }
 
+function roomNumber_filter($normalized_token, $ext) {
+    $or = [];
+    foreach ($ext ? [ ' ' . trim($ext) ] : [ '', ' bis', ' ter' ] as $ext) {
+        $or[] = "(roomNumber=$normalized_token$ext)";
+    }
+    return ldapOr($or);
+}
+
 function people_filters($token, $restriction = [], $allowInvalidAccounts = false, $allowNoAffiliationAccounts = false) {
     if (!$allowInvalidAccounts) $restriction[] = $allowNoAffiliationAccounts ? '(|(accountStatus=active)(!(accountStatus=*)))' : '(eduPersonAffiliation=*)';
 
@@ -144,6 +152,9 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
     } else if (preg_match('/^\d+$/', $token, $matches)) {
         $l[] = "(|(supannEmpId=$token)(supannEtuId=$token))";
 
+        if (strlen($token) <= 4) {
+            $l[] = roomNumber_filter($token, null);
+        }
         // barcode?
         if (strlen($token) === 12) { // codification unique UNPIdF, used at Paris1
             $l[] = "(employeeNumber=$token)";
@@ -151,6 +162,12 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
     } else {
         $l[] = "(uid=$token)";
         $l[] = "(sn=$token)";
+
+        if (preg_match('/^([A-Z])\.? ?([0-9]+)( ?bis| ?ter)?$/i', $token, $matches) ||
+            preg_match('/^([0-9]{1,4}) ?\.?([A-Z])?( ?bis| ?ter)?$/i', $token, $matches)) {
+            list($_ignore, $a, $b, $ext) = $matches;
+            $l[] = roomNumber_filter($a . ($b ? " " . trim($b) : ''), $ext);
+        }
 
         if (mb_strlen($token) > 3) {
             // too short strings are useless
