@@ -29,6 +29,10 @@ span.important {
     color: red;
     font-weight: bold;
 }
+span.notice {
+    color: orange;
+    font-weight: bold;
+}
 
 a.help {
     display: none;

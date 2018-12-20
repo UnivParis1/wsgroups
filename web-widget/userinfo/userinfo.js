@@ -100,6 +100,7 @@ var main_attrs_labels = [ [
     'Photo: Photo',
 ],
 [
+    'Listes: Listes',
     'memberOf-all: Groupes',
     'Applications: Applications',
 ]
@@ -164,8 +165,8 @@ function buildingNameToUrl(buildingName) {
     return trigramme && ("http://www.univ-paris1.fr/universite/campus/detail-campus/" + trigramme + "/");
 }
 
-function important(s, helpPage) {
-    var span = "<span class='important'>" + s + "</span>";
+function important(s, helpPage, className) {
+    var span = "<span class='" + (className || "important") + "'>" + s + "</span>";
     if (helpPage) {
 	var url = helpUrl.replace('HELP_ID', helpPage);
 	var openOptions = 'toolbar=no,scrollbars=yes,alwaysRaised,width=1000,height=400';
@@ -351,6 +352,10 @@ function asciifie(s) {
 
 function rejectEmpty(l) {
     return $.grep(l, function (v) { return v });
+}
+
+function array_includes(array, valueToFind) {
+    return $.inArray(valueToFind, array) !== -1;
 }
 
 function partition(l, f) {
@@ -669,6 +674,76 @@ function format_kerberosInfo(info, auth, div) {
     });
 }
 
+function format_lists_one(div, slists, isMainMail) {
+    var warnings = {
+        reception_nomail: { level: 'important', text: "Réception désactivée" },
+        reception_various: { level: 'notice', text: "Réception modifiée" },
+        bounce30: { level: 'notice', text: "Problèmes d'envoi" },
+        bounce50: { level: 'important', text: "Envoi en échec" },
+        suspend: { level: 'important', text: "Abonnement suspendu" },
+        since7: { level: 'notice', text: "Abonnement récent" },
+        since1: { level: 'important', text: "Abonné aujourd'hui" },
+        none: { level: '', text: "Pas de warning" },
+    };
+    slists.forEach(function (opts) {
+        var has_warning = false;
+        function add(warning) {
+            if (!warnings[warning]) warnings[warning] = { level: 'notice', text: warning };
+            if (!warnings[warning].l) warnings[warning].l = [];
+            warnings[warning].l.push(opts.name);
+            has_warning = true;
+        }
+        
+        if (!isMainMail) add(opts.mail);
+        if (opts.reception) {
+            if (opts.reception === 'nomail') add('reception_nomail');
+            else if (!array_includes(['mail', 'default', 'urlize'], opts.reception)) add('reception_various');
+        }
+        if (opts.bounce && opts.bounce > 50) add('bounce50');
+        else if (opts.bounce && opts.bounce > 30) add('bounce30');
+        if (opts.suspend) add('suspend');
+        if (opts.since) {
+            var delta_days = (new Date().getTime() / 1000 - opts.since) / 3600 / 24;
+            if (delta_days < 1) add('since1');
+            else if (delta_days < 7) add('since7');
+        }
+        if (!has_warning) add('none');
+    });
+    var ul = $("<ul>");
+    Object.keys(warnings).forEach(function (warning) {    
+        var e = warnings[warning];
+        if (e.l) {
+            var li = $('<li>');
+            if (e.level) {
+                li.append(important(e.text, undefined, e.level));
+                li.appendText(" : " + e.l.join(', '));
+            } else {
+                li.appendText(e.text + " : ");
+                li.append($("<span>", { title: e.l.join(', ') }).appendText(e.l.length + " listes "));
+            }
+            ul.append(li);
+        }
+    });
+    div.append("<b>" + (isMainMail ? "Avec l'adresse mél de l'établissement" : "Avec une autre adresse") + "</b> : ");
+    div.append(ul);
+    div.append("<p>");
+}
+function format_lists(info, lists, div) {
+    var withMainMail = [];
+    var withoutMailMail = [];
+    $.each(lists, function (mail, slists) { 
+        var o = (mail === (info.mail || "").toLowerCase() ? withMainMail : withoutMailMail);
+        Object.keys(slists).sort().forEach(function (name) {
+            var opts = slists[name];
+            opts.mail = mail;
+            opts.name = name;
+            o.push(opts);
+        });
+    });
+    if (withMainMail.length) format_lists_one(div, withMainMail, true);
+    if (withoutMailMail.length) format_lists_one(div, withoutMailMail, false);
+}
+
 function format_quota(quota) {
     var size = quota.size;
     var txt = '';
@@ -751,6 +826,19 @@ function get_kerberosInfo(info, infoDiv) {
 		infoDiv.empty().append(format_kerberosInfo(info, moreInfo.auth, infoDiv));
 	    }
     });
+}
+    
+function get_lists(info) {
+    var infoDiv = $("<span>...</span>");
+    asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "lists" }, infoDiv, function (data) {
+	    var moreInfo = data && data[info.uid];
+	    if (!moreInfo) {
+		infoDiv.text("user not found (??)");
+	    } else {
+		infoDiv.empty().append(format_lists(info, moreInfo.lists, infoDiv));
+	    }
+    });
+    return infoDiv;
 }
 
 function get_Responsable(info) {
@@ -945,7 +1033,7 @@ function format_link(link) {
     return a_or_span(link, link);
 }
 
-function formatUserInfo(info) {
+function formatUserInfo(info, showExtendedInfo) {
     //if (info.roomNumber) info.postalAddress = info.roomNumber + ", " + info.postalAddress;
     
     var fInfo = {};
@@ -976,6 +1064,8 @@ function formatUserInfo(info) {
     });
 
     if (info.allowExtendedInfo >= 1) get_mailbox_folder_Info(info, fInfo);
+
+    if (showExtendedInfo >= 2) fInfo.Listes = get_lists(info);
 
     if (info.allowExtendedInfo >= 1 && !info.isRole) fInfo["Photo"] = "<img src='" + userphotoUrl + "?app-cli=userinfo&uid=" + info.uid + "'>";
 
@@ -1043,7 +1133,7 @@ new Vue({
             this.asyncInfo();
         },
         'user_info': function () {
-            this.user_fInfo = this.user_info ? formatUserInfo(this.user_info) : {};
+            this.user_fInfo = this.user_info ? formatUserInfo(this.user_info, this.showExtendedInfo) : {};
         },
     },
     methods: {
