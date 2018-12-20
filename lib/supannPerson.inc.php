@@ -260,6 +260,12 @@ function isPersonMatchingFilter($uid, $filter) {
     return existsLdap($PEOPLE_DN, "(&(uid=$uid)" . $filter . ")");
 }
 
+function loggedUserAllowedLevel() {
+    global $LEVEL1_FILTER, $LEVEL2_FILTER;
+    return isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER) ?
+        (isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER) ? 2 : 1) : 0;
+}
+
 function allowListeRouge($allowExtendedInfo) {
     if ($allowExtendedInfo > 0 || @$isTrustedIp) {
         return true;

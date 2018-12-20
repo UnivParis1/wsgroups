@@ -14,14 +14,7 @@ $allowRoles = GET_or_NULL("allowRoles");
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
 if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && GET_uid()) {
-  global $LEVEL1_FILTER, $LEVEL2_FILTER;
-  if (isPersonMatchingFilter(GET_uid(), $LEVEL1_FILTER)) {
-    if (isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
-      $allowExtendedInfo = 2;
-    } else {
-      $allowExtendedInfo = 1;
-    }
-  }
+  $allowExtendedInfo = loggedUserAllowedLevel();
 }
 
 $extendedInfo = $allowExtendedInfo;
