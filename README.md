@@ -165,6 +165,7 @@ The first part of a group key is the *category*.
 * `filter_student=no` (equivalent to filter_not_supannEntiteAffectation=student)
 * `filter_student=only` (equivalent to filter_supannEntiteAffectation=student)
 * `allowRoles=true`
+* `format=vcard` (by default users are exported in JSON/JSONP, forces a different format)
 
 params allowed if casified user member of `$LEVEL1_FILTER` & `$LEVEL2_FILTER`:
 * `showExtendedInfo=true`

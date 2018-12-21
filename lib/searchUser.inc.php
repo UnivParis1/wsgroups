@@ -4,6 +4,7 @@ require_once ('lib/supannPerson.inc.php');
 
 $token = GET_ldapFilterSafe_or("token", '');
 $attrs = GET_or_NULL("attrs");
+$format = GET_or_NULL("format");
 $anonymous = !(@$isTrustedIp || GET_uid());
 $maxRows = !$anonymous ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 10);
 $showErrors = GET_or_NULL("showErrors");
@@ -42,6 +43,11 @@ if ($allowExtendedInfo) {
   foreach ($users as &$u) $u["allowExtendedInfo"] = $allowExtendedInfo;
 }
 
-echoJson($users);
+if ($format === 'vcard') {
+    require_once 'lib/vcard.inc.php';
+    echo_vcard($users);
+} else {
+    echoJson($users);
+}
 
 ?>

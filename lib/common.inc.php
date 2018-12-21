@@ -361,5 +361,8 @@ function lowercase_and_stripAccents($s) {
     ], mb_strtolower($s, 'UTF-8'));
 }
 
+function isAscii($str) {
+    return !preg_match('/[^\x00-\x7F]/', $str);
+}
 
 ?>
