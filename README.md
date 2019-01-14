@@ -170,7 +170,7 @@ The first part of a group key is the *category*.
 params allowed if casified user member of `$LEVEL1_FILTER` & `$LEVEL2_FILTER`:
 * `showExtendedInfo=true`
 * `showErrors=true`
-* `allowInvalidAccounts=true`
+* `allowInvalidAccounts=true|all`
 
 ### known usages:
 

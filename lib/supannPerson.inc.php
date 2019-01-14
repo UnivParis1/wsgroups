@@ -133,7 +133,10 @@ function roomNumber_filter($normalized_token, $ext) {
 }
 
 function people_filters($token, $restriction = [], $allowInvalidAccounts = false, $allowNoAffiliationAccounts = false) {
-    if (!$allowInvalidAccounts) $restriction[] = $allowNoAffiliationAccounts ? '(|(accountStatus=active)(!(accountStatus=*)))' : '(eduPersonAffiliation=*)';
+    if ($allowInvalidAccounts !== 'all') {
+        $restriction[] = $allowInvalidAccounts ? '(&(objectClass=inetOrgPerson)(!(shadowFlag=2))(!(shadowFlag=8)))' : // ignore dupes/deceased
+                     ($allowNoAffiliationAccounts ? '(|(accountStatus=active)(!(accountStatus=*)))' : '(eduPersonAffiliation=*)');
+    }
 
     $l = array();
 

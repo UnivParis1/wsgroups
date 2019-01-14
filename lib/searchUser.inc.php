@@ -31,7 +31,7 @@ if ($allowExtendedInfo >= 1) {
 $restriction = GET_extra_people_filter_from_params();
 $wanted_attrs = people_attrs($attrs, $extendedInfo);
 
-if ($allowInvalidAccounts) $allowInvalidAccounts = $extendedInfo >= 1;
+if ($allowInvalidAccounts && $extendedInfo < 1) $allowInvalidAccounts = false;
 
 $attrRestrictions = attrRestrictions($extendedInfo);
 $attrRestrictions['allowRoles'] = $allowRoles;
