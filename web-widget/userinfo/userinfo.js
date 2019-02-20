@@ -10,7 +10,7 @@ helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://d
 var impersonateUrl = 'https://ent-test.univ-paris1.fr/EsupUserApps/impersonate.html';
 var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudiant.jsp?config=apoprod&cod_etu=';
 var userphotoUrl = 'https://userphoto-test.univ-paris1.fr/';
-var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&membershipType=immediate&groupName=';
+var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&groupName=';
 
 function parse_attrs_text(l) {
     return $.map(l, function (attr_text) {
