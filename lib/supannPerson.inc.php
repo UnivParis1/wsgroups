@@ -270,6 +270,7 @@ function loggedUserAllowedLevel() {
 }
 
 function allowListeRouge($allowExtendedInfo) {
+    global $isTrustedIp;
     if ($allowExtendedInfo > 0 || @$isTrustedIp) {
         return true;
     } else {
