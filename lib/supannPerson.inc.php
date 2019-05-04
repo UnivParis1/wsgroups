@@ -11,7 +11,7 @@ $attrs_by_kind = [
     'uid', 'mail', 'displayName', 'cn', 'eduPersonPrimaryAffiliation', 
 	'postalAddress', 'eduPersonPrincipalName',
 	'sn', 'givenName',
-    'supannEntiteAffectationPrincipale',
+    'supannEntiteAffectationPrincipale', 'supannEntiteAffectationPrincipale-all',
 	'supannCivilite', 
 	'supannListeRouge',
 	'supannAliasLogin',
@@ -611,6 +611,9 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
       else if (isset($wanted_attrs['supannEntiteAffectation']))
 	  // deprecated
 	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
+  }
+  if (isset($user['supannEntiteAffectationPrincipale-all'])) {
+      $user['supannEntiteAffectationPrincipale-all'] = structureAll([$user['supannEntiteAffectationPrincipale-all']])[0];
   }
   if (isset($user['seeAlso'])) {
       if (isset($wanted_attrs['seeAlso-all']))
