@@ -310,7 +310,7 @@ function wanted_attrs_raw($wanted_attrs) {
     $r = array();
     foreach ($wanted_attrs as $attr => $v) {
 	$attr_raw = preg_replace('/-.*/', '', $attr);
-	$r[$attr_raw] = $v;
+	$r[$attr_raw] = preg_replace('/-.*/', '', $v);
     }
     return $r;
 }
@@ -613,9 +613,13 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
 	  // deprecated
 	  $user['supannEntiteAffectation'] = structureShortnames($supannEntiteAffectation);
   }
-  if (isset($user['supannEntiteAffectationPrincipale-all'])) {
-      $user['supannEntiteAffectationPrincipale-all'] = structureAll([$user['supannEntiteAffectationPrincipale-all']])[0];
-  }
+  if (isset($user['supannEntiteAffectationPrincipale'])) {
+    if (isset($wanted_attrs['supannEntiteAffectationPrincipale-all'])) {
+        $user['supannEntiteAffectationPrincipale-all'] = structureAll([$user['supannEntiteAffectationPrincipale']])[0];
+    }
+    if (!isset($wanted_attrs['supannEntiteAffectationPrincipale']))
+        unset($user['supannEntiteAffectationPrincipale']);
+}
   if (isset($user['seeAlso'])) {
       if (isset($wanted_attrs['seeAlso-all']))
         $user['seeAlso-all'] = getDNs(replace_old_structures_DN($user['seeAlso']));
