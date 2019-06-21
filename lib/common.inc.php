@@ -56,6 +56,13 @@ function ldapOr($l) {
   return count($l) > 1 ? "(|$r)" : $r;
 }
 
+function apply_restrictions_to_filters($filters, $restrictions) {
+  $r = array();
+  foreach ($filters as $filter)
+    $r[] = ldapAnd(array_merge([$filter], $restrictions));    
+  return $r;
+}
+
 function wordsFilterRaw($searchedAttrs, $token) {
   $and = array();
   $words = preg_split("/[\s,]+/", $token, -1, PREG_SPLIT_NO_EMPTY);

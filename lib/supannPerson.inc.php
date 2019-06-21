@@ -186,10 +186,7 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
         }
     }
 
-    $r = array();
-    foreach ($l as $cond)
-      $r[] = ldapAnd(array_merge([$cond], $restriction));    
-    return $r;
+    return apply_restrictions_to_filters($l, $restriction);
 }
 
 function GET_extra_people_filter_from_params() {
