@@ -435,9 +435,13 @@ function formadelai(date1, date2) {
 	Math.round(delai/365.2421875) + " ans";
 }
 
-function format_timestamp(timestamp) {
+function timestamp_to_Date(timestamp) {
     var date = timestamp.replace(/(....)(..)(..)(..)(..)(.*)/, "$1-$2-$3T$4:$5:$6");
-    var d = new Date(date);
+    return new Date(date);
+}
+
+function format_timestamp(timestamp) {
+    var d = timestamp_to_Date(timestamp);
     var text = "le " + formatDateRaw(d) + " à " + formatTimeHHhMM(d);
     return $("<span>", { title: timestamp }).text(text);
 }
@@ -546,6 +550,17 @@ function format_shadowExpire(val) {
     return formadate(val) + " (" + delta + ")";
 }
 
+function addYears(date, years) {
+    var r = new Date(date);
+    r.setFullYear(r.getFullYear() + years)
+    return r;
+}
+    
+function is_not_adult(timestamp) {
+    var birthDate = timestamp_to_Date(timestamp);
+    return birthDate && addYears(birthDate, 18) >= new Date();
+}
+
 function compute_Person(info) {
     var displayName = info.displayName || info.sn && info.givenName && info.givenName + " " + info.sn || "<INCONNU>";
     var person = (info.supannCivilite ? info.supannCivilite + " " : '') + displayName;
@@ -558,10 +573,13 @@ function compute_Person(info) {
 		civilite.match(/Mme|Mlle/) ? "née" : "né(e)";
 	    person = person + ", " + nee +
 		(birthName ? " " + birthName : '') +
-		(info.up1BirthDay ? " le " + formagtime(info.up1BirthDay) : '');
+		(info.up1BirthDay ? " le " + formagtime(info.up1BirthDay) : '')
 	}
 
     var Person = $("<span>").text(person); 
+    if (info.up1BirthDay && is_not_adult(info.up1BirthDay)) {
+        Person.append(" " + important(civilite.match(/Mme|Mlle/) ? "MINEURE" : "MINEUR", "moins-de-18-ans"));
+    }
 	Person.attr('title', 'Prénom : ' + info.givenName + (info.up1AltGivenName ? " (" + info.up1AltGivenName.join(' ') + ")" : '') + ", Nom : " + info.sn + ", Complet : " + info.cn);
     return Person;
 }
