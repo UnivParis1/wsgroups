@@ -1163,7 +1163,7 @@ new Vue({
         },
         text: function (msg, info) {
             if (info) {
-                info.isRole = (info.dn || '').match(/,ou=roles,/);
+                info.isRole = (info.objectClass || []).includes('up1Role');
             }
             this.result = { msg: msg, info: info };
         },
