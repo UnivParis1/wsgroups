@@ -203,7 +203,7 @@ function GET_extra_people_filter_from_params() {
     else if ($val === "only") $filters["eduPersonAffiliation"] = $attr;
     else exit("invalid filter_$attr value $val");
   }
-  foreach (array("mail", "labeledURI") as $attr) {
+  foreach (array("mail", "labeledURI", 'supannEmpId') as $attr) {
     $val = GET_or_NULL("filter_$attr");
     if ($val === null) continue;
     else if ($val === "*") $filters[$attr] = "*";
