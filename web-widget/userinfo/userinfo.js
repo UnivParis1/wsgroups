@@ -453,9 +453,9 @@ function compute_MailDelivery(fwd, info) {
 }
 
 function format_main_profile_info(info) {
-    return $("<span>").appendText(
-         (info.up1StartDate ? "du " + format_YYYYmmdd(info.up1StartDate) : '') + (info.up1EndDate ? " au " + format_YYYYmmdd(info.up1EndDate) : '')
-    ).append($("<span>", { title: info.up1Priority }).text(" " + info.up1Source))
+    return $("<span>").append($("<span>", { title: info.up1Priority }).text(info.up1Source)).appendText(
+        (info.up1StartDate ? " du " + format_YYYYmmdd(info.up1StartDate) : '') + (info.up1EndDate ? " au " + format_YYYYmmdd(info.up1EndDate) : '')
+    )
 }
 
 function format_main_profiles_info(profiles) {
