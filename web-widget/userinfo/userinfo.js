@@ -544,10 +544,17 @@ function format_memberOf(all) {
     }), "<br>");
 }
 
-function format_shadowExpire(val) {
+function format_shadowExpire(val, info) {
     var today = todayEpochDay();
-    var delta = val <= today ? important("EXPIRE") : "dans " + formadelai(today, val);
-    return formadate(val) + " (" + delta + ")";
+    if (val <= today) {
+        return formadate(val) + " (" + important("EXPIRE") + ")";
+    } else {
+        var delai = formadelai(today, val);
+        if (delai === "6 mois" && (info.up1Profile || []).find(function (p) { return p.up1Source.match(/^\{HARPEGE\}/) })) {
+            return "date inconnue (compte prolongé au fur et à mesure)";
+        }
+        return formadate(val) + " (dans " + delai + ")";
+    }
 }
 
 function addYears(date, years) {
