@@ -33,6 +33,9 @@ span.notice {
     color: orange;
     font-weight: bold;
 }
+span.info {
+    font-size: 80%;
+}
 
 a.help {
     display: none;
