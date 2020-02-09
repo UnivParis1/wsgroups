@@ -453,13 +453,37 @@ function compute_MailDelivery(fwd, info) {
 }
 
 function format_main_profile_info(info) {
-    return $("<span>").append($("<span>", { title: info.up1Priority }).text(info.up1Source)).appendText(
+    var elt = $("<span>").append($("<span>", { title: info.up1Priority }).text(info.up1Source)).appendText(
         (info.up1StartDate ? " du " + format_YYYYmmdd(info.up1StartDate) : '') + (info.up1EndDate ? " au " + format_YYYYmmdd(info.up1EndDate) : '')
     )
+    if (info.computedFrom) elt.append($("<span>", { class: "info" }).text(" (profil partiel reconstruit à partir de " + info.computedFrom + ")"));
+    return elt;
 }
 
-function format_main_profiles_info(profiles) {
-    return spanFromList(profiles.map(format_main_profile_info), "<br>");
+function format_main_profiles_info(profiles, info) {
+    if (!info.accountStatus || info.accountStatus === "active") {
+        function add_virtual_profile(up1Source, computedFrom) {
+            profiles = profiles.concat([ { up1Source: up1Source, computedFrom: computedFrom } ])
+        }
+        if (info['supannEtuInscription-all']) {
+            add_virtual_profile('{APOGEE}student', 'la présence de supannEtuInscription')
+        }
+        if ((info.supannEtablissement || []).find(e => e.match(/\[PCU-ReseauPro\]$/)) &&
+            (info.supannParrainDN || []).includes('supannCodeEntite=DGJC,ou=structures,dc=univ-paris1,dc=fr')) {
+            add_virtual_profile('{RESEAUPRO}alum', 'supannEtablissement PCU-ReseauPro & parrain DPEIP-BAIP')
+        }
+        if (!profiles.length && (info.eduPersonAffiliation || []).includes('alum')) {
+            add_virtual_profile('{GRACE}student', 'affiliation=alum & pas de profil')
+        }
+        if (!profiles.length && info.supannEmpId && !info.eduPersonPrimaryAffiliation) {
+            add_virtual_profile('{GRACE}staff', "la présence de supannEmpId & pas d'affiliation & pas de profil")
+        }
+        if (!profiles.length && info.eduPersonPrimaryAffiliation === 'member' &&
+            (info.supannParrainDN || []).includes('supannCodeEntite=DGE,ou=structures,dc=univ-paris1,dc=fr')) {
+            add_virtual_profile('{SIHAM}entrant', 'primaryAffiliation member & parrain DRH')
+        }
+    }
+    return profiles.length ? spanFromList(profiles.map(format_main_profile_info), "<br>") : "<i>aucun (étrange)</i>"
 }
 
 function compute_Affiliation(info) {
@@ -1060,6 +1084,8 @@ function format_link(link) {
 
 function formatUserInfo(info, showExtendedInfo) {
     //if (info.roomNumber) info.postalAddress = info.roomNumber + ", " + info.postalAddress;
+
+    if (!info.up1Profile && !info.up1Source) info.up1Profile = []; // force displaying even if empty to handle virtual profiles
     
     var fInfo = {};
 
