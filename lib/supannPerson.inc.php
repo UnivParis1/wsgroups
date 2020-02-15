@@ -71,7 +71,7 @@ $attrs_by_kind = [
   "MULTI 1" => [
 	// below are restricted or internal attributes.
 	'mailForwardingAddress', 'mailDeliveryOption', 'mailAlternateAddress',
-    'up1TermsOfUse',
+    'supannConsentement', 'up1TermsOfUse',
   ],
 ];
 $USER_ALLOWED_ATTRS = [];

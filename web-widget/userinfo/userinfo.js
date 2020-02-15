@@ -89,6 +89,7 @@ var main_attrs_labels = [ [
     //'supannRefID: RefId',
     'supannListeRouge: ' + important('Liste rouge'),
     "up1TermsOfUse: Conditions d'utilisation",
+    "supannConsentement: Conditions d'utilisation",
 ],
 [
 			  
