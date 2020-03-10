@@ -40,7 +40,7 @@ function computeOneFilter($attr, $valsS) {
 function computeFilter($filters, $not) {
    $r = [];
   foreach ($filters as $attr => $vals) {
-    if (!$vals) continue;
+    if (!$vals && $vals !== '') continue;
     $one = computeOneFilter($attr, $vals);
     $r[] = $not ? "(!$one)" : $one;
   }
