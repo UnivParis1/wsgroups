@@ -607,7 +607,7 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
 }
 
 function structureRoles($supannCodeEntite) {
-    $maxRows = 10;
+    $maxRows = 30;
     $filter = "(supannRoleEntite=*[code=$supannCodeEntite]*)";
     $wanted_attrs = array("uid" => "uid", "displayName" => "displayName", "supannRoleEntite" => "MULTI");
     require_once('lib/supannPerson.inc.php');
