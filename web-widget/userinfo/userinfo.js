@@ -483,8 +483,9 @@ function format_main_profiles_info(profiles, info) {
             (info.supannParrainDN || []).includes('supannCodeEntite=DGE,ou=structures,dc=univ-paris1,dc=fr')) {
             add_virtual_profile('{SIHAM}entrant', 'primaryAffiliation member & parrain DRH')
         }
+        if (!profiles.length) return "<i>aucun (étrange)</i>"
     }
-    return profiles.length ? spanFromList(profiles.map(format_main_profile_info), "<br>") : "<i>aucun (étrange)</i>"
+    return profiles.length ? spanFromList(profiles.map(format_main_profile_info), "<br>") : ""
 }
 
 function compute_Affiliation(info) {
