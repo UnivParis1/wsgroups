@@ -36,7 +36,7 @@
         </div>
         <div v-else-if="result.info">
             <select v-model="selectedProfile" v-if="showExtendedInfo >= 1 && result.info.up1Profile && result.info.up1Profile.length">
-                <option value="">Profiles fusionnés</option>
+                <option value="">Profils fusionnés</option>
                 <option v-for="profile in result.info.up1Profile" :value="profile.up1Source">
                     {{profile.up1Source}}
                 </option>

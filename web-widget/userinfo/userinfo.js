@@ -75,8 +75,8 @@ var main_attrs_labels = [ [
     'shadowExpire: Expire le',
     'createTimestamp: Compte créé',
     'modifyTimestamp: Dernière modification',
-    'up1Source: Profile',
-    'up1Profile: Profiles',
+    'up1Source: Profil',
+    'up1Profile: Profils',
 ],
 [
     'Mailbox: Boîte mail',
