@@ -522,12 +522,12 @@ function supannEtuInscriptionAll($supannEtuInscription) {
   return $r;
 }
 
-function supannRoleEntiteAll($e) {
+function supannRoleEntiteAll($user, $e) {
   $r = parse_composite_value($e);
   if (@$r['role']) {
     global $roleGeneriqueKeyToAll;
     if ($role = $roleGeneriqueKeyToAll[$r['role']]) {
-        $r['role'] = $role['name'];
+        $r['role'] = all_to_name_with_gender($role, $user);
         if (isset($role['weight'])) $r['role_weight'] = $role['weight'];
     }
   }
@@ -546,10 +546,10 @@ function supannEtuInscriptionsAll($l) {
   return empty($r) ? NULL : $r;
 }
 
-function supannRoleEntitesAll($l) {
+function supannRoleEntitesAll($user, $l) {
   $r = array();
   foreach ($l as $e) {
-    $r[] = supannRoleEntiteAll($e);
+    $r[] = supannRoleEntiteAll($user, $e);
   }
   return empty($r) ? NULL : $r;
 }
@@ -652,7 +652,7 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
   }
   if (isset($user['supannRoleEntite'])) {
       if (isset($wanted_attrs['supannRoleEntite-all']))
-	$user['supannRoleEntite-all'] = supannRoleEntitesAll($user['supannRoleEntite']);
+	$user['supannRoleEntite-all'] = supannRoleEntitesAll($user, $user['supannRoleEntite']);
       if (!isset($wanted_attrs['supannRoleEntite']))
 	  unset($user['supannRoleEntite']);
   }
