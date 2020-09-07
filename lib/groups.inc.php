@@ -609,7 +609,7 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
 function structureRoles($supannCodeEntite) {
     $maxRows = 30;
     $filter = "(supannRoleEntite=*[code=$supannCodeEntite]*)";
-    $wanted_attrs = array("uid" => "uid", "displayName" => "displayName", "supannRoleEntite" => "MULTI");
+    $wanted_attrs = array("uid" => "uid", "displayName" => "displayName", "supannRoleEntite" => "MULTI", "supannCivilite" => "supannCivilite");
     require_once('lib/supannPerson.inc.php');
     isCasAuthenticated();
     $all = searchPeople(array($filter), attrRestrictions(), $wanted_attrs, 'uid', $maxRows);    
@@ -633,7 +633,7 @@ function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCod
             if (@$r["code"] == $supannCodeEntite) {
                 global $roleGeneriqueKeyToAll;
                 $role = $roleGeneriqueKeyToAll[$r['role']];
-                $roles[] = $role['name'];
+                $roles[] = all_to_name_with_gender($role, $user);
                 if (isset($role['weight'])) $weights[$role['weight']] = 1;
             }
         }
