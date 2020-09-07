@@ -599,6 +599,21 @@ function userHandleSpecialAttributePrivacy(&$user) {
     }
 }
 
+function civilite_to_gender_suffix($civilite) {
+    return $civilite === 'M.' ? '-gender-m' :
+           ($civilite === 'Mme' || $civilite === 'Mlle' ? '-gender-f' : '');
+}
+
+function all_to_name_with_gender($all, $user) {
+    if (isset($user['supannCivilite'])) {
+        $name = @$all['name' . civilite_to_gender_suffix($user['supannCivilite'])];
+    }
+    if (!$name) {
+        $name = $all['name'];
+    }
+    return $name;
+}
+
 function userAttributesKeyToText(&$user, $wanted_attrs) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
@@ -648,9 +663,11 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
 	  unset($user['memberOf']);
   }
   if (isset($user['supannRoleGenerique'])) {
-    global $roleGeneriqueKeyToShortname;
+    global $roleGeneriqueKeyToAll;
     foreach ($user['supannRoleGenerique'] as &$e) {
-      $e = $roleGeneriqueKeyToShortname[$e];
+      if ($role = $roleGeneriqueKeyToAll[$e]) {
+          $e = all_to_name_with_gender($role, $user);
+      }
     }
   }
   if (isset($user['supannActivite'])) {
