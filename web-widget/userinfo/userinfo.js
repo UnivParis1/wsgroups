@@ -1127,7 +1127,7 @@ function formatUserInfo(info, showExtendedInfo) {
     return fInfo;
 }
 
-new Vue({
+Vue.createApp({
  components: {
    finfo: {
     props: [ 'val', 'elt' ],
@@ -1270,4 +1270,4 @@ new Vue({
             });        
         },
     },
-}).$mount('#annuaire');
+}).mount('#annuaire');
