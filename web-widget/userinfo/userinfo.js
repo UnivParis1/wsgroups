@@ -1127,7 +1127,9 @@ function formatUserInfo(info, showExtendedInfo) {
     return fInfo;
 }
 
-Vue.component('finfo', {
+new Vue({
+ components: {
+   finfo: {
     props: [ 'val', 'elt' ],
     template: '<span></span>',
     mounted: function () {
@@ -1141,11 +1143,9 @@ Vue.component('finfo', {
             throw "InternalError";	       
         }
     },
-});
-
-new Vue({
-    el: '#annuaire',
-    data: {
+  },
+ },
+    data: function () { return {
         allowInvalidAccounts: false,
         currentUser: undefined,
         allowExtendedInfo: undefined,
@@ -1153,7 +1153,7 @@ new Vue({
         result: { msg: undefined, info: {} },
         selectedProfile: undefined,
         user_fInfo: {},
-    },
+    } },
     mounted: function() {
         this.install_autocompleteUser();
         this.install_clickedTitle();
@@ -1270,4 +1270,4 @@ new Vue({
             });        
         },
     },
-});
+}).$mount('#annuaire');

@@ -42,9 +42,11 @@
                 </option>
             </select>
             <table class='info-block' v-for="attrs_labels in main_attrs_labels">
-                <tr v-for="e in attrs_labels" v-if="e.attr in user_fInfo ? user_fInfo[e.attr] : user_info[e.attr]" :key="e.attr + JSON.stringify(user_info[e.attr])">
+                <tr v-for="e in attrs_labels" :key="e.attr + JSON.stringify(user_info[e.attr])">
+                  <template v-if="e.attr in user_fInfo ? user_fInfo[e.attr] : user_info[e.attr]">
                     <td v-html="e.text"></td>
                     <td><finfo :val="user_info[e.attr]" :elt="user_fInfo[e.attr]"></finfo></td>
+                  </template>
                 </tr>
             </table>
         </div>
