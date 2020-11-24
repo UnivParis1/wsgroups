@@ -8,8 +8,12 @@ function groups_filters($token) {
   return array("(cn=$token)", "(&" . $words_filter . "(cn=*))");
 }
 function structures_filters($token) {
-  $words_filter = wordsFilter(array('description', 'ou'), $token);
-  return array("(supannCodeEntite=$token)", "(&(ou=$token)(supannCodeEntite=*))", "(&" . $words_filter . "(supannCodeEntite=*))");
+  return [
+      "(supannCodeEntite=$token)", 
+      "(&(supannCodeEntite=*)(ou=$token))",
+      "(&(supannCodeEntite=*)" . wordsFilter(['ou'], $token) . ")",
+      "(&(supannCodeEntite=*)" . wordsFilter(['description'], $token) . ")",
+  ];
 }
 function diploma_filters($token, $filter_attrs) {
   $r = array();
