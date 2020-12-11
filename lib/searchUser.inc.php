@@ -10,7 +10,7 @@ $maxRows = !$anonymous ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 
 $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
-$allowNoAffiliationAccounts = GET_or_NULL("allowNoAffiliationAccounts");
+$allowNoAffiliationAccounts = GET_or("allowNoAffiliationAccounts", $allowInvalidAccounts);
 $allowRoles = GET_or_NULL("allowRoles");
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
