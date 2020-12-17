@@ -8,21 +8,25 @@ if (!isPersonMatchingFilter(GET_uid(), $LEVEL2_FILTER)) {
   exit;
 }
 
-$login = GET_ldapFilterSafe("login");
+$login = strtolower(GET_ldapFilterSafe("login"));
+$mail = strtolower(GET_ldapFilterSafe("mail"));
 
-exec("echo $login | ssh userinfo@cas.univ-paris1.fr", $lines);
+exec("(echo $login; echo $mail) | ssh userinfo@cas.univ-paris1.fr", $lines);
 $since = strtotime(array_shift($lines));
 
 $list = array();
 $fuzzy_failed = array();
 foreach ($lines as $line) {
-  if (preg_match("/(.*?) - AUTHENTICATION_(SUCCESS|FAILED) from '(.*)'/", $line, $m)) {
-    $e = array("time" => strtotime($m[1]), "ip" => $m[3]);
+  if (preg_match("/(.*?) - AUTHENTICATION_(SUCCESS|FAILED) for '\[username: (.*?)\]' from '(.*)'/", $line, $m)) {
+    $e = array("time" => strtotime($m[1]), "ip" => $m[4], "username" => $m[3]);
     if ($m[2] != "SUCCESS") $e["error"] = $m[2];
-    $list[] = $e;
-  } elseif (preg_match("/(.*?) - AUTHENTICATION_FAILED for '\[username: (.*?)\]' from '(.*)'/", $line, $m)) {
-    $e = array("time" => strtotime($m[1]), "ip" => $m[3], "username" => $m[2]);
-    $fuzzy_failed[] = $e;
+    if ($e['username'] === $login || $e['username'] === $mail) {
+        $list[] = $e;
+    } else {
+        $fuzzy_failed[] = $e;
+    }
+  } else {
+      #echo "skipping $line\n";
   }
 }
 

@@ -678,7 +678,7 @@ function formatLastLogins(info, data, div) {
     if (data.list.length) {
 	var details = $("<div class='vertical-scroll hidden'>");
 	$.each(data.list, function (v, e) {
-	    var t = formatDateTime(e.time) + " : " + (e.error || "SUCCESS") + " <small>(ip = " + e.ip + " )</small>";
+	    var t = formatDateTime(e.time) + " : " + (e.error || "SUCCESS") + " <small>(login = " + e.username + ", ip = " + e.ip + " )</small>";
 	    details.append(t + '<br>');
 	})
 	if (data.fuzzy_failed.length) {
@@ -856,7 +856,7 @@ function format_groupMoreInfo(info) {
     
 function get_lastLogins(info) {
     var infoDiv = $("<span>");
-    asyncInfoRaw(lastLoginsUrl, { login: info.supannAliasLogin || info.uid }, infoDiv, function (data) {
+    asyncInfoRaw(lastLoginsUrl, { login: info.supannAliasLogin || info.uid, mail: info.mail }, infoDiv, function (data) {
 	    if (data.length == 0) {
 		infoDiv.text("user not found (??)");
 	    } else if (data.length > 1 && 0) {
