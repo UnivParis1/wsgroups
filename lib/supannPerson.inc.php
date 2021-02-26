@@ -1,7 +1,7 @@
 <?php
 
 require_once ('lib/common.inc.php');
-require_once ('gen/tables.inc.php');
+if (!isset($GLOBALS["structureKeyToAll"])) require_once ('gen/tables.inc.php');
 require_once ('config/config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
 global $USER_KEY_FIELD, $USER_ALLOWED_ATTRS;
