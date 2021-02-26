@@ -148,6 +148,7 @@ function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
 function getGroupsFromStructuresDn($filters, $sizelimit = 0, $all = false, $attrs = array()) {
   $r = getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs);
   if ($all) {
+      if (!isset($_GET["with_organization"]))
       $r = array_filter($r, 'removeStructureOrganization');
   } else {
       $r = array_filter($r, 'structurePedagogyResearch');
@@ -159,7 +160,7 @@ function getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs) {
     global $STRUCTURES_DN, $STRUCTURES_ATTRS;
     $r = getLdapInfoMultiFilters($STRUCTURES_DN, $filters, $STRUCTURES_ATTRS, "key", $sizelimit);
     foreach ($r as &$map) {
-      if (in_array('roles', $attrs)) {
+      if (in_array('roles', $attrs) || isset($_GET["with_organization"])) {
           $map["roles"] = structureRoles($map["key"]);
       }
       $map["rawKey"] = $map["key"];
