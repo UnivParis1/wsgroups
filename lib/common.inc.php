@@ -228,7 +228,9 @@ function ipTrusted() {
 
 function ipTrustedOrExit() {
     if (!ipTrusted()) {
-        exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");       
+        error_log("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");
+        header('HTTP/1.0 401 Unauthorized'); 
+        exit();
     }
 }
 
