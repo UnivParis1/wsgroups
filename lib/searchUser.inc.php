@@ -36,6 +36,10 @@ if ($allowInvalidAccounts && $extendedInfo < 1) $allowInvalidAccounts = false;
 $attrRestrictions = attrRestrictions($extendedInfo);
 $attrRestrictions['allowRoles'] = $allowRoles;
 
+if ($attrRestrictions['forceProfile']) {
+    $wanted_attrs['up1Profile'] = 'MULTI';
+}
+
 global $USER_KEY_FIELD;
 $users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts, $allowNoAffiliationAccounts), $attrRestrictions, $wanted_attrs, $USER_KEY_FIELD, $maxRows);
 

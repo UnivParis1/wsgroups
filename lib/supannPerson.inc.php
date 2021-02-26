@@ -330,6 +330,7 @@ function attrRestrictions($allowExtendedInfo = 0) {
         'allowAccountStatus' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowExtendedInfo' => $allowExtendedInfo,
+        'forceProfile' => (isset($_GET["profile_supannEntiteAffectation"]) ? '[supannEntiteAffectation=' . $_GET["profile_supannEntiteAffectation"] . ']' : null),
         );
 }
 
@@ -343,12 +344,18 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
         unset($user['mail']);
       if (!@$attrRestrictions['allowAccountStatus'])
 	     unset($user['accountStatus']);
-      userHandleSpecialAttributePrivacy($user, $attrRestrictions['allowExtendedInfo']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
       userAttributesKeyToText($user, $wanted_attrs);
-      if (isset($user['up1Profile']))
-        $user['up1Profile'] = parse_up1Profile($user['up1Profile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
+      if (isset($user['up1Profile'])) {
+        if (@$attrRestrictions['forceProfile']) {
+            forceProfile($user, $attrRestrictions['forceProfile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
+            unset($user['up1Profile']);
+        } else {
+            $user['up1Profile'] = parse_up1Profile($user['up1Profile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
+        }
+      }
+      userHandleSpecialAttributePrivacy($user, $attrRestrictions['allowExtendedInfo']);
       userHandle_postalAddress($user);
       if (@$wanted_attrs['up1Roles']) get_up1Roles($user);
     }
@@ -487,6 +494,21 @@ function parse_up1Profile($up1Profile_s, $allowExtendedInfo, $wanted_attrs) {
        $r[] = parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs);
     }
     return $r;
+}
+
+function array_replace_keys(&$array, $to_set) {
+    foreach ($to_set as $k => $v) {
+        if (isset($array[$k])) $array[$k] = $v;
+    }
+}
+
+function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) {
+    foreach ($user['up1Profile'] as $profile) {
+        if (contains($profile, $forceProfile)) {
+            array_replace_keys($user, parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs));
+        }
+    }
+    unset($user['up1Profile']);
 }
 
 function supannEtuInscriptionAll($supannEtuInscription) {
