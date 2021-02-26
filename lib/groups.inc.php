@@ -37,7 +37,7 @@ function responsable_filter($uid) {
 }
 function seeAlso_filter($cn) {
   global $GROUPS_DN;
-  return "seeAlso=cn=$cn,$GROUPS_DN";
+  return "(seeAlso=cn=$cn,$GROUPS_DN)";
 }
 
 function GET_extra_group_filter_from_params() {
