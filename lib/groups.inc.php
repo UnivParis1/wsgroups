@@ -602,7 +602,13 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
     } else {
     $diploma = getGroupsFromDiplomaDn(diploma_filters($token, $filter_attrs), $maxRows);
   }
-  $all_groups = array_merge($groups, $structures, $diploma);
+  }
+  $affiliations = [];
+  if (preg_match("/Tous les/i", $token)) {
+    global $AFFILIATION2TEXT;
+    $affiliations = array_map('affiliationGroup', array_keys($AFFILIATION2TEXT));
+  }
+  $all_groups = array_merge($affiliations, $groups, $structures, $diploma);
 
   $all_groups = exact_match_first($all_groups, $token);
   add_groups_category($all_groups);
