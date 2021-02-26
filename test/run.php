@@ -35,15 +35,24 @@ function fail($test_name, $msg) {
     exit(1);
 }
 
-function expectToBe($got, $wanted, $test_name) {
-    if ($got !== $wanted) {
-        fail($test_name, "got\n\n$got\n\ninstead of\n\n$wanted");
+function diff($got, $wanted) {
+    $context_lines = 4;
+    for ($i = 0; $i < sizeof($got); $i++) {
+        if ($got[$i] !== $wanted[$i]) {
+            $from = max(0, $i - $context_lines);
+            $context = $i >= $context_lines ? array_slice($got, $i - $context_lines, $context_lines) : array_slice($got, 0, $i);
+            return implode("\n", array_merge(
+                    $context,
+                    array_map(function ($s) { return "- $s"; }, array_slice($got, $i, 2)),
+                    array_map(function ($s) { return "+ $s"; }, array_slice($wanted, $i, 2))));
+        }
     }
+    return "NO_DIFF????";
 }
 
-function expect($name, $wanted, $ws, $params) {
-    $got = test($ws, $params);
-    expectToBe($got, $wanted, $name);
+function diff_json($got, $wanted) {
+    return diff(explode("\n", json_encode($got, JSON_PRETTY_PRINT)), 
+                explode("\n", json_encode($wanted, JSON_PRETTY_PRINT)));
 }
 
 function expect_json($test_name, $ws, $params, $wanted, $remap = null) {
@@ -51,7 +60,10 @@ function expect_json($test_name, $ws, $params, $wanted, $remap = null) {
     $r = json_decode($js);
     if ($r === NULL) fail($test_name, "invalid response\n$js");
     $got = $remap ? $remap($r) : $r;
-    expectToBe(json_encode($got), $wanted, $test_name);
+    $got_s = json_encode($got);
+    if ($got_s !== $wanted) {
+        fail($test_name, "got\n\n$got_s\n\ninstead of\n\n$wanted" . "\n\nDiff ('-' is wanted):\n\n" . diff_json(json_decode($wanted), $got));
+    }
 }
 
 function test_js_list_attr($test_name, $ws, $attr, $params, $wanted) {
