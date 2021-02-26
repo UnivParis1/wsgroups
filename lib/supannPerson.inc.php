@@ -464,7 +464,7 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs) {
         $key = $m[1]; $val = $m[2]; $up1Profile = $m[3];
         $key = unescape_sharpFF($key);
         $attr_kinds = @$USER_ALLOWED_ATTRS[$key];
-        if (!$attr_kinds || $allowExtendedInfo < $attr_kinds['LEVEL']) {
+        if (!$attr_kinds) {
             // ignore
         } else if ($attr_kinds['MULTI']) {
             $r[$key] = array_map('unescape_sharpFF', explode(';', $val));
@@ -472,6 +472,10 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs) {
             $r[$key] = unescape_sharpFF($val);
         }
     }
+    foreach ($r as $key => $val) {
+        if (!allowAttribute($r, $key, $allowExtendedInfo)) unset($r[$key]);
+    }
+
     if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
     userAttributesKeyToText($r, $wanted_attrs);
     return $r;
