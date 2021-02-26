@@ -9,6 +9,7 @@ $attrRestrictions = array();
 if (ipTrusted()) {
   $maxRows = 0;
   $attrRestrictions['allowListeRouge'] = true;
+  $SEARCH_TIMELIMIT = 0;
 } else {
   //exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");   
   $maxRows = 5;
