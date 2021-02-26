@@ -66,7 +66,7 @@ $attrs_by_kind = [
     'up1Profile', // will be filtered
   ],
   "MULTI 2" => [
-    'employeeType', 'departmentNumber',
+    'employeeType', 'departmentNumber', // NB: teacher/emeritus/researcher have a specific LEVEL -1 for those attrs
   ],
   "MULTI 1" => [
 	// below are restricted or internal attributes.
@@ -83,6 +83,11 @@ foreach ($attrs_by_kind as $kind => $attrs) {
 global $UP1_ROLES_DN;
 if (@$UP1_ROLES_DN) {
     $USER_ALLOWED_ATTRS['up1Roles'] = [ "MULTI" => true, "LEVEL" => -1 ]; // computed
+}
+
+function allowAttribute($attrName, $allowExtendedInfo) {
+    global $USER_ALLOWED_ATTRS;
+    return $allowExtendedInfo >= $USER_ALLOWED_ATTRS[$attrName]["LEVEL"];
 }
 
 function people_attrs($attrs, $allowExtendedInfo = 0) {
@@ -319,7 +324,6 @@ function attrRestrictions($allowExtendedInfo = 0) {
         array('allowListeRouge' => allowListeRouge($allowExtendedInfo),
         'allowAccountStatus' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
-        'allowEmployeeType' => $allowExtendedInfo > 1,
         'allowExtendedInfo' => $allowExtendedInfo,
         );
 }
@@ -334,8 +338,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
         unset($user['mail']);
       if (!@$attrRestrictions['allowAccountStatus'])
 	     unset($user['accountStatus']);
-      if (!@$attrRestrictions['allowEmployeeType'])
-	  userHandleSpecialAttributePrivacy($user);
+      userHandleSpecialAttributePrivacy($user, $attrRestrictions['allowExtendedInfo']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
       userAttributesKeyToText($user, $wanted_attrs);
@@ -592,11 +595,11 @@ function rdnToSupannCodeEntites($l) {
   return $codes;
 }
 
-function userHandleSpecialAttributePrivacy(&$user) {
-  if (isset($user['employeeType']) || isset($user['departmentNumber']))
+function userHandleSpecialAttributePrivacy(&$user, $allowExtendedInfo) {   
+    if (isset($user['employeeType']) || isset($user['departmentNumber']))
     if (!in_array($user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) {
-      unset($user['employeeType']); // employeeType is private for staff & student
-      unset($user['departmentNumber']); // departmentNumber is not interesting for staff & student
+      if (!allowAttribute('employeeType', $allowExtendedInfo)) unset($user['employeeType']); // employeeType is private for staff & student
+      if (!allowAttribute('departmentNumber', $allowExtendedInfo)) unset($user['departmentNumber']); // departmentNumber is not interesting for staff & student
     }
 }
 
