@@ -147,8 +147,9 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
     }
     
     if ($token === '') {
-        $l[] = '(supannRoleGenerique={SUPANN}D*)'; // important people first!
-        $l[] = '(supannRoleGenerique=*)'; // then other important people
+        $l[] = '(|(supannRoleGenerique={UAI:0751717J:HARPEGE.FCSTR}447)(supannRoleGenerique={UAI:0751717J:HARPEGE.FCSTR}1))'; // very important people first!
+        $l[] = '(supannRoleGenerique={SUPANN}D*)'; // then important people
+        $l[] = '(supannRoleGenerique=*)'; // then less important people
         $l[] = ''; // then the rest
     } else if (preg_match('/(.*?)@(.*)/', $token, $matches)) {
         $l[] = "(|(mail=$token)(&(uid=$matches[1])(mail=*@$matches[2])))";
