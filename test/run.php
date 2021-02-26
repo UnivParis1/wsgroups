@@ -174,7 +174,7 @@ EOS;
 expect_json('getSubGroups only structures', 'getSubGroups', ['key' => 'structures-DGH', 'depth' => 1, 'filter_category' => 'structures'], $children);
 
 $subAndSuper = <<<'EOS'
-{"subGroups":[{"key":"groups-matiB1010514","name":"UFR 02 - Mati\u00e8re (Semestre 1) : Comptabilit\u00e9 d'entreprise","description":"<br>\n<br>\n<br>\n","category":"elp"}],"superGroups":{"diploma-L2B101":{"category":null,"superGroups":[]}}}
+{"subGroups":[{"key":"groups-matiB1010514","name":"UFR 02 - Mati\u00e8re (Semestre 1) : Comptabilit\u00e9 d'entreprise","description":"<br>\n<br>\n<br>\n","category":"elp"}],"superGroups":[]}
 EOS;
 expect_json('getSubAndSuperGroups diploma', 'getSubAndSuperGroups', ['key' => 'diploma-L2B101', 'depth' => 99], $subAndSuper);
 
