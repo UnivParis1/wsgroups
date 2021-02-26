@@ -596,6 +596,10 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
   }
   $diploma = array();
   if (preg_match($category_filter, 'diploma')) {
+      // GLPI UP1 #77226
+    if (preg_match('/^diplomaPrev-(.*)/', $token, $m)) {
+        $diploma = getGroupsFromDiplomaDnOrPrev(diploma_filters($m[1], $filter_attrs), true, $maxRows);        
+    } else {
     $diploma = getGroupsFromDiplomaDn(diploma_filters($token, $filter_attrs), $maxRows);
   }
   $all_groups = array_merge($groups, $structures, $diploma);
