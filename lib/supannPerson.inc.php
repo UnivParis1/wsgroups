@@ -85,8 +85,13 @@ if (@$UP1_ROLES_DN) {
     $USER_ALLOWED_ATTRS['up1Roles'] = [ "MULTI" => true, "LEVEL" => -1 ]; // computed
 }
 
-function allowAttribute($attrName, $allowExtendedInfo) {
+function allowAttribute($user, $attrName, $allowExtendedInfo) {
     global $USER_ALLOWED_ATTRS;
+    if ($attrName === 'employeeType' || $attrName === 'departmentNumber') {  
+        // employeeType is private for staff & student
+        // departmentNumber is not interesting for staff & student
+        if (in_array(@$user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) return true;
+    }
     return $allowExtendedInfo >= $USER_ALLOWED_ATTRS[$attrName]["LEVEL"];
 }
 
@@ -595,11 +600,9 @@ function rdnToSupannCodeEntites($l) {
   return $codes;
 }
 
-function userHandleSpecialAttributePrivacy(&$user, $allowExtendedInfo) {   
-    if (isset($user['employeeType']) || isset($user['departmentNumber']))
-    if (!in_array($user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) {
-      if (!allowAttribute('employeeType', $allowExtendedInfo)) unset($user['employeeType']); // employeeType is private for staff & student
-      if (!allowAttribute('departmentNumber', $allowExtendedInfo)) unset($user['departmentNumber']); // departmentNumber is not interesting for staff & student
+function userHandleSpecialAttributePrivacy(&$user, $allowExtendedInfo) {
+    foreach (['employeeType', 'departmentNumber'] as $attrName) {
+        if (!allowAttribute($user, $attrName, $allowExtendedInfo)) unset($user[$attrName]);
     }
 }
 
