@@ -859,7 +859,7 @@ function get_lastLogins(info) {
     asyncInfoRaw(lastLoginsUrl, { login: info.supannAliasLogin || info.uid }, infoDiv, function (data) {
 	    if (data.length == 0) {
 		infoDiv.text("user not found (??)");
-	    } else if (data.length > 1) {
+	    } else if (data.length > 1 && 0) {
 		infoDiv.text("internal error (multiple user found)");
 	    } else {
 		infoDiv.empty().append(formatLastLogins(info, data, infoDiv));
