@@ -1,6 +1,8 @@
 <?php // -*-PHP-*-
 require_once ('lib/groups.inc.php');
 
+if (GET_bool("CAS")) forceCASAuthentication();
+
 $key = GET_ldapFilterSafe("key");
 $attrs = explode(',', GET_or_NULL("attrs"));
 $depth = min(max(0, GET_or_NULL("depth")), 3);
