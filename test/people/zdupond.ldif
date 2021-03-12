@@ -1,0 +1,17 @@
+cn: Dupond Zo
+displayName: Zo Dupond
+dn: uid=zdupond,ou=people,dc=univ-paris1,dc=fr
+eduPersonAffiliation: employee
+eduPersonAffiliation: member
+eduPersonAffiliation: staff
+eduPersonPrimaryAffiliation: staff
+eduPersonPrincipalName: zdupond@univ-paris1.fr
+givenName: Zo
+mail: Zo.Dupond@univ-paris1.fr
+objectClass: supannPerson
+sn: Dupond
+supannAliasLogin: zdupond
+supannCivilite: Mme
+uid: zdupond
+supannRoleEntite: [role={SUPANN}J10][type={SUPANN}S120][code=DGHA]
+supannRoleGenerique: {SUPANN}J10

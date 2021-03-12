@@ -1,0 +1,17 @@
+cn: Dupond Yo
+displayName: Yo Dupond
+dn: uid=ydupond,ou=people,dc=univ-paris1,dc=fr
+eduPersonAffiliation: employee
+eduPersonAffiliation: member
+eduPersonAffiliation: staff
+eduPersonPrimaryAffiliation: staff
+eduPersonPrincipalName: ydupond@univ-paris1.fr
+givenName: Yo
+mail: Yo.Dupond@univ-paris1.fr
+objectClass: supannPerson
+sn: Dupond
+supannAliasLogin: ydupond
+supannCivilite: M.
+uid: ydupond
+supannRoleEntite: [role={SUPANN}J10][type={SUPANN}S120][code=DGHA]
+supannRoleGenerique: {SUPANN}J10

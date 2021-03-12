@@ -169,6 +169,11 @@ EOS;
 expect_json('getSubGroups structures', 'getSubGroups', ['key' => 'structures-DGH', 'depth' => 1], $children);
 
 $children = <<<'EOS'
+[{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","roles":[{"uid":"ydupond","displayName":"Yo Dupond","supannCivilite":"M.","supannRoleGenerique":["Adjoint au chef de service"],"supannRoleGenerique-all":[{"name":"Adjoint(e) au chef de service","name-gender-m":"Adjoint au chef de service","name-gender-f":"Adjointe au chef de service","weight":"{PRIO}060","code":"{SUPANN}J10"}]},{"uid":"zdupond","displayName":"Zo Dupond","supannCivilite":"Mme","supannRoleGenerique":["Adjointe au chef de service"],"supannRoleGenerique-all":[{"name":"Adjoint(e) au chef de service","name-gender-m":"Adjoint au chef de service","name-gender-f":"Adjointe au chef de service","weight":"{PRIO}060","code":"{SUPANN}J10"}]}],"category":"structures"},{"key":"diploma-L2T101","description":"L2T101 - Licence 1\u00e8re ann\u00e9e Droit (FC)","name":"L2T101 - Licence 1\u00e8re ann\u00e9e Droit (FC)","category":"diploma"}]
+EOS;
+expect_json('getSubGroups structures', 'getSubGroups', ['key' => 'structures-DGH', 'depth' => 1, 'attrs' => 'roles,roles.supannRoleGenerique-all'], $children);
+
+$children = <<<'EOS'
 [{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","category":"structures"}]
 EOS;
 expect_json('getSubGroups only structures', 'getSubGroups', ['key' => 'structures-DGH', 'depth' => 1, 'filter_category' => 'structures'], $children);
@@ -177,6 +182,21 @@ $subAndSuper = <<<'EOS'
 {"subGroups":[{"key":"groups-matiB1010514","name":"UFR 02 - Mati\u00e8re (Semestre 1) : Comptabilit\u00e9 d'entreprise","description":"<br>\n<br>\n<br>\n","category":"elp"}],"superGroups":[]}
 EOS;
 expect_json('getSubAndSuperGroups diploma', 'getSubAndSuperGroups', ['key' => 'diploma-L2B101', 'depth' => 99], $subAndSuper);
+
+$getGroup = <<<'EOS'
+{"key":"structures-DGH","name":"DSIUN : Direction du syst\u00e8me d'information et des Usages Num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","rawKey":"DGH"}
+EOS;
+expect_json('getGroup structure', 'getGroup', ['key' => 'structures-DGH'], $getGroup);
+
+$getGroup = <<<'EOS'
+{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","roles":[{"uid":"ydupond","displayName":"Yo Dupond","supannCivilite":"M.","supannRoleGenerique":["Adjoint au chef de service"]},{"uid":"zdupond","displayName":"Zo Dupond","supannCivilite":"Mme","supannRoleGenerique":["Adjointe au chef de service"]}],"rawKey":"DGHA"}
+EOS;
+expect_json('getGroup structure', 'getGroup', ['key' => 'structures-DGHA', 'attrs' => 'roles'], $getGroup);
+
+$getGroup = <<<'EOS'
+{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","roles":[{"uid":"ydupond","displayName":"Yo Dupond","supannCivilite":"M.","supannRoleGenerique":["Adjoint au chef de service"],"supannRoleGenerique-all":[{"name":"Adjoint(e) au chef de service","name-gender-m":"Adjoint au chef de service","name-gender-f":"Adjointe au chef de service","weight":"{PRIO}060","code":"{SUPANN}J10"}]},{"uid":"zdupond","displayName":"Zo Dupond","supannCivilite":"Mme","supannRoleGenerique":["Adjointe au chef de service"],"supannRoleGenerique-all":[{"name":"Adjoint(e) au chef de service","name-gender-m":"Adjoint au chef de service","name-gender-f":"Adjointe au chef de service","weight":"{PRIO}060","code":"{SUPANN}J10"}]}],"rawKey":"DGHA"}
+EOS;
+expect_json('getGroup structure', 'getGroup', ['key' => 'structures-DGHA', 'attrs' => 'roles,roles.supannRoleGenerique-all'], $getGroup);
 
 
 $allGroups = <<<'EOS'

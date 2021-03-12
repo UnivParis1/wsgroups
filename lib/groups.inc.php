@@ -165,7 +165,7 @@ function getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs) {
     $r = getLdapInfoMultiFilters($STRUCTURES_DN, $filters, $STRUCTURES_ATTRS, "key", $sizelimit);
     foreach ($r as &$map) {
       if (in_array('roles', $attrs) || isset($_GET["with_organization"])) {
-          $map["roles"] = structureRoles($map["key"]);
+          $map["roles"] = structureRoles($map["key"], in_array('roles.supannRoleGenerique-all', $attrs));
       }
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
@@ -449,7 +449,7 @@ function getSuperGroups(&$all_groups, $key, $depth, $restriction) {
   }
 }
 
-function getSubGroups_one($key) {
+function getSubGroups_one($key, $attrs) {
   global $ALT_STRUCTURES_DN, $DIPLOMA_DN, $DIPLOMA_PREV_DN;
 
   $all_groups = array();
@@ -465,7 +465,7 @@ function getSubGroups_one($key) {
       $affiliation = null;
     }
 
-    $groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntiteParent=$supannCodeEntite)"), 0, 'allStructures');
+    $groupsStructures = getGroupsFromStructuresDn(array("(supannCodeEntiteParent=$supannCodeEntite)"), 0, 'allStructures', $attrs);
     if ($affiliation)
       $groupsStructures = getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures);  
 
@@ -488,13 +488,13 @@ function getSubGroups_one($key) {
   return $all_groups;
 }
 
-function getSubGroups($key, $depth, $restriction) {
-  $groups = getSubGroups_one($key);
+function getSubGroups($key, $depth, $restriction, $attrs = []) {
+  $groups = getSubGroups_one($key, $attrs);
   add_groups_category($groups);
   $groups = apply_category_restriction($groups, $restriction['category']);
   if ($depth > 0) {
     foreach ($groups as &$g) {
-      $subGroups = getSubGroups($g["key"], $depth-1, $restriction);
+      $subGroups = getSubGroups($g["key"], $depth-1, $restriction, $attrs);
       if ($subGroups) $g["subGroups"] = $subGroups;
     }
   }
@@ -622,7 +622,7 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
   return $all_groups;
 }
 
-function structureRoles($supannCodeEntite) {
+function structureRoles($supannCodeEntite, $with_supannRoleGenerique_all) {
     $maxRows = 30;
     $filter = "(supannRoleEntite=*[code=$supannCodeEntite]*)";
     $wanted_attrs = array("uid" => "uid", "accountStatus" => "accountStatus", "mail" => "mail", "displayName" => "displayName", "supannRoleEntite" => "MULTI", "supannCivilite" => "supannCivilite");
@@ -630,29 +630,35 @@ function structureRoles($supannCodeEntite) {
     $all = searchPeople(array($filter), attrRestrictions(), $wanted_attrs, 'uid', $maxRows);    
     $r = [];
     foreach ($all as &$user) {
-        $weight = _transform_supannRoleEntite_into_supannRoleGenerique($user, $supannCodeEntite);
+        $weight = _transform_supannRoleEntite_into_supannRoleGenerique($user, $supannCodeEntite, $with_supannRoleGenerique_all);
         $r[$weight . ":" . $user['uid']] = $user;
     }
     ksort($r);
     return array_values($r);
 }
 
-function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCodeEntite) {
+function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCodeEntite, $with_supannRoleGenerique_all) {
     $l = @$user['supannRoleEntite'];
     unset($user['supannRoleEntite']);
     if ($l) {
         $weights = [];
         $roles = [];
+        $roles_all = [];
         foreach ($l as $e) {
             $r = parse_composite_value($e);
             if (@$r["code"] == $supannCodeEntite) {
                 global $roleGeneriqueKeyToAll;
                 $role = $roleGeneriqueKeyToAll[$r['role']];
+                $role['code'] = $r['role'];
+                $roles_all[] = $role;
                 $roles[] = all_to_name_with_gender($role, $user);
                 if (isset($role['weight'])) $weights[$role['weight']] = 1;
             }
         }
         $user['supannRoleGenerique'] = $roles;
+        if ($with_supannRoleGenerique_all) {
+            $user['supannRoleGenerique-all'] = $roles_all;
+        }
         ksort($weights);
         return implode('-', array_keys($weights));
     }

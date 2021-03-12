@@ -26,3 +26,17 @@ global $activiteKeyToShortname; $activiteKeyToShortname = array (
 global $etablissementKeyToShortname; $etablissementKeyToShortname = array (
     '{UAI}0752719Y' => 'SERV COM DOC UNIV',
 );
+
+global $roleGeneriqueKeyToAll; $roleGeneriqueKeyToAll = array (
+    '{SUPANN}J10' => 
+    array (
+      'name' => 'Adjoint(e) au chef de service',
+      'name-gender-m' => 'Adjoint au chef de service',
+      'name-gender-f' => 'Adjointe au chef de service',
+      'weight' => '{PRIO}060',
+    ),  
+);
+
+global $roleGeneriqueKeyToShortname; $roleGeneriqueKeyToShortname = array (
+    '{SUPANN}J10' => 'Adjoint(e) au chef de service',
+);  
