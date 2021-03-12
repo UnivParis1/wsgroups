@@ -627,7 +627,6 @@ function structureRoles($supannCodeEntite) {
     $filter = "(supannRoleEntite=*[code=$supannCodeEntite]*)";
     $wanted_attrs = array("uid" => "uid", "accountStatus" => "accountStatus", "mail" => "mail", "displayName" => "displayName", "supannRoleEntite" => "MULTI", "supannCivilite" => "supannCivilite");
     require_once('lib/supannPerson.inc.php');
-    isCasAuthenticated();
     $all = searchPeople(array($filter), attrRestrictions(), $wanted_attrs, 'uid', $maxRows);    
     $r = [];
     foreach ($all as &$user) {
