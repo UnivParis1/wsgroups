@@ -14,8 +14,8 @@ $allowNoAffiliationAccounts = GET_or("allowNoAffiliationAccounts", $allowInvalid
 $allowRoles = GET_or_NULL("allowRoles");
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
-if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && GET_uid()) {
-  $allowExtendedInfo = loggedUserAllowedLevel();
+if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && (@$isTrustedIp || GET_uid())) {
+  $allowExtendedInfo = @$isTrustedIp ? 2 : loggedUserAllowedLevel();
 }
 
 $extendedInfo = $allowExtendedInfo;
