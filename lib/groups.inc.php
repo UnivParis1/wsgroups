@@ -120,8 +120,8 @@ function getUserGroups($uid) {
     return $groups;
 }
 
-function groupsNotPedagogyResearchStructures($map) {  
-  return !preg_match("/^employees\.(pedagogy|research|affiliation)\./", $map["key"]);
+function notGrouperBasedOnLdapAttrs($map) {  
+  return !preg_match("/^employees\.(pedagogy|research|affiliation)\.|^students\.diploma\./", $map["key"]);
 }
 
 function structurePedagogyResearch($map) {  
@@ -135,7 +135,7 @@ function removeStructureOrganization($map) {
 function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0, $timelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
   $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit, $timelimit);
-  $r = array_filter($r, 'groupsNotPedagogyResearchStructures');
+  $r = array_filter($r, 'notGrouperBasedOnLdapAttrs');
   foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "groups-" . $map["key"];
