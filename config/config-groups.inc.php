@@ -21,7 +21,7 @@ $ROLE_GENERIQUE_ATTRS = array("up1TableKey" => "key", "displayName" => "name", '
 $ETABLISSEMENT_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
 $ACTIVITE_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
 
-$AFFILIATION2TEXT = array("faculty" => "enseignants", 
+$AFFILIATION2TEXT = array("faculty" => "enseignants-chercheurs", 
 			  "teacher" => "enseignants et chargés d'enseignement", 
 			  "student" => "étudiants", 
 			  "staff" => "Biatss", 

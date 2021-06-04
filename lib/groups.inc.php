@@ -564,7 +564,7 @@ function getGroupsFromAffiliations($affiliations, $groupsStructures) {
 
 function getGroupsFromAffiliationAndStructures($affiliation, $groupsStructures) {
   $r = array();
-  if ($groupsStructures && ($affiliation == "student" || $affiliation == "faculty")) {
+  if ($groupsStructures && ($affiliation == "student" || $affiliation == "faculty" || $affiliation == "teacher")) {
     foreach ($groupsStructures as $group) {
 	if ($group["businessCategory"] == "pedagogy")
 	    $r[] = structureAffiliationGroup($group, $affiliation);
