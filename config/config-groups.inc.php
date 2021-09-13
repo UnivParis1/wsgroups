@@ -1,8 +1,8 @@
 <?php
 
 // specific Paris1:
-$ANNEE = 2020;
-$ANNEE_PREV = 2019;
+$ANNEE = 2021;
+$ANNEE_PREV = 2020;
 $ALT_STRUCTURES_DN = "ou=structures,o=Paris1,".$BASE_DN;
 $DIPLOMA_DN = "ou=$ANNEE,ou=diploma,o=Paris1,".$BASE_DN;
 $DIPLOMA_PREV_DN = "ou=$ANNEE_PREV,ou=diploma,o=Paris1,".$BASE_DN;

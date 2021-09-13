@@ -81,8 +81,6 @@ function computeStructuresLevel(&$structures) {
     $level = function ($code) use (&$code2level, &$code2struct, &$level) {
         if (!isset($code2level[$code])) {
             $struct = $code2struct[$code];
-            //error_log(json_encode([ $code, $struct ]));
-            if (!isset($struct["supannCodeEntiteParent"])) echo "no parent $code\n";
             $code2level[$code] = isset($struct["supannCodeEntiteParent"]) ? 1 + $level($struct["supannCodeEntiteParent"]) : 1;
         }
         return $code2level[$code];
