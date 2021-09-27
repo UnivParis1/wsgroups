@@ -72,6 +72,8 @@ $attrs_by_kind = [
 	// below are restricted or internal attributes.
 	'mailForwardingAddress', 'mailDeliveryOption', 'mailAlternateAddress',
     'supannConsentement', 'up1TermsOfUse',
+    // for roles (which are groups)
+    'member', 'member-all', 'supannGroupeLecteurDN', 'supannGroupeLecteurDN-all', 'supannGroupeAdminDN', 'supannGroupeAdminDN-all',
   ],
 ];
 $USER_ALLOWED_ATTRS = [];
@@ -123,7 +125,7 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
     // most attributes visibility are enforced using ACLs on LDAP bind
     // here are a few special cases
     if ($allowExtendedInfo < 1) {
-        foreach (array('memberOf', 'memberOf-all') as $attr) {
+        foreach (array('memberOf', 'memberOf-all', 'member', 'member-all', 'supannGroupeLecteurDN', 'supannGroupeLecteurDN-all', 'supannGroupeAdminDN', 'supannGroupeAdminDN-all') as $attr) {
             unset($wanted_attrs[$attr]);
         }
     }
@@ -673,7 +675,25 @@ function userAttributesKeyToText(&$user, $wanted_attrs) {
       if (isset($wanted_attrs['seeAlso-all']))
         $user['seeAlso-all'] = getDNs(replace_old_structures_DN($user['seeAlso']));
   }
-  if (isset($user['supannParrainDN'])) {
+  if (isset($user['member'])) {
+      if (isset($wanted_attrs['member-all']))
+        $user['member-all'] = getDNs($user['member']);
+      if (!isset($wanted_attrs['member']))
+         unset($user['member']);
+  }
+  if (isset($user['supannGroupeLecteurDN'])) {
+      if (isset($wanted_attrs['supannGroupeLecteurDN-all']))
+        $user['supannGroupeLecteurDN-all'] = getDNs($user['supannGroupeLecteurDN']);
+      if (!isset($wanted_attrs['supannGroupeLecteurDN']))
+         unset($user['supannGroupeLecteurDN']);
+  }
+  if (isset($user['supannGroupeAdminDN'])) {
+    if (isset($wanted_attrs['supannGroupeAdminDN-all']))
+      $user['supannGroupeAdminDN-all'] = getDNs($user['supannGroupeAdminDN']);
+    if (!isset($wanted_attrs['supannGroupeAdminDN']))
+       unset($user['supannGroupeAdminDN']);
+}
+if (isset($user['supannParrainDN'])) {
       if (isset($wanted_attrs['supannParrainDN-all']))
 	$user['supannParrainDN-all'] = getDNs(replace_old_structures_DN($user['supannParrainDN']));
       else if (isset($wanted_attrs['supannParrainDN-ou']))

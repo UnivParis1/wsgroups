@@ -12,6 +12,10 @@ var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudi
 var userphotoUrl = 'https://userphoto-test.univ-paris1.fr/';
 var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&groupName=';
 
+function toGrouperUrl(cn) {
+    return grouperUrl + cn.replace(/\./g, ":")
+}
+
 function parse_attrs_text(l) {
     return $.map(l, function (attr_text) {
 	var r = attr_text && attr_text.match(/(.*?): (.*)/);
@@ -103,6 +107,9 @@ var main_attrs_labels = [ [
 [
     'Listes: Listes',
     'memberOf-all: Groupes',
+    'supannGroupeAdminDN-all: Responsables',
+    'supannGroupeLecteurDN-all: Observateurs',
+    'member-all: Membres',
     'Applications: Applications',
 ]
 ];
@@ -214,6 +221,9 @@ var simple_formatters = {
     up1Roles: format_up1Roles,
     buildingName: format_buildingName,
     labeledURI: format_link,
+    'supannGroupeAdminDN-all': format_members,
+    'supannGroupeLecteurDN-all': format_members_not_admin,
+    'member-all': format_members,
     'memberOf-all': format_memberOf,
     'seeAlso-all': format_supannCodeEntite,
     'supannParrainDN-all': format_supannCodeEntite,
@@ -563,7 +573,7 @@ function format_memberOf(all) {
     });
     var moreInfo = get_groupsMoreInfo(all);
     return spanFromList($.map(all, function (e) {
-	    var span = $("<span>").append(a_or_span(e.name && e.name.match(/:/) && (grouperUrl + e.key.replace(/\./g, ":")), e.key))
+	    var span = $("<span>").append(a_or_span(e.name && e.name.match(/:/) && toGrouperUrl(e.key), e.key))
                 .appendText(" : " + (e.description || ''));
         if (moreInfo[e.key]) span.append(moreInfo[e.key]);
         return span;
@@ -1021,6 +1031,22 @@ function format_up1Roles(val) {
 	    .append($("<a>", { href: "#" + mail }).text(mail))
 	    .appendText(" (" + roles.join(", ") + ")");
     }), "<br>");
+}
+
+function format_members(val) {
+    return spanFromList($.map(val, function (member) {
+        var match_cn = member.key.match(/^cn=(.*?),ou=groups/);
+        var a = match_cn ?
+                    a_or_span(member.name && member.name.match(/:/) && toGrouperUrl(match_cn[1]), match_cn[1]) :
+                    a_or_span('#' + encodeURIComponent(dn2uid(member.key)), member.name);
+        return $("<span>").append(a).appendText(member.description ? " (" + member.description + ")" : '');
+    }), "<br>");
+}
+
+function format_members_not_admin(val, info) {
+    var admins = (info['supannGroupeAdminDN-all'] || []).map(member => member.key)
+    var val_ = val.filter(member => !admins.includes(member.key))
+    return format_members(val_)
 }
 
 function format_supannCodeEntite(l, principale) {
