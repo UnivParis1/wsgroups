@@ -518,6 +518,10 @@ function supannEtuInscriptionAll($supannEtuInscription) {
     require_once 'lib/groups.inc.php';
     $diploma = getGroupsFromDiplomaDn(array("(ou=$localEtape)"), 1);
     if ($diploma) $r['etape'] = $diploma[0]["description"];
+
+    if (@$r['anneeinsc'] !== "" . $GLOBALS['ANNEE']) {
+        $r['anneePrecedente'] = true;
+    }
   }
   if (@$r['etab'] === '{UAI}0751717J') {
     unset($r['etab']);
