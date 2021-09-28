@@ -1286,7 +1286,8 @@ Vue.createApp({
             input.handlePlaceholderOnIE();
         },
         install_clickedTitle: function () {
-            $(".annuaireResult").on('click', "span[title]", function () {
+            $(".annuaireResult").on('click', "span[title]", function (evt) {
+                if (evt.target !== this) return; // only on span
                 var $title = $(this).find(".clickedTitle");
                 if (!$title.length) {
                     $(this).append($('<span>', { 'class': "clickedTitle" }).text($(this).attr("title")));

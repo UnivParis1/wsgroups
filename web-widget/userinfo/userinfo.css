@@ -59,9 +59,17 @@ span[title], a[title] {
   position: absolute;
   top: 20px;
   background: silver;
-  padding: 4px;
+  padding: 1rem;
   left: 0;
-  white-space: nowrap;
+  width: 50vw;
+  z-index: 1;
+}
+@media screen and (max-device-width: 800px){
+    .clickedTitle {
+        position: fixed;
+        top: 0;
+        width: 100%;
+    }
 }
 
 .clickable {
