@@ -764,7 +764,7 @@ function get_up1Roles_raw($user) {
 
   $roles = array();
   $rdn = "uid=" . $user['uid'] . ",$PEOPLE_DN";
-  foreach (array('manager', 'roleOccupant', 'secretary', 'member') as $role) {
+  foreach (array('manager', 'member') as $role) {
     $filter = "($role=$rdn)";
     if ($role === 'manager') $filter = "(|$filter(supannGroupeLecteurDN=$rdn))";
     $filter = "(&(objectClass=up1Role)$filter)";
