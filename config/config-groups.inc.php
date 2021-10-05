@@ -16,7 +16,7 @@ $ETABLISSEMENT_TABLE_DN = "ou=supannEtablissement,ou=tables,".$BASE_DN;
 $ACTIVITE_TABLE_DN = "ou=supannActivite,ou=tables,".$BASE_DN;
 
 $GROUPS_ATTRS = array("cn" => "key", "description" => "name", "modifyTimestamp" => "modifyTimestamp", "seeAlso" => "MULTI");
-$STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description", "businessCategory" => "businessCategory", "labeledURI" => "labeledURI", "modifyTimestamp" => "modifyTimestamp");
+$STRUCTURES_ATTRS = array("supannCodeEntite" => "key", "ou" => "name", "description" => "description", "businessCategory" => "businessCategory", "labeledURI" => "labeledURI", "modifyTimestamp" => "modifyTimestamp", "up1Flags" => "MULTI");
 $ROLE_GENERIQUE_ATTRS = array("up1TableKey" => "key", "displayName" => "name", 'displayName;x-gender-m' => "name-gender-m", 'displayName;x-gender-f' => "name-gender-f", "up1Flags" => "weight");
 $ETABLISSEMENT_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
 $ACTIVITE_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
