@@ -321,6 +321,8 @@
       input.click(function () {
       	  input.autocomplete("search");
       });
+
+      return { wsParams: wsParams };
   };
 
 
