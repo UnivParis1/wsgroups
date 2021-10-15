@@ -1,5 +1,5 @@
 (function ($) {
-  var attrs = "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation,supannRoleGenerique,supannEtablissement";
+  var attrs = "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation-ou,supannRoleGenerique,supannEtablissement";
     var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, alum: 7, member: 8, "registered-reader": 9, "library-walk-in": 10 };
     var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", alum: "Anciens &eacute;tudiants", retired: "Retrait&eacute;s", "registered-reader": "Lecteur externe", "library-walk-in": "Visiteur biblioth&egrave;que" };
 
@@ -38,9 +38,9 @@
 	  details.push(item.employeeType.join(" - "));
       if (item.supannRoleGenerique)
 	  details.push(item.supannRoleGenerique.join(" - "));
-      if (item.supannEntiteAffectation) {
+      if (item['supannEntiteAffectation-ou']) {
 	  var prev = details.pop();
-	  details.push((prev ? prev + " - " : '') + item.supannEntiteAffectation.join(" - "));
+	  details.push((prev ? prev + " - " : '') + item['supannEntiteAffectation-ou'].join(" - "));
       }
       if (item.departmentNumber) {
 	  details.push((item.departmentNumber.count >= 2 ? "Disciplines : " : "Discipline : ") + item.departmentNumber.join(' - '));
