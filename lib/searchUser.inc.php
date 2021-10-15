@@ -15,6 +15,7 @@ $allowRoles = GET_or_NULL("allowRoles");
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
 if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && (@$isTrustedIp || GET_uid())) {
+  if (GET_or_NULL("auth") === "Bearer") fatal('"Bearer" auth is limited to non extended info'); 
   $allowExtendedInfo = @$isTrustedIp ? 2 : loggedUserAllowedLevel();
 }
 
