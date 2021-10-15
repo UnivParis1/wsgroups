@@ -225,7 +225,23 @@ function GET_extra_people_filter_from_params() {
   return array_merge(
       computeFilter($filters, false),
       computeFilter($filters_not, true),
+      GET_filter_supannEtuInscription(),
       GET_filter_member_of_group());
+}
+
+function GET_filter_supannEtuInscription() {
+    $filters = [];
+    $affect = GET_ldapFilterSafe_or_NULL("filter_student_affectation_annee_courante");
+    if ($affect) {
+        $or = [];
+        require_once ('config/config-groups.inc.php');
+        global $ANNEE;
+        foreach (explode('|', $affect) as $one) {
+            $or[] = "(supannEtuInscription=*[anneeinsc=$ANNEE]*[affect=$one]*)";
+        }
+        $filters[] = ldapOr($or);
+    }
+    return $filters;
 }
 
 function GET_filter_member_of_group() {
