@@ -230,16 +230,22 @@ function GET_extra_people_filter_from_params() {
 }
 
 function GET_filter_supannEtuInscription() {
+    $params = [
+        'affect' => GET_ldapFilterSafe_or_NULL("filter_student_affectation_annee_courante"),
+        'etab' => GET_ldapFilterSafe_or_NULL("filter_student_etablissement_annee_courante"),
+    ];
     $filters = [];
-    $affect = GET_ldapFilterSafe_or_NULL("filter_student_affectation_annee_courante");
-    if ($affect) {
-        $or = [];
-        require_once ('config/config-groups.inc.php');
-        global $ANNEE;
-        foreach (explode('|', $affect) as $one) {
-            $or[] = "(supannEtuInscription=*[anneeinsc=$ANNEE]*[affect=$one]*)";
+    foreach ($params as $key => $values) {
+        if ($values) {
+            $or = [];
+            require_once ('config/config-groups.inc.php');
+            global $ANNEE;
+            foreach (explode('|', $values) as $one) {
+                $test = $key === 'etab' ? "*[$key=$one]*[anneeinsc=$ANNEE]*" : "*[anneeinsc=$ANNEE]*[$key=$one]*";
+                $or[] = "(supannEtuInscription=$test)";
+            }
+            $filters[] = ldapOr($or);
         }
-        $filters[] = ldapOr($or);
     }
     return $filters;
 }
