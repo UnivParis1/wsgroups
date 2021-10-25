@@ -650,13 +650,14 @@ function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCod
                 global $roleGeneriqueKeyToAll;
                 $role = $roleGeneriqueKeyToAll[$r['role']];
                 $role['code'] = $r['role'];
-                $name_gender = all_to_name_with_gender($role, $user);
+                $name_gender = all_to_name_with_gender_no_fallback($role, $user);
                 if ($with_supannRoleGenerique_all) {
+                    if ($name_gender) $role['name-gender'] = $name_gender;
                     // remove gender-f/gender-m. API users will use fields where gender is already taken into account
                     $role = array_filter($role, function ($k) { return !preg_match('/gender-[mf]/', $k); }, ARRAY_FILTER_USE_KEY);
                 }
                 $roles_all[] = $role;
-                $roles[] = $name_gender;
+                $roles[] = $name_gender ? $name_gender : $role['name'];
                 if (isset($role['weight'])) $weights[$role['weight']] = 1;
             }
         }

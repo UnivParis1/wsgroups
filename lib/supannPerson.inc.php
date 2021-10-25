@@ -665,10 +665,15 @@ function civilite_to_gender_suffix($civilite) {
            ($civilite === 'Mme' || $civilite === 'Mlle' ? '-gender-f' : '');
 }
 
-function all_to_name_with_gender($all, $user) {
+function all_to_name_with_gender_no_fallback($all, $user) {
     if (isset($user['supannCivilite'])) {
         $name = @$all['name' . civilite_to_gender_suffix($user['supannCivilite'])];
     }
+    return $name;
+}
+
+function all_to_name_with_gender($all, $user) {
+    $name = all_to_name_with_gender_no_fallback($all, $user);
     if (!$name) {
         $name = $all['name'];
     }
