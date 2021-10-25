@@ -680,6 +680,13 @@ function all_to_name_with_gender($all, $user) {
     return $name;
 }
 
+function all_to_short_name_with_gender($all, $user) {
+    if (isset($user['supannCivilite'])) {
+        $name = @$all['name' . civilite_to_gender_suffix($user['supannCivilite']) . '-short'];
+    }
+    return $name;
+}
+
 function userAttributesKeyToText(&$user, $wanted_attrs) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {

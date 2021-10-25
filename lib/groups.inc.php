@@ -653,6 +653,8 @@ function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCod
                 $name_gender = all_to_name_with_gender_no_fallback($role, $user);
                 if ($with_supannRoleGenerique_all) {
                     if ($name_gender) $role['name-gender'] = $name_gender;
+                    $short = all_to_short_name_with_gender($role, $user);
+                    if ($short) $role['name-gender-short'] = $short;
                     // remove gender-f/gender-m. API users will use fields where gender is already taken into account
                     $role = array_filter($role, function ($k) { return !preg_match('/gender-[mf]/', $k); }, ARRAY_FILTER_USE_KEY);
                 }
