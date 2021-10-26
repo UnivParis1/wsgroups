@@ -1051,9 +1051,9 @@ function format_members_not_admin(val, info) {
 
 function format_supannCodeEntite(l, principale) {
     return spanFromList(rejectEmpty($.map(l, function (e) {
-	if (e.name) {
+	if (e.name || e.key) {
 	    var title = (e.description || '') + " (" + e.key + ")";
-	    var elt = a_or_span(e.labeledURI, e.name).attr('title', title);
+	    var elt = a_or_span(e.labeledURI, e.name || e.key).attr('title', title);
 	    if (principale && e.key === principale && l.length > 1) elt = $("<b>").append(elt);
 	    return elt;
 	} else
