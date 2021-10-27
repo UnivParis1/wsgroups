@@ -904,7 +904,7 @@ function get_lists(info) {
 
 function get_Responsable(info) {
     var infoDiv = $("<span>...</span>");
-    asyncInfoRaw(getGroupURL, { key: "structures-" + info.supannEntiteAffectationPrincipale, attrs: 'roles' }, infoDiv,
+    asyncInfoRaw(getGroupURL, { CAS: true, key: "structures-" + info.supannEntiteAffectationPrincipale, attrs: 'roles' }, infoDiv,
        function (data) {
 	    infoDiv.empty();
 	    if (!data || !data.key) {
