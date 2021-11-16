@@ -66,7 +66,7 @@ $attrs_by_kind = [
     'up1Profile', // will be filtered
   ],
   "MULTI 2" => [
-    'employeeType', 'departmentNumber', // NB: teacher/emeritus/researcher have a specific LEVEL -1 for those attrs
+    'employeeType', 'employeeType-all', 'departmentNumber', // NB: teacher/emeritus/researcher have a specific LEVEL -1 for those attrs
   ],
   "MULTI 1" => [
 	// below are restricted or internal attributes.
@@ -89,7 +89,7 @@ if (@$UP1_ROLES_DN) {
 
 function allowAttribute($user, $attrName, $allowExtendedInfo) {
     global $USER_ALLOWED_ATTRS;
-    if ($attrName === 'employeeType' || $attrName === 'departmentNumber') {  
+    if (in_array($attrName, ['employeeType', 'employeeType-all', 'departmentNumber'])) {  
         // employeeType is private for staff & student
         // departmentNumber is not interesting for staff & student
         if (in_array(@$user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) return true;
@@ -113,9 +113,9 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
     if (!isset($wanted_attrs[$USER_KEY_FIELD]))
         $wanted_attrs[$USER_KEY_FIELD] = $USER_KEY_FIELD;
 
-    // employeeType is only allowed on some eduPersonPrimaryAffiliation
+    // employeeType* is only allowed on some eduPersonPrimaryAffiliation
     // departmentNumber is only useful for some eduPersonPrimaryAffiliation
-    if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['departmentNumber']))
+    if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['employeeType-all']) || isset($wanted_attrs['departmentNumber']))
         $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
 
     // we want to hide 'mail' when accountStatus is unset
@@ -655,7 +655,7 @@ function rdnToSupannCodeEntites($l) {
 }
 
 function userHandleSpecialAttributePrivacy(&$user, $allowExtendedInfo) {
-    foreach (['employeeType', 'departmentNumber'] as $attrName) {
+    foreach (['employeeType', 'employeeType-all', 'departmentNumber'] as $attrName) {
         if (!allowAttribute($user, $attrName, $allowExtendedInfo)) unset($user[$attrName]);
     }
 }
@@ -685,6 +685,18 @@ function all_to_short_name_with_gender($all, $user) {
         $name = @$all['name' . civilite_to_gender_suffix($user['supannCivilite']) . '-short'];
     }
     return $name;
+}
+
+function employeeTypeAll($name, $user) {
+    require_once 'lib/employeeTypes.inc.php';
+    $r = [ "name" => $name ];
+    $all = @$GLOBALS['employeeTypes'][$name];
+    if ($all) {
+        $r["weight"] = $all["weight"];
+        $gender = all_to_name_with_gender_no_fallback($all, $user);
+        if ($gender) $r['name-gender'] = $gender;
+    }
+    return $r;
 }
 
 function userAttributesKeyToText(&$user, $wanted_attrs) {
@@ -768,6 +780,11 @@ if (isset($user['supannParrainDN'])) {
         $user['supannActivite'] = supannActiviteShortnames($user['supannActivite']);
     else
         unset($user['supannActivite']);
+  }
+  if (isset($user['employeeType'])) {
+      if (isset($wanted_attrs['employeeType-all'])) {
+          $user['employeeType-all'] = array_map(function ($name) use ($user) { return employeeTypeAll($name, $user); }, $user['employeeType']);
+      }
   }
   if (isset($user['description']) && isset($wanted_attrs['supannActivite-all'])) {
 	$user['supannActivite-all'] = array_merge((array) $user['supannActivite-all'], activiteUP1All($user['description']));
