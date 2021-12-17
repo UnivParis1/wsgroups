@@ -702,6 +702,13 @@ function employeeTypeAll($name, $user) {
     return $r;
 }
 
+function supannEtablissementShortname($key) {
+    $usefulKey = removePrefixOrNULL($key, "{AUTRE}");
+    $name = @$GLOBALS['etablissementKeyToShortname'][$key];
+    if ($name) return $usefulKey ? "$name [$usefulKey]" : $name;
+    return null;
+}
+
 function userAttributesKeyToText(&$user, $wanted_attrs) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
@@ -800,9 +807,8 @@ if (isset($user['supannParrainDN'])) {
     } else {
       global $etablissementKeyToShortname;
       foreach ($user['supannEtablissement'] as &$e) {
-	$usefulKey = removePrefixOrNULL($e, "{AUTRE}");
-	$name = @$etablissementKeyToShortname[$e];
-	if ($name) $e = $usefulKey ? "$name [$usefulKey]" : $name;
+        $name = supannEtablissementShortname($e);
+        if ($name) $e = $name;
       }
     }
   }
