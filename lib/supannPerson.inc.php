@@ -460,13 +460,16 @@ function supannActiviteAll($keys) {
   return empty($r) ? NULL : $r;
 }
 
-function supannActiviteShortnames($keys) {
-    $all = supannActiviteAll($keys);
+function toShortnames($all) {
     $r = array();
     foreach ($all as $e) {
       $r[] = @$e['name'];
     }
     return empty($r) ? NULL : $r;
+}
+  
+function supannActiviteShortnames($keys) {
+    return toShortnames(supannActiviteAll($keys));
 }
 
 function parse_composite_value($s) {
