@@ -31,6 +31,7 @@ var main_attrs_labels = [ [
     'businessCategory: Catégorie',
     
     'employeeType: Type',
+    'supannCodePopulation: Type',
     'supannActivite-REFERENS: Emploi type',
     'supannActivite-other: Discipline(s)',
     //'departmentNumber: Discipline(s)', // redundant
@@ -79,6 +80,8 @@ var main_attrs_labels = [ [
     'shadowExpire: Expire le',
     'createTimestamp: Compte créé',
     'modifyTimestamp: Dernière modification',
+    'supannExtProfil-all: Profil(s) externe',
+    'supannEmpProfil-all: Profil(s) employé',
     'up1Source: Profil',
     'up1Profile: Profils',
 ],
@@ -228,6 +231,8 @@ var simple_formatters = {
     'seeAlso-all': format_supannCodeEntite,
     'supannParrainDN-all': format_supannCodeEntite,
     'supannEntiteAffectation-all': format_supannEntiteAffectation,
+    'supannEmpProfil-all': format_supannEmpExtProfilAll,
+    'supannExtProfil-all': format_supannEmpExtProfilAll,
     mailForwardingAddress: compute_MailDelivery,
     up1Profile: format_main_profiles_info,
     up1Source: function (_, info) { return format_main_profile_info(info) },
@@ -545,6 +550,17 @@ function format_supannActivite(all, fInfo) {
 	fInfo['supannActivite-REFERENS'] = spanFromList($.map(ll[0], format_it), '<br>');
     if (ll[1].length)
 	fInfo['supannActivite-other'] = spanFromList($.map(ll[1], format_it), '<br>');
+}
+
+function format_supannEmpExtProfilAll(l) {
+    var format_it = function (e) {
+
+        return e.population?.name + " (" + eduPersonAffiliation_valnames[e.affil] + ")" +
+            (e.affect ? ", affecté à " + e.affect.name + (e.etab ? " (" + e.etab.name + ")" : '') : 
+                (e.etab ? ", affecté à " + e.etab.name : '')) +
+            (e.parrain ? ", parrainé par " + e.parrain.name : '')
+    }
+    return spanFromList($.map(l, format_it), "<br>")
 }
 
 function format_supannEtuInscriptionAll(all, fInfo) {

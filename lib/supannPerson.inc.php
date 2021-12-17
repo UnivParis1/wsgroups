@@ -62,6 +62,7 @@ $attrs_by_kind = [
 	'objectClass',
 	'labeledURI',
     'seeAlso', 'seeAlso-all',
+    'supannCodePopulation', 'supannCodePopulation-all', 'supannEmpProfil-all', 'supannExtProfil-all',
     
     'up1Profile', // will be filtered
   ],
@@ -460,6 +461,13 @@ function supannActiviteAll($keys) {
   return empty($r) ? NULL : $r;
 }
 
+function supannCodePopulationAll($key) {
+    $e = array('key' => $key);
+    $name = $GLOBALS['supannCodePopulationToShortname'][$key];
+    if ($name) $e['name'] = $name;
+    return $e;
+}
+
 function toShortnames($all) {
     $r = array();
     foreach ($all as $e) {
@@ -536,6 +544,28 @@ function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) 
         }
     }
     unset($user['up1Profile']);
+}
+
+function supannEmpExtProfilAll($profil) {
+    $r = parse_composite_value($profil);
+    if (isset($r["population"])) {
+        $r["population"] = supannCodePopulationAll($r["population"]);
+    }
+    if (isset($r['parrain'])) {
+        $r['parrain'] = getDN($r['parrain']);
+    }
+    if (isset($r['etab'])) {
+        if ($r['etab'] === '{UAI}0751717J') {
+            unset($r['etab']);
+        } else {
+            $r['etab'] = supannEtablissementAll($r['etab']);
+        }
+    }
+    if (isset($r['affect'])) {
+        $r['affect'] = structureAll([$r['affect']])[0];
+    }
+    unset($r['typeaffect']); // we do not handle it for the moment, so hide it
+    return $r;
 }
 
 function supannEtuInscriptionAll($supannEtuInscription) {
@@ -635,6 +665,9 @@ function getDNs($l) {
   foreach ($l as $dn) $r[] = getLdapDN_with_DN_as_key($dn, $attrs);
   return $r;
 }
+function getDN($dn) {
+    return getDNS([$dn])[0];
+}
 
 function replace_old_structures_DN($l) {
     global $ALT_STRUCTURES_DN, $STRUCTURES_DN;
@@ -707,6 +740,13 @@ function supannEtablissementShortname($key) {
     $name = @$GLOBALS['etablissementKeyToShortname'][$key];
     if ($name) return $usefulKey ? "$name [$usefulKey]" : $name;
     return null;
+}
+
+function supannEtablissementAll($key) {
+    $r = [ key => $key ];
+    $name = supannEtablissementShortname($key);
+    if ($name) $r['name'] = $name;
+    return $r;
 }
 
 function userAttributesKeyToText(&$user, $wanted_attrs) {
@@ -790,6 +830,24 @@ if (isset($user['supannParrainDN'])) {
         $user['supannActivite'] = supannActiviteShortnames($user['supannActivite']);
     else
         unset($user['supannActivite']);
+  }
+  if (isset($user['supannCodePopulation'])) {
+    if (isset($wanted_attrs['supannCodePopulation-all']))
+        $user['supannCodePopulation-all'] = array_map(supannCodePopulationAll, $user['supannCodePopulation']);
+    if (isset($wanted_attrs['supannCodePopulation']))
+        $user['supannCodePopulation'] = toShortnames(array_map(supannCodePopulationAll, $user['supannCodePopulation']));
+    else
+        unset($user['supannCodePopulation']);
+  }
+  if (isset($user['supannEmpProfil'])) {
+    if (isset($wanted_attrs['supannEmpProfil-all']))
+        $user['supannEmpProfil-all'] = array_map(supannEmpExtProfilAll, $user['supannEmpProfil']);
+    unset($user['supannEmpProfil']);
+  }
+  if (isset($user['supannExtProfil'])) {
+    if (isset($wanted_attrs['supannExtProfil-all']))
+        $user['supannExtProfil-all'] = array_map(supannEmpExtProfilAll, $user['supannExtProfil']);
+    unset($user['supannExtProfil']);
   }
   if (isset($user['employeeType'])) {
       if (isset($wanted_attrs['employeeType-all'])) {
