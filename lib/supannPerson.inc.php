@@ -377,7 +377,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
             forceProfile($user, $attrRestrictions['forceProfile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
             unset($user['up1Profile']);
         } else {
-            $user['up1Profile'] = parse_up1Profile($user['up1Profile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
+            $user['up1Profile'] = parse_up1Profile($user['up1Profile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs, $user);
         }
       }
       userHandleSpecialAttributePrivacy($user, $attrRestrictions['allowExtendedInfo']);
@@ -503,7 +503,7 @@ function unescape_sharpFF($attr_value) {
     return preg_replace_callback('/#([0-9A-F]{2})/', function ($xx) { return chr(hexdec($xx)); }, $attr_value);
 }
 
-function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs) {
+function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs, $global_user) {
     global $USER_ALLOWED_ATTRS;
     $r = [];
     while (preg_match('/^\[([^\[\]=]+)=((?:[^\[\]]|\[[^\[\]]*\])*)\](.*)/', $up1Profile, $m)) {
@@ -523,14 +523,14 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs) {
     }
 
     if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
-    userAttributesKeyToText($r, $wanted_attrs, @$r['supannCivilite']);
+    userAttributesKeyToText($r, $wanted_attrs, isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite']);
     return $r;
 }
 
-function parse_up1Profile($up1Profile_s, $allowExtendedInfo, $wanted_attrs) {
+function parse_up1Profile($up1Profile_s, $allowExtendedInfo, $wanted_attrs, $global_user) {
     $r = [];
     foreach ($up1Profile_s as $profile) {
-       $r[] = parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs);
+       $r[] = parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs, $global_user);
     }
     return $r;
 }
@@ -544,7 +544,7 @@ function array_replace_keys(&$array, $to_set) {
 function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) {
     foreach ($user['up1Profile'] as $profile) {
         if (contains($profile, $forceProfile)) {
-            array_replace_keys($user, parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs));
+            array_replace_keys($user, parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs, $user));
         }
     }
     unset($user['up1Profile']);
