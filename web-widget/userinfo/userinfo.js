@@ -32,10 +32,17 @@ var main_attrs_labels = [ [
     
     'employeeType: Type',
     'supannCodePopulation: Type',
-    'supannActivite-REFERENS: Emploi type',
-    'supannActivite-other: Discipline(s)',
+    "supannRoles: Fonction(s) d'encadrement ou transverses",
+
+    'supannActivite-REFERENS: Emploi type REFERENS <small>(RH)</small>',
+    'supannActivite-RIFSEEP: Emploi RIFSEEP <small>(RH)</small>',
+    'supannActivite-CNU: Discipline(s) <small>(RH)</small>',
+    "supannActivite-various: supannActivite-various", 
     //'departmentNumber: Discipline(s)', // redundant
-    'Fonctions: Fonction(s)',
+
+    'description: Activité<br><small>(choisi dans Mon Compte Paris 1)</small>',
+    "info: Domaine d'activité ou Spécialité<br><small>(saisie libre dans Mon Compte Paris 1)</small>",
+
     'supannEntiteAffectation-all: Structure(s)/Composante(s)',
     'Responsable: Responsable',
 
@@ -518,7 +525,7 @@ function compute_Affiliation(info) {
     return Affiliation;
 }
 
-function compute_Fonctions(info) {
+function compute_supannRoles(info) {
     var span = $("<span>");
     var done = {};
     if (info['supannRoleEntite-all']) {
@@ -530,26 +537,29 @@ function compute_Fonctions(info) {
 	    span.appendText(")");
 	});
     }
-    var list = flattenFailsafe([info.supannRoleGenerique, info.description, info.info]);
-    $.each(list, function (i, fonction) {
-	if (!done[fonction]) {
-	    if (!$.isEmptyObject(done)) span.append("<br>");
-	    done[fonction] = true;
-	    span.appendText(fonction);
-	}
-    });
     return !$.isEmptyObject(done) && span;
 }
 
 function format_supannActivite(all, fInfo) {
     var format_it = function (e) {
-	return $("<span>", { title: e.key }).text(e.name);
+        return $("<span>", { title: e.key }).text(e.name);
     };
-    var ll = partition(all, function (e) { return e.key.match(/^{REFERENS}/) });
-    if (ll[0].length)
-	fInfo['supannActivite-REFERENS'] = spanFromList($.map(ll[0], format_it), '<br>');
-    if (ll[1].length)
-	fInfo['supannActivite-other'] = spanFromList($.map(ll[1], format_it), '<br>');
+    var cat2l = {}
+    for (const e of all) { 
+        const cat = 
+            e.key.match(/^{REFERENS}/) ? 'REFERENS' :
+            e.key.match(/^{UAI:0751717J:RIFSEEP}/) ? 'RIFSEEP' :
+            e.key.match(/^{CNU}/) ? 'CNU' :
+            e.key.match(/^{UAI:0751717J:ACT}/) ? undefined : // NB: ignore it since we display "description" and this is a duplicate added here by wsgroups, cf https://projets.univ-paris1.fr/project/22/task/135. 
+            'various'
+        if (cat) {
+            if (!cat2l[cat]) cat2l[cat] = []
+            cat2l[cat].push(e)
+        }
+    }
+	$.each(cat2l, function (cat,l) {
+        fInfo['supannActivite-' + cat] = spanFromList($.map(l, format_it), '<br>');
+    })
 }
 
 function format_supannEmpExtProfilAll(l) {
@@ -1149,7 +1159,7 @@ function formatUserInfo(info, showExtendedInfo) {
 	// if we have up1BirthDay, we have full power
 	if (!info.up1Source) compute_Account_and_accountStatus(info, fInfo);
     if (info.supannEntiteAffectationPrincipale) fInfo.Responsable = get_Responsable(info);
-    fInfo.Fonctions = compute_Fonctions(info);
+    fInfo.supannRoles = compute_supannRoles(info);
 
     $.each(['telephoneNumber', 'facsimileTelephoneNumber', 'supannAutreTelephone', 'mobile', 'pager'], function (i, attr) {
 	if (info[attr]) fInfo[attr] = format_telephoneNumber(info[attr], attr);
