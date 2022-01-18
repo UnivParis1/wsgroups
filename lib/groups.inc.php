@@ -650,10 +650,10 @@ function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCod
                 global $roleGeneriqueKeyToAll;
                 $role = $roleGeneriqueKeyToAll[$r['role']];
                 $role['code'] = $r['role'];
-                $name_gender = all_to_name_with_gender_no_fallback($role, $user);
+                $name_gender = all_to_name_with_gender_no_fallback($role, $user['supannCivilite']);
                 if ($with_supannRoleGenerique_all) {
                     if ($name_gender) $role['name-gender'] = $name_gender;
-                    $short = all_to_short_name_with_gender($role, $user);
+                    $short = all_to_short_name_with_gender($role, $user['supannCivilite']);
                     if ($short) {
                         $role['name-gender-short'] = $short;
                         $role['name-short'] = $role['name-short'];

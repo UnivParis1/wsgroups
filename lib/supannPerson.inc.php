@@ -371,7 +371,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
 	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
-      userAttributesKeyToText($user, $wanted_attrs);
+      userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite']);
       if (isset($user['up1Profile'])) {
         if (@$attrRestrictions['forceProfile']) {
             forceProfile($user, $attrRestrictions['forceProfile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
@@ -449,7 +449,7 @@ function activiteUP1All($descriptions) {
   return $r;
 }
 
-function supannActiviteAll($user, $keys) {
+function supannActiviteAll($supannCivilite, $keys) {
   global $activiteKeyToAll;
   $r = array();
   foreach ($keys as $key) {
@@ -457,7 +457,7 @@ function supannActiviteAll($user, $keys) {
     $all = @$activiteKeyToAll[$key];
     if ($all) {
         $e['name'] = $all['name'];
-        $gender = all_to_name_with_gender_no_fallback($all, $user);
+        $gender = all_to_name_with_gender_no_fallback($all, $supannCivilite);
         if ($gender) $e['name-gender'] = $gender;
     }
     $r[] = $e;
@@ -481,7 +481,7 @@ function toShortnames($all) {
 }
   
 function supannActiviteShortnames($keys) {
-    return toShortnames(supannActiviteAll([], $keys));
+    return toShortnames(supannActiviteAll(null, $keys));
 }
 
 function parse_composite_value($s) {
@@ -523,7 +523,7 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs) {
     }
 
     if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
-    userAttributesKeyToText($r, $wanted_attrs);
+    userAttributesKeyToText($r, $wanted_attrs, @$r['supannCivilite']);
     return $r;
 }
 
@@ -622,12 +622,12 @@ function supannEtuInscriptionAll($supannEtuInscription) {
   return $r;
 }
 
-function supannRoleEntiteAll($user, $e) {
+function supannRoleEntiteAll($supannCivilite, $e) {
   $r = parse_composite_value($e);
   if (@$r['role']) {
     global $roleGeneriqueKeyToAll;
     if ($role = $roleGeneriqueKeyToAll[$r['role']]) {
-        $r['role'] = all_to_name_with_gender($role, $user);
+        $r['role'] = all_to_name_with_gender($role, $supannCivilite);
         if (isset($role['weight'])) $r['role_weight'] = $role['weight'];
     }
   }
@@ -646,10 +646,10 @@ function supannEtuInscriptionsAll($l) {
   return empty($r) ? NULL : $r;
 }
 
-function supannRoleEntitesAll($user, $l) {
+function supannRoleEntitesAll($supannCivilite, $l) {
   $r = array();
   foreach ($l as $e) {
-    $r[] = supannRoleEntiteAll($user, $e);
+    $r[] = supannRoleEntiteAll($supannCivilite, $e);
   }
   return empty($r) ? NULL : $r;
 }
@@ -705,36 +705,36 @@ function civilite_to_gender_suffix($civilite) {
            ($civilite === 'Mme' || $civilite === 'Mlle' ? '-gender-f' : '');
 }
 
-function all_to_name_with_gender_no_fallback($all, $user) {
+function all_to_name_with_gender_no_fallback($all, $supannCivilite) {
     $name = null;
-    if (isset($user['supannCivilite'])) {
-        $name = @$all['name' . civilite_to_gender_suffix($user['supannCivilite'])];
+    if ($supannCivilite) {
+        $name = @$all['name' . civilite_to_gender_suffix($supannCivilite)];
     }
     return $name;
 }
 
-function all_to_name_with_gender($all, $user) {
-    $name = all_to_name_with_gender_no_fallback($all, $user);
+function all_to_name_with_gender($all, $supannCivilite) {
+    $name = all_to_name_with_gender_no_fallback($all, $supannCivilite);
     if (!$name) {
         $name = $all['name'];
     }
     return $name;
 }
 
-function all_to_short_name_with_gender($all, $user) {
-    if (isset($user['supannCivilite'])) {
-        $name = @$all['name' . civilite_to_gender_suffix($user['supannCivilite']) . '-short'];
+function all_to_short_name_with_gender($all, $supannCivilite) {
+    if ($supannCivilite) {
+        $name = @$all['name' . civilite_to_gender_suffix($supannCivilite) . '-short'];
     }
     return $name;
 }
 
-function employeeTypeAll($name, $user) {
+function employeeTypeAll($name, $supannCivilite) {
     require_once 'lib/employeeTypes.inc.php';
     $r = [ "name" => $name ];
     $all = @$GLOBALS['employeeTypes'][$name];
     if ($all) {
         $r["weight"] = $all["weight"];
-        $gender = all_to_name_with_gender_no_fallback($all, $user);
+        $gender = all_to_name_with_gender_no_fallback($all, $supannCivilite);
         if ($gender) $r['name-gender'] = $gender;
     }
     return $r;
@@ -754,7 +754,7 @@ function supannEtablissementAll($key) {
     return $r;
 }
 
-function userAttributesKeyToText(&$user, $wanted_attrs) {
+function userAttributesKeyToText(&$user, $wanted_attrs, $supannCivilite) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
       if (isset($wanted_attrs['supannEntiteAffectation-all']))
@@ -810,7 +810,7 @@ if (isset($user['supannParrainDN'])) {
   }
   if (isset($user['supannRoleEntite'])) {
       if (isset($wanted_attrs['supannRoleEntite-all']))
-	$user['supannRoleEntite-all'] = supannRoleEntitesAll($user, $user['supannRoleEntite']);
+	$user['supannRoleEntite-all'] = supannRoleEntitesAll($supannCivilite, $user['supannRoleEntite']);
       if (!isset($wanted_attrs['supannRoleEntite']))
 	  unset($user['supannRoleEntite']);
   }
@@ -824,13 +824,13 @@ if (isset($user['supannParrainDN'])) {
     global $roleGeneriqueKeyToAll;
     foreach ($user['supannRoleGenerique'] as &$e) {
       if ($role = $roleGeneriqueKeyToAll[$e]) {
-          $e = all_to_name_with_gender($role, $user);
+          $e = all_to_name_with_gender($role, $supannCivilite);
       }
     }
   }
   if (isset($user['supannActivite'])) {
     if (isset($wanted_attrs['supannActivite-all']))
-	$user['supannActivite-all'] = supannActiviteAll($user, $user['supannActivite']);
+	$user['supannActivite-all'] = supannActiviteAll($supannCivilite, $user['supannActivite']);
     if (isset($wanted_attrs['supannActivite']))
         $user['supannActivite'] = supannActiviteShortnames($user['supannActivite']);
     else
@@ -856,7 +856,7 @@ if (isset($user['supannParrainDN'])) {
   }
   if (isset($user['employeeType'])) {
       if (isset($wanted_attrs['employeeType-all'])) {
-          $user['employeeType-all'] = array_map(function ($name) use ($user) { return employeeTypeAll($name, $user); }, $user['employeeType']);
+          $user['employeeType-all'] = array_map(function ($name) use ($supannCivilite) { return employeeTypeAll($name, $supannCivilite); }, $user['employeeType']);
       }
   }
   if (isset($user['description']) && isset($wanted_attrs['supannActivite-all'])) {
