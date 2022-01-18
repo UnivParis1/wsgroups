@@ -449,13 +449,17 @@ function activiteUP1All($descriptions) {
   return $r;
 }
 
-function supannActiviteAll($keys) {
-  global $activiteKeyToShortname;
+function supannActiviteAll($user, $keys) {
+  global $activiteKeyToAll;
   $r = array();
   foreach ($keys as $key) {
     $e = array('key' => $key);
-    $name = @$activiteKeyToShortname[$key];
-    if ($name) $e['name'] = $name;
+    $all = @$activiteKeyToAll[$key];
+    if ($all) {
+        $e['name'] = $all['name'];
+        $gender = all_to_name_with_gender_no_fallback($all, $user);
+        if ($gender) $e['name-gender'] = $gender;
+    }
     $r[] = $e;
   }
   return empty($r) ? NULL : $r;
@@ -477,7 +481,7 @@ function toShortnames($all) {
 }
   
 function supannActiviteShortnames($keys) {
-    return toShortnames(supannActiviteAll($keys));
+    return toShortnames(supannActiviteAll([], $keys));
 }
 
 function parse_composite_value($s) {
@@ -825,7 +829,7 @@ if (isset($user['supannParrainDN'])) {
   }
   if (isset($user['supannActivite'])) {
     if (isset($wanted_attrs['supannActivite-all']))
-	$user['supannActivite-all'] = supannActiviteAll($user['supannActivite']);
+	$user['supannActivite-all'] = supannActiviteAll($user, $user['supannActivite']);
     if (isset($wanted_attrs['supannActivite']))
         $user['supannActivite'] = supannActiviteShortnames($user['supannActivite']);
     else

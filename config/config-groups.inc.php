@@ -23,7 +23,9 @@ $ROLE_GENERIQUE_ATTRS = array("up1TableKey" => "key", "displayName" => "name",
     'displayName;x-gender-m;x-short' => "name-gender-m-short", 'displayName;x-gender-f;x-short' => "name-gender-f-short", 
     "up1Flags" => "weight");
 $ETABLISSEMENT_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
-$ACTIVITE_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name");
+$ACTIVITE_TABLE_ATTRS = array("up1TableKey" => "key", "displayName" => "name",
+    'displayName;x-gender-m' => "name-gender-m", 'displayName;x-gender-f' => "name-gender-f", 
+);
 
 $AFFILIATION2TEXT = array("faculty" => "enseignants-chercheurs", 
 			  "teacher" => "enseignants et chargés d'enseignement", 

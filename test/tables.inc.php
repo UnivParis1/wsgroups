@@ -17,9 +17,16 @@ global $structureKeyToAll; $structureKeyToAll = array (
     ),
   );  
 
-global $activiteKeyToShortname; $activiteKeyToShortname = array (
-    '{REFERENS}E1B22' => 'Chef de projet ou expert en développement et déploiement d\'applications',
-    '{REFERENS}E1C23' => 'Chef de projet ou expert systèmes informatiques, réseaux et télécommunications',
+global $activiteKeyToAll; $activiteKeyToAll = array (
+    '{REFERENS}E1B22' => [ 
+        'name' => 'Chef-fe de projet ou expert-e en Ingéniérie logicielle',
+        'name-gender-f' => 'Cheffe de projet ou experte en Ingéniérie logicielle',
+        'name-gender-m' => 'Chef de projet ou expert en Ingéniérie logicielle',
+    ],
+    '{REFERENS}E1C23' => [ 'name' => 'Chef-fe de projet ou expert-e systèmes informatiques, réseaux et télécommunications',
+        'name-gender-f' => 'Cheffe de projet ou experte systèmes informatiques, réseaux et télécommunications',
+        'name-gender-m' => 'Chef de projet ou expert systèmes informatiques, réseaux et télécommunications',
+],
 );
 
 

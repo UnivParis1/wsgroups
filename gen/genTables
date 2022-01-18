@@ -24,9 +24,9 @@ $fh = fopen($output_file, "w");
 if (!$fh) exit("failed to open output file $output_file");
 gen($fh,
     array('structureKeyToAll' => $structures,
+          'activiteKeyToAll' => $activites,
           'roleGeneriqueKeyToAll' => $roles),
     array('roleGeneriqueKeyToShortname' => $roles,
-	  'activiteKeyToShortname' => $activites,
 	  'etablissementKeyToShortname' => $etablissements,
 	  'supannCodePopulationToShortname' => $supannCodesPopulation),
     array('descriptionToActivityKey' => $activitesUP1)
