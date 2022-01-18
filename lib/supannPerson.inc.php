@@ -706,6 +706,7 @@ function civilite_to_gender_suffix($civilite) {
 }
 
 function all_to_name_with_gender_no_fallback($all, $user) {
+    $name = null;
     if (isset($user['supannCivilite'])) {
         $name = @$all['name' . civilite_to_gender_suffix($user['supannCivilite'])];
     }
