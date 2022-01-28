@@ -1,5 +1,7 @@
 <?php
 
+# https://glpi-front.univ-paris1.fr/front/ticket.form.php?id=115582
+#
 global $employeeTypes; $employeeTypes = [
     "Professeur émérite" => [ "weight" => "01", "name-gender-f" => "Professeure émérite" ],
 
