@@ -757,6 +757,11 @@ function supannEtablissementAll($key) {
 function userAttributesKeyToText(&$user, $wanted_attrs, $supannCivilite) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
+      if (isset($user['supannEntiteAffectationPrincipale'])) {
+          # put "principale" affectation first
+          $first = $user['supannEntiteAffectationPrincipale'];
+          $supannEntiteAffectation = array_unique(array_merge([$first], $supannEntiteAffectation));
+      }
       if (isset($wanted_attrs['supannEntiteAffectation-all']))
 	  $user['supannEntiteAffectation-all'] = structureAll($supannEntiteAffectation);
       if (isset($wanted_attrs['supannEntiteAffectation-ou']))
