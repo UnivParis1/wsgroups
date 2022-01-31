@@ -399,7 +399,7 @@ function groupKey2parentKey($key) {
     $g = getLdapDN($entryDn, array("seeAlso" => "MULTI", "supannCodeEntiteParent" => "MULTI", "up1Flags" => "up1Flags"), 1);
     $affiliation = groupIsStudentsOnly($key) ? 'student' : '';
     $r = array();
-    if ($g && isset($g["supannCodeEntiteParent"]) && getAndUnset($g, "up1Flags") === "included") {
+    if ($g && isset($g["supannCodeEntiteParent"]) && (getAndUnset($g, "up1Flags") === "included" || isset($_GET["with_organization"]))) {
         if (!isset($g["seeAlso"])) $g["seeAlso"] = [];
         foreach ($g["supannCodeEntiteParent"] as $parent) {
             $g["seeAlso"][] = groupKey2entryDn("structures-$parent");
