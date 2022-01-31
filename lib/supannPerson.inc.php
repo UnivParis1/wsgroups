@@ -696,7 +696,16 @@ function rdnToSupannCodeEntites($l) {
 
 function userHandleSpecialAttributePrivacy(&$user, $allowExtendedInfo) {
     foreach (['employeeType', 'employeeType-all', 'departmentNumber'] as $attrName) {
-        if (!allowAttribute($user, $attrName, $allowExtendedInfo)) unset($user[$attrName]);
+        if (!allowAttribute($user, $attrName, $allowExtendedInfo)) {
+            unset($user[$attrName]);
+        }
+        if (isset($user['up1Profile'])) {
+            foreach ($user['up1Profile'] as &$profile) {
+                if (!allowAttribute($profile, $attrName, $allowExtendedInfo)) {
+                    unset($profile[$attrName]);
+                }
+            }
+        }
     }
 }
 
