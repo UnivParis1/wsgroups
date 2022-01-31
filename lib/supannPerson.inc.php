@@ -542,9 +542,13 @@ function array_replace_keys(&$array, $to_set) {
 }
 
 function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) {
-    foreach ($user['up1Profile'] as $profile) {
-        if (contains($profile, $forceProfile)) {
-            array_replace_keys($user, parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs, $user));
+    foreach ($user['up1Profile'] as $profile_s) {
+        if (contains($profile_s, $forceProfile)) {
+            $profile = parse_up1Profile_one($profile_s, $allowExtendedInfo, $wanted_attrs, $user);
+            array_replace_keys($user, $profile);
+            foreach (['supannActivite', 'supannActivite-all'] as $profiled_attr) {
+                if (!isset($profile[$profiled_attr])) unset($user[$profiled_attr]);
+            }
         }
     }
     unset($user['up1Profile']);
