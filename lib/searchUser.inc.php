@@ -11,7 +11,7 @@ $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
 $allowNoAffiliationAccounts = GET_or("allowNoAffiliationAccounts", $allowInvalidAccounts);
-$allowRoles = GET_or_NULL("allowRoles");
+$allowRoles = GET_or_NULL("allowRoles"); # allow searching non-people entries
 
 $allowExtendedInfo = $anonymous ? -1 : 0;
 if ((isset($showExtendedInfo) || isset($allowInvalidAccounts)) && (@$isTrustedIp || GET_uid())) {
