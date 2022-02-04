@@ -85,7 +85,7 @@ foreach ($attrs_by_kind as $kind => $attrs) {
 }
 global $UP1_ROLES_DN;
 if (@$UP1_ROLES_DN) {
-    $USER_ALLOWED_ATTRS['up1Roles'] = [ "MULTI" => true, "LEVEL" => -1 ]; // computed
+    $USER_ALLOWED_ATTRS['up1Roles'] = [ "MULTI" => true, "LEVEL" => 0 ]; // computed
 }
 
 function allowAttribute($user, $attrName, $allowExtendedInfo) {
@@ -353,6 +353,7 @@ function attrRestrictions($allowExtendedInfo = 0) {
     return
         array('allowListeRouge' => allowListeRouge($allowExtendedInfo),
         'allowAccountStatus' => GET_uid(),
+        'allowUp1Roles' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowExtendedInfo' => $allowExtendedInfo,
         'forceProfile' => (isset($_GET["profile_supannEntiteAffectation"]) ? '[supannEntiteAffectation=' . $_GET["profile_supannEntiteAffectation"] . ']' : null),
@@ -382,7 +383,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
       }
       userHandleSpecialAttributePrivacy($user, $attrRestrictions['allowExtendedInfo']);
       userHandle_postalAddress($user);
-      if (@$wanted_attrs['up1Roles']) get_up1Roles($user);
+      if ($attrRestrictions['allowUp1Roles'] && @$wanted_attrs['up1Roles']) get_up1Roles($user);
     }
     return $r;
 }
