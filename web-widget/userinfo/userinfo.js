@@ -433,8 +433,8 @@ function formatDateRaw(d) {
     return leftPadZero(d.getDate(), 2) + "/" + leftPadZero(d.getMonth() + 1, 2) + "/" + d.getFullYear();
 }
 
-function formatDateTime(epoch) {
-    var d = new Date(epoch * 1000);
+function formatDateTime(date) {
+    var d = new Date(date);
     return "le " + formatDateRaw(d) + " à " + formatTimeHHhMM(d);
 }
 function formatTimeHHhMM(d) {
@@ -702,26 +702,26 @@ function formatLastLogins(info, data, div) {
 	lastErrs.push(list.shift());
     }
     if (list.length) {
-	div.text(", dernier login CAS " + formatDateTime(list[0].time));
+	div.text(", dernier login CAS " + formatDateTime(list[0].when));
 	if (lastErrs.length)
 	    div.append(important(", " + lastErrs.length + " échecs depuis"));
     } else if (lastErrs.length) {
-	div.append(", " + important(lastErrs.length + " login en échecs depuis " + formatDateTime(lastErrs.reverse()[0].time)));
+	div.append(", " + important(lastErrs.length + " login en échecs depuis " + formatDateTime(lastErrs.reverse()[0].when)));
     } else {
 	if (info.accountStatus === "active" && !info.isRole) 
-	    div.text(", aucune tentative de login depuis " + formatDateTime(since));
+	    div.text(", aucune tentative de login depuis " + since.map(formatDateTime).join(' ou '));
     }
     if (data.list.length) {
 	var details = $("<div class='vertical-scroll hidden'>");
 	$.each(data.list, function (v, e) {
-	    var t = formatDateTime(e.time) + " : " + (e.error || "SUCCESS") + " <small>(login = " + e.username + ", ip = " + e.ip + " )</small>";
+	    var t = formatDateTime(e.when) + " : " + (e.error || "SUCCESS") + " <small>(login = " + e.who + ", ip = " + e.ip + " )</small>";
 	    details.append(t + '<br>');
 	})
 	if (data.fuzzy_failed.length) {
 	    details.append("<br>Logins en échec avec login légèrement différent :<br>");
 	}
 	$.each(data.fuzzy_failed, function (v, e) {
-	    var t = formatDateTime(e.time) + " : " + e.username + " FAILED <small>(ip = " + e.ip + " )</small>";
+	    var t = formatDateTime(e.when) + " : " + e.who + " FAILED <small>(ip = " + e.ip + " )</small>";
 	    details.append(t + '<br>');
 	})
 	div.append($("<span class='clickable'>").append(" <small>details</small>").click(function () { details.toggleClass("hidden") }));
