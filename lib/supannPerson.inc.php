@@ -750,6 +750,11 @@ function employeeTypeAll($name, $supannCivilite) {
         $r["weight"] = $all["weight"];
         $gender = all_to_name_with_gender_no_fallback($all, $supannCivilite);
         if ($gender) $r['name-gender'] = $gender;
+        if ($all["name"]) {
+            # GLPI UP1#125765
+            $r["key"] = $name;
+            $r["name"] = $all["name"];
+        }
     }
     return $r;
 }

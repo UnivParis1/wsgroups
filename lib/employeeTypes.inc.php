@@ -18,15 +18,15 @@ global $employeeTypes; $employeeTypes = [
     "Professeur des lycées professionnels" => [ "weight" => "05", "name-gender-f" => "Professeure des lycées professionnels" ],
 
     "Professeur invité" => [ "weight" => "06", "name-gender-f" => "Professeure invitée" ],
-    "Associé professeur mi-tps" => [ "weight" => "06", "name-gender-f" => "Associée professeure mi-tps" ],
+    "Associé professeur mi-tps" => [ "weight" => "06", "name" => "Associé professeur", "name-gender-f" => "Associée professeure" ],
     "Chercheur associé" => [ "weight" => "06", "name-gender-f" => "Chercheuse associée" ],
-    "Associé mcf mi-tps" => [ "weight" => "06", "name-gender-f" => "Associée mcf mi-tps" ],
+    "Associé mcf mi-tps" => [ "weight" => "06", "name" => "Associé mcf", "name-gender-f" => "Associée mcf" ],
     "Associé mcf" => [ "weight" => "06", "name-gender-f" => "Associée mcf" ],
 
     "Contractuel chercheur lru" => [ "weight" => "07", "name-gender-f" => "Contractuelle chercheuse lru" ],
 
     "Ater" => [ "weight" => "08" ],
-    "Ater mi-temps" => [ "weight" => "08" ],
+    "Ater mi-temps" => [ "weight" => "08", "name" => "Ater" ],
 
     "Doctorant epes/ep recherche sans enseignement" => [ "weight" => "09", "name-gender-f" => "Doctorante epes/ep recherche sans enseignement" ],
     "Doctorant epes ou ep recherche" => [ "weight" => "09", "name-gender-f" => "Doctorante epes ou ep recherche" ],
