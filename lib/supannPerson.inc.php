@@ -879,9 +879,12 @@ if (isset($user['supannParrainDN'])) {
     unset($user['supannExtProfil']);
   }
   if (isset($user['employeeType'])) {
+      $alls = array_map(function ($name) use ($supannCivilite) { return employeeTypeAll($name, $supannCivilite); }, $user['employeeType']);
       if (isset($wanted_attrs['employeeType-all'])) {
-          $user['employeeType-all'] = array_map(function ($name) use ($supannCivilite) { return employeeTypeAll($name, $supannCivilite); }, $user['employeeType']);
+          $user['employeeType-all'] = $alls;
       }
+      # use simplified names from lib/employeeTypes.inc.php, cf GLPI UP1#125765
+      $user['employeeType'] = array_map(function ($all) { return $all['name']; }, $alls);
   }
   if (isset($user['description']) && isset($wanted_attrs['supannActivite-all'])) {
 	$user['supannActivite-all'] = array_merge((array) $user['supannActivite-all'], activiteUP1All($user['description']));
