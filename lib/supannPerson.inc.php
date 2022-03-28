@@ -373,6 +373,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
       userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite']);
+      userHandleSpecialAttributeValues($user, $attrRestrictions['allowExtendedInfo']);
       if (isset($user['up1Profile'])) {
         if (@$attrRestrictions['forceProfile']) {
             forceProfile($user, $attrRestrictions['forceProfile'], $attrRestrictions['allowExtendedInfo'], $wanted_attrs);
@@ -525,6 +526,7 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs, $g
 
     if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
     userAttributesKeyToText($r, $wanted_attrs, isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite']);
+    userHandleSpecialAttributeValues($r, $allowExtendedInfo);
     return $r;
 }
 
@@ -713,6 +715,15 @@ function userHandleSpecialAttributePrivacy(&$user, $allowExtendedInfo) {
         }
     }
 }
+
+function userHandleSpecialAttributeValues(&$user, $allowExtendedInfo) {
+    if ($allowExtendedInfo < 1) {
+        if (isset($user['labeledURI'])) {
+            $user['labeledURI'] = array_filter($user['labeledURI'], function ($uri) { return !contains($uri, ' {DEMANDE}'); });
+        }
+    }
+}
+
 
 function civilite_to_gender_suffix($civilite) {
     return $civilite === 'M.' ? '-gender-m' :
