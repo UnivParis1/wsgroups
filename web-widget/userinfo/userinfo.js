@@ -479,6 +479,11 @@ function format_main_profile_info(info) {
     var elt = $("<span>").append($("<span>", { title: info.up1Priority }).text(info.up1Source)).appendText(
         (info.up1StartDate ? " du " + format_YYYYmmdd(info.up1StartDate) : '') + (info.up1EndDate ? " au " + format_YYYYmmdd(info.up1EndDate) : '')
     )
+    if (info['info;x-demande']) elt.append($("<span>", { class: "info" }).text(" - motif: " + info['info;x-demande']));
+    for (const uri of info['labeledURI'] || []) {
+        const demande = uri.replace(/ {DEMANDE}$/, '')
+        if (demande !== uri) elt.appendText(' - ').append(a_or_span(demande, 'détails demande')) 
+    }
     if (info.computedFrom) elt.append($("<span>", { class: "info" }).text(" (profil partiel reconstruit à partir de " + info.computedFrom + ")"));
     return elt;
 }
