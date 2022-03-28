@@ -501,7 +501,7 @@ function parse_supannEtuInscription($s) {
 
 # inverse échappement les caractères spéciaux d'attributs composites pour une liste de valeurs
 function unescape_sharpFF($attr_value) {
-    return preg_replace_callback('/#([0-9A-F]{2})/', function ($xx) { return chr(hexdec($xx)); }, $attr_value);
+    return preg_replace_callback('/#([0-9A-F]{2})/i', function ($m) { return chr(hexdec($m[1])); }, $attr_value);
 }
 
 function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs, $global_user) {
