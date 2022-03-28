@@ -25,7 +25,7 @@ $attrs_by_kind = [
     'sambaAcctFlags', 'sambaSID', 'sambaHomePath',
 
     // from up1Profile
-    'up1Source', 'up1Priority', 'up1StartDate', 'up1EndDate',
+    'up1Source', 'up1Priority', 'up1StartDate', 'up1EndDate', 'info;x-demande',
   ],
   "MONO 2" => [
 	'supannEmpCorps',    
