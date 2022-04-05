@@ -27,7 +27,7 @@ function parse_attrs_text(l) {
 var main_attrs_labels = [ [
     'Person: Personne',
 
-    'Affiliation: Statut(s)',
+    'eduPersonAffiliation: Statut(s)',
     'businessCategory: Catégorie',
     
     'employeeType: Type',
@@ -513,21 +513,6 @@ function format_main_profiles_info(profiles, info) {
         if (!profiles.length) return "<i>aucun (étrange)</i>"
     }
     return profiles.length ? spanFromList(profiles.map(format_main_profile_info), "<br>") : ""
-}
-
-function compute_Affiliation(info) {
-    var valnames = eduPersonAffiliation_valnames;
-    var Affiliation = info.eduPersonPrimaryAffiliation === 'member' && important('member', 'no-precise-affiliation') ||
-	formatValues(valnames, info.eduPersonPrimaryAffiliation)
-	|| spanFromList([important(info.eduPersonPrimaryAffiliation ? info.eduPersonPrimaryAffiliation : 'MANQUANTE')]);
-    if (info.eduPersonAffiliation) {	
-	var other = arraySubstraction(info.eduPersonAffiliation, [info.eduPersonPrimaryAffiliation]);
-	var fv = formatValues(valnames, other);
-	if (fv) jqueryAppendMany(Affiliation, [" (secondaires: ", fv, ")"]);
-	if ($.inArray('member', info.eduPersonAffiliation) === -1)
-	    Affiliation.appendText(" (non membre)");
-    }
-    return Affiliation;
 }
 
 function compute_supannRoles(info) {
@@ -1159,7 +1144,6 @@ function formatUserInfo(info, showExtendedInfo) {
     $.each(simple_formatters, function (attr, formatter) {
         if (info[attr]) fInfo[attr] = formatter(info[attr], info);
     });
-    if (info.eduPersonPrimaryAffiliation || info.eduPersonAffiliation) fInfo.Affiliation = compute_Affiliation(info);
     if (info['supannEtuInscription-all']) format_supannEtuInscriptionAll(info['supannEtuInscription-all'], fInfo);
     if (info['supannActivite-all']) format_supannActivite(info['supannActivite-all'], fInfo);
 	// if we have up1BirthDay, we have full power
@@ -1186,8 +1170,32 @@ function formatUserInfo(info, showExtendedInfo) {
     return fInfo;
 }
 
-Vue.createApp({
+const app = Vue.createApp({
  components: {
+   Affiliation: {
+    props: [ 'primary', 'affiliations' ],
+    computed: {
+        otherText() {
+            const other = arraySubstraction(this.affiliations, [this.primary, 'member'])
+            return other.map(aff => this.toText[aff] || aff).join(', ')
+        },
+        toText() { return eduPersonAffiliation_valnames },
+    },
+    template: `<span>
+        <span v-if="primary === 'member' || !primary">
+            <Important :s="primary || 'MANQUANTE'" helpPage='no-precise-affiliation'></Important>
+        </span>
+        <span v-else>
+            {{toText[primary] || primary}}
+        </span>
+        <span v-if="otherText">
+            (secondaires: {{otherText}})
+        </span>
+        <span v-if="!affiliations.includes('member')">
+            (non membre)
+        </span>
+    </span>`,
+   },
    finfo: {
     props: [ 'val', 'elt' ],
     template: '<span></span>',
@@ -1330,4 +1338,20 @@ Vue.createApp({
             });        
         },
     },
-}).mount('#annuaire');
+})
+
+app.component('Important', {
+    props: ['s', 'helpPage', 'className'],
+    computed: {
+      helpUrl() { return helpUrl.replace('HELP_ID', this.helpPage) },
+    },
+    template: `<span>
+      <span :class='className || "important"'>{{s}}</span>
+      <a v-if="helpPage" :href='helpUrl' 
+         target='form_help' class='help'
+         onclick='window.open("", "form_help", "toolbar=no,scrollbars=yes,alwaysRaised,width=1000,height=400")'
+      >?</a>
+    </span>`,
+})
+
+app.mount('#annuaire');
