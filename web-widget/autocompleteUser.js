@@ -261,7 +261,7 @@
       var input = this;
 
       var source = function( request, response ) {
-	  wsParams.token = request.term;
+	  wsParams.token = request.term = request.term.trim();
 	    $.ajax({
 		url: searchUserURL,
 		dataType: "jsonp",
@@ -500,7 +500,7 @@
       var input = this;
 
       var source = function( request, response ) {
-	  wsParams.token = request.term;
+	  wsParams.token = request.term = request.term.trim();
 	    $.ajax({
 		url: searchGroupURL,
 		dataType: "jsonp",
@@ -583,7 +583,7 @@
       var input = this;
 
       var source = function( request, response ) {
-	  wsParams.token = request.term;
+	  wsParams.token = request.term = request.term.trim();
 	    $.ajax({
 		url: searchUserAndGroupURL,
 		dataType: "jsonp",
