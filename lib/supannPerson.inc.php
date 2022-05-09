@@ -19,7 +19,7 @@ $attrs_by_kind = [
 	'accountStatus', 
   ],
   "MONO 1" => [
-    'supannEmpId', 'supannEtuId', 'supannCodeINE',
+    'supannEmpId', 'supannEtuId', 'supannCodeINE', 'supannFCSub',
     'shadowFlag', 'shadowExpire', 'shadowLastChange',    
 	'homeDirectory', 'gecos',
     'sambaAcctFlags', 'sambaSID', 'sambaHomePath',

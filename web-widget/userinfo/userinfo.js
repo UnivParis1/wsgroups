@@ -82,6 +82,7 @@ var main_attrs_labels = [ [
 [
     'Identifiers: Identifiant',
     'OtherIdentifiers: Identifiant(s)',
+    'supannFCSub: Identifiant délégation France Connect',
     'accountStatus: Etat du compte',
     'Account: Compte',
     'shadowExpire: Expire le',
