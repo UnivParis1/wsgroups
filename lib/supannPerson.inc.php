@@ -372,7 +372,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
 	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
-      userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite']);
+      userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite'], $attrRestrictions['allowExtendedInfo']);
       userHandleSpecialAttributeValues($user, $attrRestrictions['allowExtendedInfo']);
       if (isset($user['up1Profile'])) {
         if (@$attrRestrictions['forceProfile']) {
@@ -525,7 +525,7 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs, $g
     }
 
     if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
-    userAttributesKeyToText($r, $wanted_attrs, isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite']);
+    userAttributesKeyToText($r, $wanted_attrs, isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite'], $allowExtendedInfo);
     userHandleSpecialAttributeValues($r, $allowExtendedInfo);
     return $r;
 }
@@ -629,9 +629,14 @@ function supannEtuInscriptionAll($supannEtuInscription) {
   return $r;
 }
 
-function supannRoleEntiteAll($supannCivilite, $e) {
+function should_hide_role($r, $allowExtendedInfo) {
+    return $r['role'] === '{SUPANN}R22' && !$allowExtendedInfo; # GLPI UP1#126406
+}
+
+function supannRoleEntiteAll($supannCivilite, $e, $allowExtendedInfo) {
   $r = parse_composite_value($e);
   if (@$r['role']) {
+    if (should_hide_role($r, $allowExtendedInfo)) return;
     global $roleGeneriqueKeyToAll;
     if ($role = $roleGeneriqueKeyToAll[$r['role']]) {
         $r['role'] = all_to_name_with_gender($role, $supannCivilite);
@@ -653,10 +658,11 @@ function supannEtuInscriptionsAll($l) {
   return empty($r) ? NULL : $r;
 }
 
-function supannRoleEntitesAll($supannCivilite, $l) {
+function supannRoleEntitesAll($supannCivilite, $l, $allowExtendedInfo) {
   $r = array();
   foreach ($l as $e) {
-    $r[] = supannRoleEntiteAll($supannCivilite, $e);
+    $e_ = supannRoleEntiteAll($supannCivilite, $e, $allowExtendedInfo);
+    if ($e_) $r[] = $e_;
   }
   return empty($r) ? NULL : $r;
 }
@@ -784,7 +790,7 @@ function supannEtablissementAll($key) {
     return $r;
 }
 
-function userAttributesKeyToText(&$user, $wanted_attrs, $supannCivilite) {
+function userAttributesKeyToText(&$user, $wanted_attrs, $supannCivilite, $allowExtendedInfo) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
       if (isset($user['supannEntiteAffectationPrincipale'])) {
@@ -845,7 +851,7 @@ if (isset($user['supannParrainDN'])) {
   }
   if (isset($user['supannRoleEntite'])) {
       if (isset($wanted_attrs['supannRoleEntite-all']))
-	$user['supannRoleEntite-all'] = supannRoleEntitesAll($supannCivilite, $user['supannRoleEntite']);
+	$user['supannRoleEntite-all'] = supannRoleEntitesAll($supannCivilite, $user['supannRoleEntite'], $allowExtendedInfo);
       if (!isset($wanted_attrs['supannRoleEntite']))
 	  unset($user['supannRoleEntite']);
   }

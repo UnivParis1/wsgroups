@@ -631,7 +631,9 @@ function structureRoles($supannCodeEntite, $with_supannRoleGenerique_all) {
     $r = [];
     foreach ($all as &$user) {
         $weight = _transform_supannRoleEntite_into_supannRoleGenerique($user, $supannCodeEntite, $with_supannRoleGenerique_all);
-        $r[$weight . ":" . $user['uid']] = $user;
+        if (count($user['supannRoleGenerique'])) {
+            $r[$weight . ":" . $user['uid']] = $user;
+        }
     }
     ksort($r);
     return array_values($r);
@@ -646,6 +648,7 @@ function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCod
         $roles_all = [];
         foreach ($l as $e) {
             $r = parse_composite_value($e);
+            if (should_hide_role($r, false)) continue;
             if (@$r["code"] == $supannCodeEntite) {
                 global $roleGeneriqueKeyToAll;
                 $role = $roleGeneriqueKeyToAll[$r['role']];
@@ -666,9 +669,11 @@ function _transform_supannRoleEntite_into_supannRoleGenerique(&$user, $supannCod
                 if (isset($role['weight'])) $weights[$role['weight']] = 1;
             }
         }
-        $user['supannRoleGenerique'] = $roles;
-        if ($with_supannRoleGenerique_all) {
-            $user['supannRoleGenerique-all'] = $roles_all;
+        if (count($roles)) {
+            $user['supannRoleGenerique'] = $roles;
+            if ($with_supannRoleGenerique_all) {
+                $user['supannRoleGenerique-all'] = $roles_all;
+            }
         }
         ksort($weights);
         return implode('-', array_keys($weights));
