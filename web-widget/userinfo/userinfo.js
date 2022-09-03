@@ -944,11 +944,15 @@ function get_mailbox_folder_Info(info, fInfo) {
     fInfo.Folder = $("<div>").text(info.sambaHomePath ? '...' : '');
     asyncInfoRaw(moreInfoUrl, { uid: info.uid, info: "mailbox,folder", type: info.isRole ? "role" : "user" }, infoDiv, function (data) {
 	    var moreInfo = data && data[info.uid];
-	    if (!moreInfo) {
-	        infoDiv.text("aucune");
-	        fInfo['mail'].append($("<span class='notice'> (mail non actif)</span>"));
-	    } else {
+	    if (moreInfo && moreInfo.mailbox) {
 		format_mailboxInfo(moreInfo.mailbox, infoDiv);
+	    } else {
+	        infoDiv.text("aucune");
+		['mail', 'mailAlternateAddress'].forEach(function (attr) {
+	            if (fInfo[attr]) fInfo[attr].append($("<span class='notice'> (mail non actif)</span>"));
+		})
+	    }
+	    if (moreInfo) {
 		if (moreInfo.folder || info.sambaHomePath) format_folderInfo(moreInfo.folder, fInfo.Folder);
 	    }
     });
