@@ -1283,7 +1283,7 @@ const app = Vue.createApp({
             this.selectedProfile = '';
      
             var wsParams = {
-                token: user.value,
+                id: user.value,
                 showErrors: this.showExtendedInfo,
                 allowInvalidAccounts: 'all',
                 allowRoles: true,
