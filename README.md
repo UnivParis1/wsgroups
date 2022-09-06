@@ -146,6 +146,7 @@ The first part of a group key is the *category*.
 ### params
 
 * `token=`text
+* `id=`text (similar to `token` but for exact search on user identifiers)
 * `maxRows=`number
 * `attrs=`attr,attr2,...
 * `callback=`function name for jsonp

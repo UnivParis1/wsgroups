@@ -145,7 +145,7 @@ function roomNumber_filter($normalized_token, $ext) {
     return ldapOr($or);
 }
 
-function people_filters($token, $restriction = [], $allowInvalidAccounts = false, $allowNoAffiliationAccounts = false) {
+function people_filters($token, $restriction = [], $allowInvalidAccounts = false, $allowNoAffiliationAccounts = false, $tokenIsId = false) {
     if ($allowInvalidAccounts !== 'all') {
         $restriction[] = $allowInvalidAccounts ? '(&(objectClass=inetOrgPerson)(!(shadowFlag=2))(!(shadowFlag=8)))' : // ignore dupes/deceased
                      ($allowNoAffiliationAccounts ? '(|(accountStatus=active)(!(accountStatus=*)))' : '(eduPersonAffiliation=*)');
@@ -158,8 +158,10 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
         preg_match('/^[0-9A-F]{8}$/', $token)) { // Classic
         $l[] = "(supannRefId={MIFARE}$token)";
     }
-    
-    if ($token === '') {
+
+    if ($tokenIsId) {
+        $l[] = "(|(uid=$token)(mail=$token))";
+    } else if ($token === '') {
         $l[] = '(|(supannRoleGenerique={UAI:0751717J:HARPEGE.FCSTR}447)(supannRoleGenerique={UAI:0751717J:HARPEGE.FCSTR}1))'; // very important people first!
         $l[] = '(supannRoleGenerique={SUPANN}D*)'; // then important people
         $l[] = '(supannRoleGenerique=*)'; // then less important people

@@ -2,7 +2,14 @@
 
 require_once ('lib/supannPerson.inc.php');
 
-$token = GET_ldapFilterSafe_or("token", '');
+$id = GET_ldapFilterSafe_or_NULL("id");
+if ($id !== NULL) {
+    $token = $id;
+    $tokenIsId = true;
+} else {
+    $token = GET_ldapFilterSafe_or("token", '');
+    $tokenIsId = false;
+}
 $attrs = GET_or_NULL("attrs");
 $format = GET_or_NULL("format");
 $anonymous = !(@$isTrustedIp || GET_uid());
@@ -42,7 +49,7 @@ if ($attrRestrictions['forceProfile']) {
 }
 
 global $USER_KEY_FIELD;
-$users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts, $allowNoAffiliationAccounts), $attrRestrictions, $wanted_attrs, $USER_KEY_FIELD, $maxRows);
+$users = searchPeople(people_filters($token, $restriction, $allowInvalidAccounts, $allowNoAffiliationAccounts, $tokenIsId), $attrRestrictions, $wanted_attrs, $USER_KEY_FIELD, $maxRows);
 
 if ($allowExtendedInfo) {
   foreach ($users as &$u) $u["allowExtendedInfo"] = $allowExtendedInfo;
