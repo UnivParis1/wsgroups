@@ -152,38 +152,6 @@ var eduPersonAffiliation_valnames = {
 	'internal': "compte interne",
 };
 
-function buildingNameToUrl(buildingName) {
-    var toTrigramme = {
-// missing: centre-arago centre-bicetre centre-de-sceaux centre-meudon centre-nanterre centre-sorbonne-1 centre-sorbonne-47 centre-villejuif fontenay-aux-roses maison-des-sciences-economiques rue-regnault 
-  "Centre 17 rue de Tolbiac"        : '17t',
-  "Maison internationale"	    : 'ara',
-  "Centre Bourg-la-Reine"	    : 'blr',
-  "Sainte Barbe (Institut Tunc)"    : 'brb',
-  "Centre Broca"		    : 'brc',
-  "Centre Port-Royal René Cassin"   : 'cas',
-  "Centre Cujas"		    : 'cuj',
-  "Centre rue du Four"		    : 'dfo',
-  "Centre Michelet"		    : 'iaa',
-  "Centre Malher"		    : 'mah',
-  "Maison des Sciences Économiques" : 'mse',
-  "Centre Pierre Mendès France"	    : 'pmf',
-  "Centre Panthéon"		    : 'pth',
-  "Centre Sorbonne"		    : 'srb',
-  "Centre Saint Charles"	    : 'stc',
-  "Institut de Géographie"	    : 'stj',
-  "Centre Thénard"		    : 'thn',
-  "Centre rue d'Ulm"		    : 'ulm',
-  "Centre Valette"		    : 'val',
- 
-  "centre Albert Chatelet" 	    : 'ach'
-}
-
-    // found on page http://www.univ-paris1.fr/universite/campus/ using:
-    // $.map($("#c531163").find("a"), function (e) { return e.href.replace("http://www.univ-paris1.fr/universite/campus/detail-campus/", "") })
-    var trigramme = toTrigramme[buildingName];
-    return trigramme && ("http://www.univ-paris1.fr/universite/campus/detail-campus/" + trigramme + "/");
-}
-
 function important(s, helpPage, className) {
     var span = "<span class='" + (className || "important") + "'>" + s + "</span>";
     if (helpPage) {
@@ -230,7 +198,6 @@ var simple_formatters = {
     createTimestamp: format_timestamp,
     modifyTimestamp: format_timestamp,
     up1Roles: format_up1Roles,
-    buildingName: format_buildingName,
     labeledURI: format_link,
     'supannGroupeAdminDN-all': format_members,
     'supannGroupeLecteurDN-all': format_members_not_admin,
@@ -1115,12 +1082,6 @@ function format_telephoneNumber(number, attr) {
     } else {
 	return format_it(number);
     }
-}
-
-function format_buildingName(buildingNames) {
-    return spanFromList($.map(buildingNames, function (buildingName) {
-	return a_or_span(buildingNameToUrl(buildingName), buildingName);
-    }), ", ");
 }
 
 function a_or_span(href, text) {
