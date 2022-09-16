@@ -119,10 +119,6 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
     if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['employeeType-all']) || isset($wanted_attrs['departmentNumber']))
         $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
 
-    // we want to hide 'mail' when accountStatus is unset
-    if (isset($wanted_attrs['mail']))
-        $wanted_attrs['accountStatus'] = 'accountStatus';
-
     // most attributes visibility are enforced using ACLs on LDAP bind
     // here are a few special cases
     if ($allowExtendedInfo < 1) {
@@ -367,9 +363,6 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
     $wanted_attrs_raw = wanted_attrs_raw($wanted_attrs);
     $r = searchPeopleRaw($filter, $allowListeRouge, @$attrRestrictions['allowRoles'], $wanted_attrs_raw, $KEY_FIELD, $maxRows);
     foreach ($r as &$user) {
-      // we want to hide 'mail' when accountStatus is unset
-      if (@$user['mail'] && !@$user['accountStatus'])
-        unset($user['mail']);
       if (!@$attrRestrictions['allowAccountStatus'])
 	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
