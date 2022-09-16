@@ -101,7 +101,7 @@ function importantEtuInscription($inscriptions, $primaryAffect, $uid) {
     return $best;
 }
 
-$attrs = getFirstLdapInfo($PEOPLE_DN, "(&(uid=$uid)(employeeNumber=*)(supannEntiteAffectationPrincipale=*))", $CARTE_ETU_ALLOWED_ATTRS);
+$attrs = getFirstLdapInfo($PEOPLE_DN, "(&(uid=$uid)(employeeNumber=*)(supannEntiteAffectationPrincipale=*)(supannEtuInscription=*))", $CARTE_ETU_ALLOWED_ATTRS);
 
 if (!$attrs) {
     echoJson([ "error" => "Unauthorized" ]);
