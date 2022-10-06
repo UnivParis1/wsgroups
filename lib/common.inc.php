@@ -238,8 +238,9 @@ function force_Bearer_Authentication() {
 }
 
 function ipTrusted() {
-    global $TRUSTED_IPS;
-    return $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
+    global $TRUSTED_IPS, $isTrustedIp;
+    $isTrustedIp = $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
+    return $isTrustedIp;
 }
 
 function ipTrustedOrExit() {
