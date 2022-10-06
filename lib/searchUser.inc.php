@@ -31,9 +31,11 @@ if ($allowExtendedInfo >= 1) {
   if (is_numeric($showExtendedInfo)) {
       $extendedInfo = min($extendedInfo, $showExtendedInfo);
   }
-  global $LDAP_CONNECT_LEVEL1, $LDAP_CONNECT_LEVEL2;
-  $LDAP_CONNECT = $extendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
-  global_ldap_open('reOpen');
+  if (!@$isTrustedIp) {
+      global $LDAP_CONNECT_LEVEL1, $LDAP_CONNECT_LEVEL2;
+      $LDAP_CONNECT = $extendedInfo == 2 ? $LDAP_CONNECT_LEVEL2 : $LDAP_CONNECT_LEVEL1;
+      global_ldap_open('reOpen');
+  }
 }
 
 $restriction = GET_extra_people_filter_from_params();

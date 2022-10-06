@@ -169,8 +169,8 @@ function _ldap_entry_remap($entry, $attributes_map) {
 function global_ldap_open($reOpen = false) {
     global $ldapDS;
     if (!$ldapDS || $reOpen) {
-	global $LDAP_CONNECT;
-	$ldapDS = MyLdap::connect($LDAP_CONNECT);
+	global $LDAP_CONNECT, $LDAP_CONNECT_TRUSTED, $isTrustedIp;
+	$ldapDS = MyLdap::connect($isTrustedIp ? $LDAP_CONNECT_TRUSTED : $LDAP_CONNECT);
     }
     return $ldapDS;
 }
