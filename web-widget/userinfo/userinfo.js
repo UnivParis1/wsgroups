@@ -1204,6 +1204,7 @@ const app = Vue.createApp({
             var that = this;
             return this.selectedProfile ? this.result.info.up1Profile.find(function (profile) { return profile.up1Source === that.selectedProfile }) : this.result.info; 
         },
+        baseURL: () => baseURL,
     },
     watch: {
         'allowInvalidAccounts': function () {

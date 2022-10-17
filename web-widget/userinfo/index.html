@@ -50,6 +50,9 @@
                             :primary="user_info.eduPersonPrimaryAffiliation"
                             :affiliations="user_info.eduPersonAffiliation || []"></Affiliation>
                         <finfo v-else :val="user_info[e.attr]" :elt="user_fInfo[e.attr]"></finfo>
+                        <div v-if="e.attr === 'supannConsentement' && showExtendedInfo >= 2">
+                            <a target="_blank" :href="baseURL + '/userLastModifications.php?uid=' + user_info.uid">Modifications des 7 derniers jours</a>
+                        </div>
                     </td>
                   </template>
                 </tr>
