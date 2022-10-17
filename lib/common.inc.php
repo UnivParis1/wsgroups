@@ -253,11 +253,13 @@ function ipTrustedOrExit() {
 
 function echoJson($o) {
   ensure_ldap_close();
-  header('Content-type: application/json; charset=UTF-8');
-  if (isset($_GET["callback"]))
+  if (isset($_GET["callback"])) {
+    header('Content-type: application/javascript; charset=UTF-8');
     echo $_GET["callback"] . "(" . json_encode($o) . ");";
-  else
-    echo json_encode($o);  
+  } else {
+      header('Content-type: application/json; charset=UTF-8');
+      echo json_encode($o);  
+  }
 }
 
 function identiqueMap($list) {
