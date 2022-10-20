@@ -461,7 +461,7 @@ function format_main_profiles_info(profiles, info) {
         function add_virtual_profile(up1Source, computedFrom) {
             profiles = profiles.concat([ { up1Source: up1Source, computedFrom: computedFrom } ])
         }
-        if (info['supannEtuInscription-all']) {
+        if (info['supannEtuInscription-all'] && (info.eduPersonAffiliation || []).includes('student')) {
             add_virtual_profile('{APOGEE}student', 'la présence de supannEtuInscription')
         }
         if ((info.supannEtablissement || []).find(e => e.match(/\[PCU-ReseauPro\]$/)) &&
