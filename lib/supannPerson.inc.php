@@ -176,7 +176,7 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
         }
     } else {
         $l[] = "(uid=$token)";
-        $l[] = "(sn=$token)";
+        $l[] = "(|(sn=$token)(up1BirthName=$token))";
 
         if (preg_match('/^([A-Z])\.? ?([0-9]+)( ?bis| ?ter)?$/i', $token, $matches) ||
             preg_match('/^([0-9]{1,4}) ?\.?([A-Z])?( ?bis| ?ter)?$/i', $token, $matches)) {
