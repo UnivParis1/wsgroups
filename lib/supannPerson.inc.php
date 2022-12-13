@@ -354,7 +354,7 @@ function attrRestrictions($allowExtendedInfo = 0) {
         'allowUp1Roles' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowExtendedInfo' => $allowExtendedInfo,
-        'forceProfile' => (isset($_GET["profile_supannEntiteAffectation"]) ? '[supannEntiteAffectation=' . $_GET["profile_supannEntiteAffectation"] . ']' : null),
+        'forceProfile' => (isset($_GET["profile_supannEntiteAffectation"]) ? '/\[supannEntiteAffectation=(\w+;)*' . preg_quote($_GET["profile_supannEntiteAffectation"], '/') . '[;\]]/' : null),
         );
 }
 
@@ -541,7 +541,7 @@ function array_replace_keys(&$array, $to_set) {
 
 function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) {
     foreach ($user['up1Profile'] as $profile_s) {
-        if (contains($profile_s, $forceProfile)) {
+        if (preg_match($forceProfile, $profile_s)) {
             $profile = parse_up1Profile_one($profile_s, $allowExtendedInfo, $wanted_attrs, $user);
             array_replace_keys($user, $profile);
             foreach (['supannActivite', 'supannActivite-all'] as $profiled_attr) {
