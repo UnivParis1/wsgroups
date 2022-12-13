@@ -103,7 +103,9 @@ function importantEtuInscription($inscriptions, $primaryAffect, $uid) {
 
 $attrs = getFirstLdapInfo($PEOPLE_DN, "(&(uid=$uid)(supannEntiteAffectationPrincipale=*)(supannEtuInscription=*))", $CARTE_ETU_ALLOWED_ATTRS);
 
-if (!$attrs || !$attrs['employeeNumber'] || $attrs["supannEntiteAffectationPrincipale"] === 'COV1') {
+if (isset($_GET["iae"]) && $attrs && $attrs["supannEntiteAffectationPrincipale"] === 'COV1') {
+   # ok, going on with no error
+} else if (!$attrs || !$attrs['employeeNumber'] || $attrs["supannEntiteAffectationPrincipale"] === 'COV1') {
     $error = !$attrs ? "Inconnu" : ($attrs["supannEntiteAffectationPrincipale"] === 'COV1' ? "Les étudiants de l'IAE ne sont pas autorisés. Nous devrions bientôt fournir une version spécifique IAE..." : 
         "Pour avoir accès à la carte d'étudiant dématérialisée, il faut actuellement :
         - soit avoir une carte physique
