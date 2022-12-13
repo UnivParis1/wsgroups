@@ -555,6 +555,7 @@ function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) 
                         return !startsWith($act, '{UAI:0751717J:RIFSEEP}') && !startsWith($act, '{REFERENS}');
                     });
                 }
+                $full_profile['eduPersonPrimaryAffiliation'] = 'teacher';
             }
             $profile = post_parse_up1Profile_one($full_profile, $allowExtendedInfo, $wanted_attrs, $user);
             array_replace_keys($user, $profile);

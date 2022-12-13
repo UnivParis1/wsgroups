@@ -101,8 +101,8 @@ expect_json('use prefered profile', 'searchUser', ['token' => 'fbar', 'profile_s
 test_js_attr('no prefered profile employeeType', 'searchUser', 'employeeType', ['token' => 'fbar'], 'null');
 test_js_attr('use prefered profile employeeType', 'searchUser', 'employeeType', ['token' => 'fbar', 'profile_supannEntiteAffectation' => 'DS'], '["Charg\u00e9 d\'enseignement"]');
 
-expect_json('no prefered profile zbar', 'searchUser', ['token' => 'zbar', 'attrs' => 'eduPersonAffiliation'], '[{"eduPersonAffiliation":["employee","member","staff","registered-reader","teacher"],"uid":"zbar"}]');
-expect_json('use prefered profile zbar', 'searchUser', ['token' => 'zbar', 'profile_supannEntiteAffectation' => 'DS', 'attrs' => 'eduPersonAffiliation'], '[{"eduPersonAffiliation":["employee","member","staff","teacher"],"uid":"zbar"}]');
+expect_json('no prefered profile zbar', 'searchUser', ['token' => 'zbar', 'attrs' => 'eduPersonAffiliation,eduPersonPrimaryAffiliation'], '[{"eduPersonAffiliation":["employee","member","staff","registered-reader","teacher"],"eduPersonPrimaryAffiliation":"staff","uid":"zbar"}]');
+expect_json('use prefered profile zbar', 'searchUser', ['token' => 'zbar', 'profile_supannEntiteAffectation' => 'DS', 'attrs' => 'eduPersonAffiliation,eduPersonPrimaryAffiliation'], '[{"eduPersonAffiliation":["employee","member","staff","teacher"],"eduPersonPrimaryAffiliation":"teacher","uid":"zbar"}]');
 test_js_attr('no prefered profile zbar supannActivite', 'searchUser', 'supannActivite-all', ['token' => 'zbar', 'attrs' => 'supannActivite-all'], '[{"key":"{REFERENS}E1B22","name":"Chef-fe de projet ou expert-e en Ing\u00e9ni\u00e9rie logicielle"}]');
 test_js_attr('use prefered profile zbar supannActivite', 'searchUser', 'supannActivite-all', ['token' => 'zbar', 'profile_supannEntiteAffectation' => 'DS', 'attrs' => 'supannActivite-all'], 'null');
 
