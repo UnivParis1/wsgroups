@@ -500,7 +500,7 @@ function unescape_sharpFF($attr_value) {
     return preg_replace_callback('/#([0-9A-F]{2})/i', function ($m) { return chr(hexdec($m[1])); }, $attr_value);
 }
 
-function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs, $global_user) {
+function parse_up1Profile_one_raw($up1Profile) {
     global $USER_ALLOWED_ATTRS;
     $r = [];
     while (preg_match('/^\[([^\[\]=]+)=((?:[^\[\]]|\[[^\[\]]*\])*)\](.*)/', $up1Profile, $m)) {
@@ -515,11 +515,14 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs, $g
             $r[$key] = unescape_sharpFF($val);
         }
     }
+    if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
+    return $r;
+}
+
+function post_parse_up1Profile_one($r, $allowExtendedInfo, $wanted_attrs, $global_user) {
     foreach ($r as $key => $val) {
         if (!allowAttribute($r, $key, $allowExtendedInfo)) unset($r[$key]);
     }
-
-    if ($up1Profile !== '') error_log("bad up1Profile, remaining $up1Profile");
     userAttributesKeyToText($r, $wanted_attrs, isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite'], $allowExtendedInfo);
     userHandleSpecialAttributeValues($r, $allowExtendedInfo);
     return $r;
@@ -528,7 +531,7 @@ function parse_up1Profile_one($up1Profile, $allowExtendedInfo, $wanted_attrs, $g
 function parse_up1Profile($up1Profile_s, $allowExtendedInfo, $wanted_attrs, $global_user) {
     $r = [];
     foreach ($up1Profile_s as $profile) {
-       $r[] = parse_up1Profile_one($profile, $allowExtendedInfo, $wanted_attrs, $global_user);
+       $r[] = post_parse_up1Profile_one(parse_up1Profile_one_raw($profile), $allowExtendedInfo, $wanted_attrs, $global_user);
     }
     return $r;
 }
@@ -542,7 +545,18 @@ function array_replace_keys(&$array, $to_set) {
 function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) {
     foreach ($user['up1Profile'] as $profile_s) {
         if (preg_match($forceProfile, $profile_s)) {
-            $profile = parse_up1Profile_one($profile_s, $allowExtendedInfo, $wanted_attrs, $user);
+            $full_profile = parse_up1Profile_one_raw($profile_s);
+            if ($full_profile['supannEntiteAffectationPrincipale'] !== $_GET["profile_supannEntiteAffectation"] && 
+                $full_profile['eduPersonPrimaryAffiliation'] === 'staff' &&
+                in_array('teacher', $full_profile['eduPersonAffiliation'])) {
+                // "cuisine" mélange plusieurs contrats. Les supannActivite RIFSEEP sont forcément associés au contrat staff, donc les ignorer pour les chargés d'enseignement
+                if ($full_profile['supannActivite']) {
+                    $full_profile['supannActivite'] = array_filter($full_profile['supannActivite'], function ($act) {
+                        return !startsWith($act, '{UAI:0751717J:RIFSEEP}') && !startsWith($act, '{REFERENS}');
+                    });
+                }
+            }
+            $profile = post_parse_up1Profile_one($full_profile, $allowExtendedInfo, $wanted_attrs, $user);
             array_replace_keys($user, $profile);
             foreach (['supannActivite', 'supannActivite-all'] as $profiled_attr) {
                 if (!isset($profile[$profiled_attr])) unset($user[$profiled_attr]);

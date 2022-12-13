@@ -4,6 +4,8 @@ dn: uid=zbar,ou=people,dc=univ-paris1,dc=fr
 eduPersonAffiliation: employee
 eduPersonAffiliation: member
 eduPersonAffiliation: staff
+eduPersonAffiliation: registered-reader
+eduPersonAffiliation: teacher
 eduPersonPrimaryAffiliation: staff
 eduPersonPrincipalName: zbar@univ-paris1.fr
 givenName: Zo
@@ -14,3 +16,9 @@ supannAliasLogin: zbar
 supannCivilite: M.
 supannEmpId: 99008
 uid: zbar
+supannEntiteAffectation: DGHA
+supannEntiteAffectation: DS
+supannEntiteAffectationPrincipale: DGHA
+supannActivite: {REFERENS}E1B22
+up1Profile: [up1Source={HARPEGE}carriere][up1Priority=800][up1StartDate=20110915][up1EndDate=20190430][supannEntiteAffectation=DGHA;DS][supannEntiteAffectationPrincipale=DGHA][supannActivite={REFERENS}E1B22][eduPersonAffiliation=employee;member;staff;teacher][eduPersonPrimaryAffiliation=staff]
+up1Profile: [up1Source={COMPTEX}PLB.SC4][up1Priority=190][up1StartDate=20171216][up1EndDate=20181101][eduPersonAffiliation=register-reader][eduPersonPrimaryAffiliation=registered-reader]
