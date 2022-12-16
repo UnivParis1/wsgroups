@@ -691,7 +691,7 @@ function format_one_kerberosInfo(info, principal, krb) {
     var txt = [ $("<span>", { title: principal }).text("KERBEROS") ];
 	
     var txtPassword = [];
-    if (krb.lastmod) txtPassword.push("changé le " + formadate(krb.lastmod / 24 / 3600));
+    if (krb.lastmod) txtPassword.push("changé le " + formatDateTime(krb.lastmod * 1000));
     if (krb.expire) {
 	krb.expire = krb.expire / 24 / 3600;
 	if (krb.expire != info.shadowExpire) txtPassword.push("expire le " + formadate(krb.expire));
