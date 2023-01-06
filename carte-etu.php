@@ -5,7 +5,7 @@ require_once ('lib/supannPerson.inc.php');
 
 
 $CARTE_ETU_ALLOWED_ATTRS = [
-    'sn' => 'sn', 'givenName' => 'givenName',
+    'sn' => 'sn', 'givenName' => 'givenName', 'supannNomDeNaissance' => 'supannNomDeNaissance',
     'supannEtuId' => 'supannEtuId',
     'supannCodeINE' => 'supannCodeINE',
     'employeeNumber' => 'employeeNumber',
