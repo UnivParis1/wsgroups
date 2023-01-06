@@ -367,6 +367,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
 	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
+      if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle_ChargeEnseignement($user);
       userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite'], $attrRestrictions['allowExtendedInfo']);
       userHandleSpecialAttributeValues($user, $attrRestrictions['allowExtendedInfo']);
       if (isset($user['up1Profile'])) {
@@ -382,6 +383,19 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
       if ($attrRestrictions['allowUp1Roles'] && @$wanted_attrs['up1Roles']) get_up1Roles($user);
     }
     return $r;
+}
+
+function userHandle_PersonnelEnActivitePonctuelle_ChargeEnseignement(&$user) {
+    if (isset($user['employeeType']) &&
+    implode(", ", $user['employeeType']) === "Personnel en activité ponctuelle, Chargé d'enseignement") {
+        // on supprime les infos venant de "Personnel en activité ponctuelle", notamment son affectation (GLPI UP1#137957)
+        $user['employeeType'] = ["Chargé d'enseignement"];
+        $user['eduPersonPrimaryAffiliation'] = 'teacher';
+        if (count($user['supannEntiteAffectation']) > 1) {
+            array_shift($user['supannEntiteAffectation']);
+            $user['supannEntiteAffectationPrincipale'] = $user['supannEntiteAffectation'][0];
+        }
+    }
 }
 
 function userHandle_postalAddress(&$e) {
@@ -520,6 +534,7 @@ function parse_up1Profile_one_raw($up1Profile) {
 }
 
 function post_parse_up1Profile_one($r, $allowExtendedInfo, $wanted_attrs, $global_user) {
+    if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle_ChargeEnseignement($r);
     foreach ($r as $key => $val) {
         if (!allowAttribute($r, $key, $allowExtendedInfo)) unset($r[$key]);
     }
