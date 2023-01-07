@@ -367,7 +367,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
 	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
-      if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle_ChargeEnseignement($user);
+      if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle($user);
       userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite'], $attrRestrictions['allowExtendedInfo']);
       userHandleSpecialAttributeValues($user, $attrRestrictions['allowExtendedInfo']);
       if (isset($user['up1Profile'])) {
@@ -385,13 +385,23 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
     return $r;
 }
 
-function userHandle_PersonnelEnActivitePonctuelle_ChargeEnseignement(&$user) {
+function array_remove($array, $elt) {
+    return array_values(array_diff($array, [$elt]));
+}
+
+function userHandle_PersonnelEnActivitePonctuelle(&$user) {
     if (isset($user['employeeType']) &&
-    implode(", ", $user['employeeType']) === "Personnel en activité ponctuelle, Chargé d'enseignement") {
+        $user['employeeType'][0] === "Personnel en activité ponctuelle") {
         // on supprime les infos venant de "Personnel en activité ponctuelle", notamment son affectation (GLPI UP1#137957)
-        $user['employeeType'] = ["Chargé d'enseignement"];
-        $user['eduPersonPrimaryAffiliation'] = 'teacher';
-        if (count($user['supannEntiteAffectation']) > 1) {
+        array_shift($user['employeeType']);
+        if (in_array('staff', $user['eduPersonAffiliation'])) {
+            $user['eduPersonAffiliation'] = array_remove($user['eduPersonAffiliation'], 'staff');
+            if ($user['eduPersonPrimaryAffiliation'] === 'staff' && in_array('teacher', $user['eduPersonAffiliation'])) {
+                $user['eduPersonPrimaryAffiliation'] = 'teacher';
+            }
+        }
+        $allow_remove_all_affectations = count(array_intersect($user['eduPersonAffiliation'], ['teacher', 'researcher'])) === 0;
+        if (count($user['supannEntiteAffectation']) > ($allow_remove_all_affectations ? 0 : 1)) {
             array_shift($user['supannEntiteAffectation']);
             $user['supannEntiteAffectationPrincipale'] = $user['supannEntiteAffectation'][0];
         }
@@ -534,7 +544,7 @@ function parse_up1Profile_one_raw($up1Profile) {
 }
 
 function post_parse_up1Profile_one($r, $allowExtendedInfo, $wanted_attrs, $global_user) {
-    if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle_ChargeEnseignement($r);
+    if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle($r);
     foreach ($r as $key => $val) {
         if (!allowAttribute($r, $key, $allowExtendedInfo)) unset($r[$key]);
     }
