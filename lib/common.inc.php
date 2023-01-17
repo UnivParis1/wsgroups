@@ -393,4 +393,17 @@ function isAscii($str) {
     return !preg_match('/[^\x00-\x7F]/', $str);
 }
 
+function groupByEtiquette($l) {
+    if (!$l) return [];
+    $r = [];
+    foreach ($l as $s) {
+        if (preg_match('/^\{([^}]*)\}(.*)/', $s, $match)) {
+            $r[$match[1]] = $match[2];
+        } else {
+            error_log("weird non prefixed value $s");
+        }
+    }
+    return $r;
+}
+
 ?>
