@@ -119,6 +119,9 @@ if (isset($_GET["iae"]) && $attrs && $attrs["supannEntiteAffectationPrincipale"]
 
 $ids = groupByEtiquette(getAndUnset($attrs, 'supannRefId'));
 if (isset($ids['ESCN'])) $attrs['ESCN'] = $ids['ESCN'];
+if (isset($_GET["iae"])) {
+    $attrs['employeeNumber'] = $ids['UAI:0753364Z:BARCODE'];
+}
 
 $attrs['importantEtuInscription'] = importantEtuInscription(getAndUnset($attrs, 'supannEtuInscription'), $primaryAffect, $uid);
 
