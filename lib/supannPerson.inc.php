@@ -118,6 +118,11 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
     // departmentNumber is only useful for some eduPersonPrimaryAffiliation
     if (isset($wanted_attrs['employeeType']) || isset($wanted_attrs['employeeType-all']) || isset($wanted_attrs['departmentNumber']))
         $wanted_attrs['eduPersonPrimaryAffiliation'] = 'eduPersonPrimaryAffiliation';
+    // gendered employeeType depends on supannCivilite & supannConsentement
+    if (isset($wanted_attrs['employeeType'])) {
+        $wanted_attrs['supannCivilite'] = 'supannCivilite';
+        $wanted_attrs['supannConsentement'] = 'MULTI';
+    }
 
     // most attributes visibility are enforced using ACLs on LDAP bind
     // here are a few special cases
@@ -368,7 +373,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
       if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle($user);
-      userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite'], $attrRestrictions['allowExtendedInfo']);
+      userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite'], @$user['supannConsentement'] , $attrRestrictions['allowExtendedInfo']);
       userHandleSpecialAttributeValues($user, $attrRestrictions['allowExtendedInfo']);
       if (isset($user['up1Profile'])) {
         if (@$attrRestrictions['forceProfile']) {
@@ -548,7 +553,10 @@ function post_parse_up1Profile_one($r, $allowExtendedInfo, $wanted_attrs, $globa
     foreach ($r as $key => $val) {
         if (!allowAttribute($r, $key, $allowExtendedInfo)) unset($r[$key]);
     }
-    userAttributesKeyToText($r, $wanted_attrs, isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite'], $allowExtendedInfo);
+    userAttributesKeyToText($r, $wanted_attrs, 
+            isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite'], 
+            isset($r['supannConsentement']) ? $r['supannConsentement'] : $global_user['supannConsentement'], 
+            $allowExtendedInfo);
     userHandleSpecialAttributeValues($r, $allowExtendedInfo);
     return $r;
 }
@@ -825,7 +833,7 @@ function supannEtablissementAll($key) {
     return $r;
 }
 
-function userAttributesKeyToText(&$user, $wanted_attrs, $supannCivilite, $allowExtendedInfo) {
+function userAttributesKeyToText(&$user, $wanted_attrs, $supannCivilite, $supannConsentement, $allowExtendedInfo) {
   $supannEntiteAffectation = @$user['supannEntiteAffectation'];
   if ($supannEntiteAffectation) {
       if (isset($user['supannEntiteAffectationPrincipale'])) {
@@ -935,8 +943,12 @@ if (isset($user['supannParrainDN'])) {
       if (isset($wanted_attrs['employeeType-all'])) {
           $user['employeeType-all'] = $alls;
       }
+      # we allow gendered employeeType only if allowed by user, cf GLPI UP1#115582
+      $allow_gendered = in_array('{EMPLOYEETYPE}GENDER', $supannConsentement ?? []);
       # use simplified names from lib/employeeTypes.inc.php, cf GLPI UP1#125765
-      $user['employeeType'] = array_map(function ($all) { return $all['name']; }, $alls);
+      $user['employeeType'] = array_map(function ($all) use ($allow_gendered) { 
+          return $allow_gendered && isset($all['name-gender']) ? $all['name-gender'] : $all['name'];
+      }, $alls);
   }
   if (isset($user['description']) && isset($wanted_attrs['supannActivite-all'])) {
 	$user['supannActivite-all'] = array_merge((array) $user['supannActivite-all'], activiteUP1All($user['description']));
