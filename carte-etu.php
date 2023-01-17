@@ -117,13 +117,8 @@ if (isset($_GET["iae"]) && $attrs && $attrs["supannEntiteAffectationPrincipale"]
     exit(0);
 }
 
-$ids = getAndUnset($attrs, 'supannRefId');
-if ($ids) {
-    foreach ($ids as $id) {
-        $ESCN = removePrefixOrNULL($id, '{ESCN}');
-        if ($ESCN) $attrs['ESCN'] = $ESCN;
-    }
-}
+$ids = groupByEtiquette(getAndUnset($attrs, 'supannRefId'));
+if (isset($ids['ESCN'])) $attrs['ESCN'] = $ids['ESCN'];
 
 $attrs['importantEtuInscription'] = importantEtuInscription(getAndUnset($attrs, 'supannEtuInscription'), $primaryAffect, $uid);
 
