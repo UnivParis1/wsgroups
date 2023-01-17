@@ -209,7 +209,7 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
 function GET_extra_people_filter_from_params() {
   $filters = array();
   $filters_not = array();
-  foreach (array("supannConsentement", "eduPersonAffiliation", "eduPersonPrimaryAffiliation", "supannEntiteAffectation", "description", "employeeType", "supannActivite", "supannRoleGenerique", "uid") as $attr) {
+  foreach (array("supannConsentement", "eduPersonEntitlement", "eduPersonAffiliation", "eduPersonPrimaryAffiliation", "supannEntiteAffectation", "description", "employeeType", "supannActivite", "supannRoleGenerique", "uid") as $attr) {
     $filters[$attr] = GET_ldapFilterSafe_or_NULL("filter_$attr");
     $filters_not[$attr] = GET_ldapFilterSafe_or_NULL("filter_not_$attr");
   }
