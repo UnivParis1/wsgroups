@@ -9,7 +9,7 @@ function groups_filters($token) {
 }
 function structures_filters($token) {
   return [
-      "(supannCodeEntite=$token)", 
+      "(|(supannCodeEntite=$token)(supannRefId={SITE}" . strtoupper($token) . "))", 
       "(&(supannCodeEntite=*)(ou=$token))",
       "(&(supannCodeEntite=*)" . wordsFilter(['ou'], $token) . ")",
       "(&(supannCodeEntite=*)" . wordsFilter(['description'], $token) . ")",
