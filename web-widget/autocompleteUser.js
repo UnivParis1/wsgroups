@@ -7,6 +7,7 @@
 
   var category2text = {
       structures: 'Directions / Composantes / Laboratoires',
+      location: 'Sites',
       affiliation: 'Directions / Composantes / Laboratoires',
       diploma: 'Dipl&ocirc;mes / &Eacute;tapes',
       elp: 'Groupes Mati&egrave;res',

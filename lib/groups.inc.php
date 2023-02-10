@@ -170,6 +170,7 @@ function getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
       normalizeNameGroupFromStructuresDn($map);
+      format_postalAddress($map);
     }
     return $r;
 }
@@ -509,6 +510,9 @@ function apply_category_restriction($groups, $category_filter) {
 
 function add_group_category(&$g) {
   $g["category"] = groupKeyToCategory($g["key"]);
+  if ($g["category"] === 'structures' && $g["businessCategory"] === 'location') {
+    $g["category"] = "location";
+  }
 }
 function add_groups_category(&$groups) {
   foreach ($groups as &$g) add_group_category($g);
