@@ -384,7 +384,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
         }
       }
       userHandleSpecialAttributePrivacy($user, $attrRestrictions['allowExtendedInfo']);
-      userHandle_postalAddress($user);
+      format_postalAddress($user);
       if ($attrRestrictions['allowUp1Roles'] && @$wanted_attrs['up1Roles']) get_up1Roles($user);
     }
     return $r;
@@ -410,13 +410,6 @@ function userHandle_PersonnelEnActivitePonctuelle(&$user) {
             array_shift($user['supannEntiteAffectation']);
             $user['supannEntiteAffectationPrincipale'] = $user['supannEntiteAffectation'][0];
         }
-    }
-}
-
-function userHandle_postalAddress(&$e) {
-    if (@$e['postalAddress']) {
-	$e['postalAddress'] =
-	    str_replace("\\\n", '\$', str_replace('$', "\n", $e['postalAddress']));
     }
 }
 

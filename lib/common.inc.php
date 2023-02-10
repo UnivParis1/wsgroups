@@ -406,4 +406,11 @@ function groupByEtiquette($l) {
     return $r;
 }
 
+function format_postalAddress(&$e) {
+    if (@$e['postalAddress']) {
+	$e['postalAddress'] =
+	    str_replace("\\\n", '\$', str_replace('$', "\n", $e['postalAddress']));
+    }
+}
+
 ?>
