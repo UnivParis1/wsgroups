@@ -79,10 +79,11 @@ function diploma_name($code_etape) {
     return removePrefix($diploma[0]["description"], "$code_etape - ");
 }
 
-function importantEtuInscription($inscriptions, $primaryAffect, $uid) {
+function importantEtuInscription($inscriptions, $primaryAffect, $uid, $etab) {
     $best = null;
     foreach ($inscriptions as $s) {
         $inscr = parse_supannEtuInscription($s);
+        if ($inscr['etab'] !== $etab) continue;
 	$inscr['anneeinsc'] = intval($inscr['anneeinsc']);
         if (!$best || $inscr['anneeinsc'] > $best['anneeinsc'] || $inscr['anneeinsc'] === $best['anneeinsc'] && $inscr['typedip'] > $best['typedip']) {
             $best = $inscr;
@@ -103,27 +104,29 @@ function importantEtuInscription($inscriptions, $primaryAffect, $uid) {
 
 $attrs = getFirstLdapInfo($PEOPLE_DN, "(&(uid=$uid)(supannEntiteAffectationPrincipale=*)(supannEtuInscription=*))", $CARTE_ETU_ALLOWED_ATTRS);
 
-if (isset($_GET["iae"]) && $attrs && $attrs["supannEntiteAffectationPrincipale"] === 'COV1') {
-   # ok, going on with no error
-} else if (!$attrs || !$attrs['employeeNumber'] || $attrs["supannEntiteAffectationPrincipale"] === 'COV1') {
-    $error = !$attrs ? "Inconnu" : ($attrs["supannEntiteAffectationPrincipale"] === 'COV1' ? "Les étudiants de l'IAE ne sont pas autorisés. Nous devrions bientôt fournir une version spécifique IAE..." : 
+$etab = '{UAI}0751717J';
+if ($attrs) {
+    $ids = groupByEtiquette(getAndUnset($attrs, 'supannRefId'));
+    if (isset($ids['ESCN'])) $attrs['ESCN'] = $ids['ESCN'];
+    if (isset($_GET["iae"])) {
+        $etab = '{UAI}0753364Z';
+        $attrs['employeeNumber'] = $ids['UAI:0753364Z:BARCODE'];
+    }
+}    
+
+if (!$attrs || !$attrs['employeeNumber']) {
+    $error = !$attrs ? "Inconnu" :  
         "Pour avoir accès à la carte d'étudiant dématérialisée, il faut actuellement :
         - soit avoir une carte physique
         - soit avoir perdu une carte physique
         - soit une carte physique est imprimée mais vous ne l'avez pas encore reçu
         
-        Vous n'êtes donc pas éligible (pour l'instant, nous travaillons pour étendre les cas éligibles...)");
+        Vous n'êtes donc pas éligible (pour l'instant, nous travaillons pour étendre les cas éligibles...)";
     echoJson([ "error" => $error ]);
     exit(0);
 }
 
-$ids = groupByEtiquette(getAndUnset($attrs, 'supannRefId'));
-if (isset($ids['ESCN'])) $attrs['ESCN'] = $ids['ESCN'];
-if (isset($_GET["iae"])) {
-    $attrs['employeeNumber'] = $ids['UAI:0753364Z:BARCODE'];
-}
-
-$attrs['importantEtuInscription'] = importantEtuInscription(getAndUnset($attrs, 'supannEtuInscription'), $primaryAffect, $uid);
+$attrs['importantEtuInscription'] = importantEtuInscription(getAndUnset($attrs, 'supannEtuInscription'), $primaryAffect, $uid, $etab);
 
 echoJson($attrs);
 
