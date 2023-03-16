@@ -1139,13 +1139,14 @@ function formatUserInfo(info, showExtendedInfo) {
 const app = Vue.createApp({
  components: {
    Affiliation: {
-    props: [ 'primary', 'affiliations' ],
+    props: [ 'primary', 'affiliations', 'user_info' ],
     computed: {
         otherText() {
             const other = arraySubstraction(this.affiliations, [this.primary, 'member'])
             return other.map(aff => this.toText[aff] || aff).join(', ')
         },
         toText() { return eduPersonAffiliation_valnames },
+        up1Sources() { return this.user_info?.up1Profile?.map(p => p.up1Source) },
     },
     template: `<span>
         <span v-if="primary === 'member' || !primary">
@@ -1159,6 +1160,9 @@ const app = Vue.createApp({
         </span>
         <span v-if="!affiliations.includes('member')">
             (non membre)
+        </span>
+        <span v-if="primary === 'staff' && up1Sources.includes('{HARPEGE}heberge')">
+            <Important s=" hébergé"></Important>
         </span>
     </span>`,
    },
