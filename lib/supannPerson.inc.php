@@ -351,7 +351,7 @@ function wanted_attrs_raw($wanted_attrs) {
     return $r;
 }
 
-function attrRestrictions($allowExtendedInfo = 0) {
+function attrRestrictions($allowExtendedInfo = -1) {
     global $isTrustedIp;
     return
         array('allowListeRouge' => allowListeRouge($allowExtendedInfo),
