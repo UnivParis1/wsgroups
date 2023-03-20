@@ -64,10 +64,8 @@ $attrs_by_kind = [
     'seeAlso', 'seeAlso-all',
     'supannCodePopulation', 'supannCodePopulation-all', 'supannEmpProfil-all', 'supannExtProfil-all',
     
+    'employeeType', 'employeeType-all', 'departmentNumber', // NB: non teacher/emeritus/researcher have a specific LEVEL 2 for those attrs
     'up1Profile', // will be filtered
-  ],
-  "MULTI 2" => [
-    'employeeType', 'employeeType-all', 'departmentNumber', // NB: teacher/emeritus/researcher have a specific LEVEL -1 for those attrs
   ],
   "MULTI 1" => [
 	// below are restricted or internal attributes.
@@ -94,6 +92,7 @@ function allowAttribute($user, $attrName, $allowExtendedInfo) {
         // employeeType is private for staff & student
         // departmentNumber is not interesting for staff & student
         if (in_array(@$user['eduPersonPrimaryAffiliation'], array('teacher', 'emeritus', 'researcher'))) return true;
+        return $allowExtendedInfo >= 2;
     }
     return $allowExtendedInfo >= $USER_ALLOWED_ATTRS[$attrName]["LEVEL"];
 }
