@@ -372,7 +372,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
 	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
-      if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle($user);
+      if ($attrRestrictions['allowExtendedInfo'] < 1) userHandle_PersonnelEnActivitePonctuelle($user);
       userAttributesKeyToText($user, $wanted_attrs, @$user['supannCivilite'], @$user['supannConsentement'] , $attrRestrictions['allowExtendedInfo']);
       userHandleSpecialAttributeValues($user, $attrRestrictions['allowExtendedInfo']);
       if (isset($user['up1Profile'])) {
