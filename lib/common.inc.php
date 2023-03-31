@@ -185,6 +185,7 @@ function ensure_ldap_close() {
 
 function initPhpCAS_raw($host, $port, $context, $CA_certificate_file) {
   phpCAS::client(CAS_VERSION_2_0, $host, intval($port), $context);
+  phpCAS::setNoClearTicketsFromUrl(); // not needed and breaks on cross-domain (when the cookie is not accepted, which happens often nowadays)
   if ($CA_certificate_file)
     phpCAS::setCasServerCACert($CA_certificate_file);
   else
