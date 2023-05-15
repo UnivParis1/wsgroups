@@ -99,7 +99,10 @@ function allowAttribute($user, $attrName, $allowExtendedInfo) {
 
 function people_attrs($attrs, $allowExtendedInfo = 0) {
     global $USER_ALLOWED_ATTRS;
-    if (!$attrs) $attrs = implode(',', array_keys($USER_ALLOWED_ATTRS));
+    if (!$attrs) {
+        $attrs = implode(',', array_keys($USER_ALLOWED_ATTRS));
+        $all_attrs = true;
+    }
     $wanted_attrs = array();
     foreach (explode(',', $attrs) as $attr) {
         $attr_kinds = @$USER_ALLOWED_ATTRS[$attr];
@@ -107,7 +110,13 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
             error("unknown attribute $attr. allowed attributes: " . join(",", array_keys($USER_ALLOWED_ATTRS)));
             exit;
         }
-        $wanted_attrs[$attr] = $attr_kinds['MULTI'] ? 'MULTI' : $attr;
+        // most attributes visibility are enforced using ACLs on LDAP bind
+        // but there are special cases so enforce our own rules
+        if ($attr_kinds['LEVEL'] > $allowExtendedInfo) {
+            if (!$all_attrs) error_log("not allowing $attr since request level is $allowExtendedInfo");
+        } else {
+            $wanted_attrs[$attr] = $attr_kinds['MULTI'] ? 'MULTI' : $attr;
+        }
     }
     global $USER_KEY_FIELD;
     if (!isset($wanted_attrs[$USER_KEY_FIELD]))
