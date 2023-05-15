@@ -355,8 +355,6 @@ function attrRestrictions($allowExtendedInfo = -1) {
     global $isTrustedIp;
     return
         array('allowListeRouge' => allowListeRouge($allowExtendedInfo),
-        'allowAccountStatus' => GET_uid(),
-        'allowUp1Roles' => GET_uid(),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowExtendedInfo' => $allowExtendedInfo,
         'forceProfile' => (isset($_GET["profile_supannEntiteAffectation"]) ? '/\[supannEntiteAffectation=(\w+;)*' . preg_quote($_GET["profile_supannEntiteAffectation"], '/') . '[;\]]/' : null),
@@ -368,8 +366,6 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
     $wanted_attrs_raw = wanted_attrs_raw($wanted_attrs);
     $r = searchPeopleRaw($filter, $allowListeRouge, @$attrRestrictions['allowRoles'], $wanted_attrs_raw, $KEY_FIELD, $maxRows);
     foreach ($r as &$user) {
-      if (!@$attrRestrictions['allowAccountStatus'])
-	     unset($user['accountStatus']);
       if (!@$attrRestrictions['allowMailForwardingAddress'])
 	  anonymizeUserMailForwardingAddress($user);
       if ($attrRestrictions['allowExtendedInfo'] < 1) userHandle_PersonnelEnActivitePonctuelle($user);
@@ -385,7 +381,7 @@ function searchPeople($filter, $attrRestrictions, $wanted_attrs, $KEY_FIELD, $ma
       }
       userHandleSpecialAttributePrivacy($user, $attrRestrictions['allowExtendedInfo']);
       format_postalAddress($user);
-      if ($attrRestrictions['allowUp1Roles'] && @$wanted_attrs['up1Roles']) get_up1Roles($user);
+      if (@$wanted_attrs['up1Roles']) get_up1Roles($user);
     }
     return $r;
 }
