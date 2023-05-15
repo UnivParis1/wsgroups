@@ -15,10 +15,12 @@ $attrs_by_kind = [
 	'supannCivilite', 
 	'supannListeRouge',
 	'supannAliasLogin',
-	'uidNumber', 'gidNumber',
+  ],
+  "MONO 0" => [
 	'accountStatus', 
   ],
   "MONO 1" => [
+    'uidNumber', 'gidNumber',
     'supannEmpId', 'supannEtuId', 'supannCodeINE', 'supannFCSub',
     'shadowFlag', 'shadowExpire', 'shadowLastChange',    
 	'homeDirectory', 'gecos',
@@ -51,25 +53,25 @@ $attrs_by_kind = [
     'eduPersonEntitlement',
 
     'up1AltGivenName',
-	'up1KrbPrincipal',
 	'roomNumber', 'up1FloorNumber', 'up1RoomAccess',
 
 	'telephoneNumber', 
 	'facsimileTelephoneNumber', 
 	'supannAutreTelephone',
 
-	'objectClass',
 	'labeledURI',
     'seeAlso', 'seeAlso-all',
-    'supannCodePopulation', 'supannCodePopulation-all', 'supannEmpProfil-all', 'supannExtProfil-all',
     
     'employeeType', 'employeeType-all', 'departmentNumber', // NB: non teacher/emeritus/researcher have a specific LEVEL 2 for those attrs
     'up1Profile', // will be filtered
   ],
   "MULTI 0" => [
     'mobile',
+    'up1KrbPrincipal',
+    'supannCodePopulation', 'supannCodePopulation-all', 'supannEmpProfil-all', 'supannExtProfil-all',
   ],
   "MULTI 1" => [
+	'objectClass',
 	'memberOf', 'memberOf-all',
 	// below are restricted or internal attributes.
 	'mailForwardingAddress', 'mailDeliveryOption', 'mailAlternateAddress',
