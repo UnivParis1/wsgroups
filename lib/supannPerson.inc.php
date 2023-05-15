@@ -47,7 +47,6 @@ $attrs_by_kind = [
 	'supannParrainDN', 'supannParrainDN-ou', 'supannParrainDN-all',
 	'supannRoleEntite', 'supannRoleEntite-all',
 	'supannEtuInscription', 'supannEtuInscription-all',
-	'memberOf', 'memberOf-all',
 	'supannRoleGenerique',
     'eduPersonEntitlement',
 
@@ -57,7 +56,7 @@ $attrs_by_kind = [
 
 	'telephoneNumber', 
 	'facsimileTelephoneNumber', 
-	'supannAutreTelephone', 'mobile',
+	'supannAutreTelephone',
 
 	'objectClass',
 	'labeledURI',
@@ -67,7 +66,11 @@ $attrs_by_kind = [
     'employeeType', 'employeeType-all', 'departmentNumber', // NB: non teacher/emeritus/researcher have a specific LEVEL 2 for those attrs
     'up1Profile', // will be filtered
   ],
+  "MULTI 0" => [
+    'mobile',
+  ],
   "MULTI 1" => [
+	'memberOf', 'memberOf-all',
 	// below are restricted or internal attributes.
 	'mailForwardingAddress', 'mailDeliveryOption', 'mailAlternateAddress',
     'supannConsentement', 'up1TermsOfUse',
@@ -131,18 +134,7 @@ function people_attrs($attrs, $allowExtendedInfo = 0) {
         $wanted_attrs['supannCivilite'] = 'supannCivilite';
         $wanted_attrs['supannConsentement'] = 'MULTI';
     }
-
-    // most attributes visibility are enforced using ACLs on LDAP bind
-    // here are a few special cases
-    if ($allowExtendedInfo < 1) {
-        foreach (array('memberOf', 'memberOf-all', 'member', 'member-all', 'supannGroupeLecteurDN', 'supannGroupeLecteurDN-all', 'supannGroupeAdminDN', 'supannGroupeAdminDN-all') as $attr) {
-            unset($wanted_attrs[$attr]);
-        }
-    }
-    if ($allowExtendedInfo < 0) {
-        unset($wanted_attrs['mobile']);
-    }
-    
+   
     return $wanted_attrs;
 }
 
