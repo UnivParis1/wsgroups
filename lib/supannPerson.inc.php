@@ -543,9 +543,7 @@ function parse_up1Profile_one_raw($up1Profile) {
 
 function post_parse_up1Profile_one($r, $allowExtendedInfo, $wanted_attrs, $global_user) {
     if ($allowExtendedInfo < 1) userHandle_PersonnelEnActivitePonctuelle($r);
-    foreach ($r as $key => $val) {
-        if (!allowAttribute($r, $key, $allowExtendedInfo)) unset($r[$key]);
-    }
+    userHandleSpecialAttributePrivacy($r, $allowExtendedInfo);
     userAttributesKeyToText($r, $wanted_attrs, 
             isset($r['supannCivilite']) ? $r['supannCivilite'] : $global_user['supannCivilite'], 
             isset($r['supannConsentement']) ? $r['supannConsentement'] : $global_user['supannConsentement'], 
@@ -744,16 +742,9 @@ function rdnToSupannCodeEntites($l) {
 }
 
 function userHandleSpecialAttributePrivacy(&$user, $allowExtendedInfo) {
-    foreach (['employeeType', 'employeeType-all', 'departmentNumber'] as $attrName) {
+    foreach ($user as $attrName => $val) {
         if (!allowAttribute($user, $attrName, $allowExtendedInfo)) {
             unset($user[$attrName]);
-        }
-        if (isset($user['up1Profile'])) {
-            foreach ($user['up1Profile'] as &$profile) {
-                if (!allowAttribute($profile, $attrName, $allowExtendedInfo)) {
-                    unset($profile[$attrName]);
-                }
-            }
         }
     }
 }
