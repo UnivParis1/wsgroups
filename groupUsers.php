@@ -5,12 +5,12 @@ require_once ('lib/supannPerson.inc.php');
 
 $key = GET_ldapFilterSafe("key");
 $wantedAttr = GET_or_NULL("attr");
-$attrRestrictions = array();
 if (ipTrusted()) {
   $maxRows = 0;
-  $attrRestrictions['allowListeRouge'] = true;
+  $attrRestrictions = attrRestrictions(2);
   $SEARCH_TIMELIMIT = 0;
 } else {
+  $attrRestrictions = attrRestrictions(-1);
   //exit("your IP (" . $_SERVER['REMOTE_ADDR'] . ") is not allowed");   
   $maxRows = 5;
 }
