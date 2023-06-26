@@ -167,6 +167,10 @@ function getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs) {
       if (in_array('roles', $attrs) || isset($_GET["with_organization"])) {
           $map["roles"] = structureRoles($map["key"], in_array('roles.supannRoleGenerique-all', $attrs));
       }
+      if (in_array('groups-roles', $attrs)) {
+          # used by econvention, cf GLPI UP1#149137
+          $map["groups-roles"] = getGroupsFromGroupsDn(array("(cn=employees.role.*-" . $map["key"] . ")"));
+      }
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
       normalizeNameGroupFromStructuresDn($map);
