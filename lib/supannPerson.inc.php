@@ -195,12 +195,16 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
             // too short strings are useless
             $l[] = "(|(displayName=*$token*)(cn=*" . lowercase_and_stripAccents($token) . "*)(up1BirthName=*$token*))";
             $tokens = preg_split("/[\s']+/", $token);
-            if (sizeof($tokens) === 2) {
-                $tokens = array($tokens[1], $tokens[0]);
+            if (sizeof(($tokens)) > 1) {
                 $search = implode('*', $tokens);
                 $short_tokens = array_filter($tokens, function ($s) { return mb_strlen($s) <= 3; });
                 $x = sizeof($short_tokens) === 0 ? '*' : '';
                 $l[] = "(|(displayName=$x$search$x)(cn=$x" . lowercase_and_stripAccents($search) . "$x))";
+                if (sizeof($tokens) === 2) {
+                    // also search in reverse token order
+                    $search = implode('*', array($tokens[1], $tokens[0]));
+                    $l[] = "(|(displayName=$x$search$x)(cn=$x" . lowercase_and_stripAccents($search) . "$x))";
+                }
             }
         }
     }
