@@ -198,7 +198,7 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
         if (mb_strlen($token) >= index_substr_any_len) {
             // too short strings are useless
             $l[] = "(|(displayName=*$token*)(cn=*" . lowercase_and_stripAccents($token) . "*)(up1BirthName=*$token*))";
-            $tokens = preg_split("/[\s']+/", $token);
+            $tokens = preg_split("/[\s'\-]+/", $token);
             $larger_token_size = max(array_map(function ($s) { return mb_strlen($s); }, $tokens));
             if (sizeof(($tokens)) > 1 && $larger_token_size >= index_substr_if_minlen) {
                 $search = implode('*', $tokens);
