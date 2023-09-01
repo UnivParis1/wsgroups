@@ -210,6 +210,12 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
                     $l[] = "(|(displayName=$x$search$x)(cn=$x" . lowercase_and_stripAccents($search) . "$x))";
                 }
             }
+            // cas particulier pour les noms à particules qui peuvent être cherchés sans espace : "Dumoulin" doit trouver "Du moulin"
+            if (sizeof($tokens) === 1 && preg_match('/^(de|des|du)(.*)/i', $token, $matches)) {
+                list($_ignore, $particule, $reste) = $matches;
+                $search = "$particule $reste";
+                $l[] = "(|(sn=$search*)(cn=" . lowercase_and_stripAccents($search) . "*)(up1BirthName=$search*))";
+            }
         }
     }
 
