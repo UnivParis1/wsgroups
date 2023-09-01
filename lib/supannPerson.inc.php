@@ -4,6 +4,10 @@ require_once ('lib/common.inc.php');
 if (!isset($GLOBALS["structureKeyToAll"])) require_once ('gen/tables.inc.php');
 require_once ('config/config-groups.inc.php'); // in case groups.inc.php is used (php files setting global variables must be required outside a function!)
 
+// cf slapd conf
+const index_substr_if_minlen = 2;
+const index_substr_any_len = 4;
+
 global $USER_KEY_FIELD, $USER_ALLOWED_ATTRS;
 $USER_KEY_FIELD = 'uid';
 $attrs_by_kind = [
@@ -191,7 +195,7 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
             $l[] = roomNumber_filter($a . ($b ? " " . trim($b) : ''), $ext);
         }
 
-        if (mb_strlen($token) > 3) {
+        if (mb_strlen($token) >= index_substr_any_len) {
             // too short strings are useless
             $l[] = "(|(displayName=*$token*)(cn=*" . lowercase_and_stripAccents($token) . "*)(up1BirthName=*$token*))";
             $tokens = preg_split("/[\s']+/", $token);
