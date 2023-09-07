@@ -5,7 +5,7 @@ require_once ('lib/groups.inc.php');
 if (GET_bool("CAS")) forceCASAuthentication();
 
 $token = GET_ldapFilterSafe("token");
-$anonymous = !(@$isTrustedIp || GET_uid());
+$anonymous = !(ipTrusted() || GET_uid());
 $maxRows = !$anonymous ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 40);
 $attrs = explode(',', GET_or_NULL("attrs"));
 $restriction = GET_extra_group_filter_from_params();
