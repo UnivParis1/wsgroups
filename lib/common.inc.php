@@ -223,8 +223,10 @@ function isCASAuthenticated() {
 }
 
 function ipTrusted() {
-    global $TRUSTED_IPS, $isTrustedIp;
-    $isTrustedIp = $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);
+    global $APP_AUTH_BEARER_TOKENS, $TRUSTED_IPS, $isTrustedIp;
+    $bearerToken = removePrefixOrNULL(@$_SERVER['HTTP_AUTHORIZATION'], 'Bearer ');
+    $isTrustedIp = $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS) ||
+        $bearerToken && $APP_AUTH_BEARER_TOKENS && in_array($bearerToken, $APP_AUTH_BEARER_TOKENS);
     return $isTrustedIp;
 }
 
