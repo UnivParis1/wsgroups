@@ -222,22 +222,6 @@ function isCASAuthenticated() {
   }
 }
 
-function force_Bearer_Authentication() {
-    $bearerToken = removePrefixOrNULL(@$_SERVER['HTTP_AUTHORIZATION'], 'Bearer ');
-    $eppn = $_SERVER["HTTP_EPPN"];
-    if ($bearerToken && $eppn && in_array($bearerToken, $GLOBALS["AUTH_BEARER_TOKENS"])) {
-        global $PEOPLE_DN;
-        $user = getFirstLdapInfo($PEOPLE_DN, "(eduPersonPrincipalName=$eppn)", [ "uid" => "uid" ]);
-        if ($user) {
-            $_SERVER["HTTP_CAS_USER"] = $user['uid'];
-        }
-    } else {
-        error_log(!$eppn ? 'missing "eppn" header' : ($bearerToken ? "invalid bearer token $bearerToken" : "bearer token missing in Authorization header " . @$_SERVER['HTTP_AUTHORIZATION']));
-        header('HTTP/1.0 401 Unauthorized'); 
-        exit();
-    }
-}
-
 function ipTrusted() {
     global $TRUSTED_IPS, $isTrustedIp;
     $isTrustedIp = $TRUSTED_IPS && in_array($_SERVER['REMOTE_ADDR'], $TRUSTED_IPS);

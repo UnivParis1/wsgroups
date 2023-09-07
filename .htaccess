@@ -1,8 +1,5 @@
 #php_value magic_quotes_gpc Off
 
-# for Authorization header
-CGIPassAuth on
-
 RewriteEngine on
 RewriteRule ^(\w+)$ $1.php [NC,L]
 RewriteRule ^(.*\.html\.js)$ $1.php [NC,L]
