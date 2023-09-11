@@ -167,7 +167,8 @@ function people_filters($token, $restriction = [], $allowInvalidAccounts = false
     }
 
     if ($tokenIsId) {
-        $l[] = "(|(uid=$token)(mail=$token))";
+        // it is allowed to be an array
+        $l = array_map(function ($token) { return "(|(uid=$token)(mail=$token))"; }, is_array($token) ? $token : [$token]);
     } else if ($token === '') {
         $l[] = '(|(supannRoleGenerique={UAI:0751717J:HARPEGE.FCSTR}447)(supannRoleGenerique={UAI:0751717J:HARPEGE.FCSTR}1))'; // very important people first!
         $l[] = '(supannRoleGenerique={SUPANN}D*)'; // then important people

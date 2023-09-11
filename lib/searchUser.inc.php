@@ -4,6 +4,7 @@ require_once ('lib/supannPerson.inc.php');
 
 $id = GET_ldapFilterSafe_or_NULL("id");
 if ($id !== NULL) {
+    // NB: "id" can be an array, that's ok & useful!
     $token = $id;
     $tokenIsId = true;
 } else {
