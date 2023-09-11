@@ -723,7 +723,7 @@ function memberOfAll($l) {
 }
 
 function getDNs($l) {
-  $attrs = array("ou" => "name", "displayName" => "name", "description" => "description", "labeledURI" => "labeledURI");
+  $attrs = array("ou" => "name", "displayName" => "name", "description" => "description", "labeledURI" => "labeledURI", "mail" => "mail");
 
   $r = [];
   foreach ($l as $dn) $r[] = getLdapDN_with_DN_as_key($dn, $attrs);
