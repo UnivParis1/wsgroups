@@ -210,6 +210,10 @@ function forceCASAuthentication() {
     phpCAS::logout();
   }
 
+  // no need to lock the session which is only used to store user identifier
+  // => release the session:
+  session_write_close();
+  
   // will be used by function "GET_uid"
   $_SERVER["HTTP_CAS_USER"] = phpCAS::getUser();
 }
