@@ -36,6 +36,7 @@ $attrs_by_kind = [
   "MONO 2" => [
 	'supannEmpCorps',    
 	'employeeNumber', // (NB: search allowed in level 1)
+	'up1TagMifare',
     
 	'createTimestamp', 'modifyTimestamp',
 
@@ -82,6 +83,9 @@ $attrs_by_kind = [
     'supannConsentement', 'up1TermsOfUse',
     // for roles (which are groups)
     'member', 'member-all', 'supannGroupeLecteurDN', 'supannGroupeLecteurDN-all', 'supannGroupeAdminDN', 'supannGroupeAdminDN-all',
+  ],
+  "MULTI 2" => [
+    'supannRefId',
   ],
 ];
 $USER_ALLOWED_ATTRS = [];

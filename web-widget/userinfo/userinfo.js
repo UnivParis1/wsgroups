@@ -92,6 +92,7 @@ var main_attrs_labels = [ [
     'supannEmpProfil-all: Profil(s) employé',
     'up1Source: Profil',
     'up1Profile: Profils',
+    'supannRefId: RefIds',
 ],
 [
     'Mailbox: Boîte mail',
@@ -132,6 +133,7 @@ var sub_attrs_labels = {
     , 'supannCodeINE: INE'
     , 'uidNumber: UID NAS'
     , 'employeeNumber: code-barre'
+    , 'up1TagMifare: tag Mifare'
   //, 'eduPersonPrincipalName: EPPN'
     ]
 };
@@ -208,6 +210,7 @@ var simple_formatters = {
     'supannEntiteAffectation-all': format_supannEntiteAffectation,
     'supannEmpProfil-all': format_supannEmpExtProfilAll,
     'supannExtProfil-all': format_supannEmpExtProfilAll,
+    supannRefId: format_supannRefId,
     mailForwardingAddress: compute_MailDelivery,
     up1Profile: format_main_profiles_info,
     up1Source: function (_, info) { return format_main_profile_info(info) },
@@ -575,6 +578,15 @@ function format_shadowExpire(val, info) {
         }
         return formadate(val) + " (dans " + delai + ")";
     }
+}
+
+function format_supannRefId(val) {
+    return val.map(id => {
+        let [, prefix, id_] = id.match(/\{(.*)\}(.*)/)
+        prefix = prefix.replace('UAI:0752707K', 'CUJAS')
+        // hide refIds already displayed via supannEmpId/up1TagMifare
+        return ["HARPEGE", "MIFARE", "SIHAM"].includes(prefix) ? '' : prefix + " : " + id_
+    }).filter(s => s).sort().join("<br>")
 }
 
 function addYears(date, years) {
