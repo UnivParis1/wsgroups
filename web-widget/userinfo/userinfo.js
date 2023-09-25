@@ -684,14 +684,14 @@ function formatLastLogins(info, data, div) {
     if (data.list.length) {
 	var details = $("<div class='vertical-scroll hidden'>");
 	$.each(data.list, function (v, e) {
-	    var t = formatDateTime(e.when) + " : " + (e.error || "SUCCESS") + " <small>(login = " + e.who + ", ip = " + e.ip + " )</small>";
+	    var t = formatDateTime(e.when) + " : " + (e.error || "SUCCESS") + " <small>(login = " + e.login + ", ip = " + e.ip + " )</small>";
 	    details.append(t + '<br>');
 	})
 	if (data.fuzzy_failed.length) {
 	    details.append("<br>Logins en échec avec login légèrement différent :<br>");
 	}
 	$.each(data.fuzzy_failed, function (v, e) {
-	    var t = formatDateTime(e.when) + " : " + e.who + " FAILED <small>(ip = " + e.ip + " )</small>";
+	    var t = formatDateTime(e.when) + " : " + e.login + " FAILED <small>(ip = " + e.ip + " )</small>";
 	    details.append(t + '<br>');
 	})
 	div.append($("<span class='clickable'>").append(" <small>details</small>").click(function () { details.toggleClass("hidden") }));

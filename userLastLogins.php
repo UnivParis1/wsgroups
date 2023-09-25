@@ -21,7 +21,7 @@ while ($line = array_shift($lines)) {
     if (preg_match('/^#/', $line)) break;
     $e = json_decode($line, true);
     $action = getAndUnset($e, 'action');
-    if ($action !== 'TICKET_GRANTING_TICKET_CREATED') {
+    if ($action === 'AUTHENTICATION_FAILED') {
         $e['error'] = $action;
     }
     $list[] = $e;
@@ -30,7 +30,7 @@ while ($line = array_shift($lines)) {
 # all remaining $lines are "similar login failures"
 $fuzzy_failed = array_map(json_decode, $lines);
 
-$since = compute_since_from_audit_boundary_dates($audit_boundary_dates);
+$since = [ $audit_boundary_dates[0] ];
 
 
 # sort by date (needed since it is an aggregation of login logs + mail logs)
@@ -39,15 +39,5 @@ usort($list, function ($a, $b) { return strcmp($a["when"], $b["when"]); });
 
 echoJson(array("since" => $since, "list" => $list, "fuzzy_failed" => $fuzzy_failed));
 
-
-function compute_since_from_audit_boundary_dates($l) {
-    $start1 = $l[0][0]; $end1 = $l[0][1];
-    $start2 = $l[1][0]; $end2 = $l[1][1];
-    if (strcmp($end1, $start2) <= 0 || strcmp($end2, $start1) <= 0) {
-        return [$start1, $start2];
-    } else {
-        return [min($start1, $start2)];
-    }
-}
 
 ?>
