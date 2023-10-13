@@ -681,7 +681,7 @@ function supannEtuInscriptionAll($supannEtuInscription) {
 }
 
 function should_hide_role($r, $allowExtendedInfo) {
-    return $r['role'] === '{SUPANN}R22' && !$allowExtendedInfo; # GLPI UP1#126406
+    return $r['role'] === '{SUPANN}R22' && $allowExtendedInfo < 1; # GLPI UP1#126406
 }
 
 function supannRoleEntiteAll($supannCivilite, $e, $allowExtendedInfo) {
