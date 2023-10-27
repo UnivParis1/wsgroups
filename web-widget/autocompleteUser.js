@@ -604,6 +604,7 @@
 
                     $.each(users, function (i, item) { item.category = 'users'; });                    
 		    users = transformUserItems(users, 'uid', request.term);
+		    data.groups = sortByGroupCategory(data.groups)
 		    transformGroupItems(data.groups, 'key', request.term);
 
             var roles = transformRoleGeneriqueItems(data.supannRoleGenerique || [], data.supannActivite || [], 'key', request.term);
