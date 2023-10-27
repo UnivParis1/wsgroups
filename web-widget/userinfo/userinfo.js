@@ -597,7 +597,7 @@ function addYears(date, years) {
     
 function is_not_adult(timestamp) {
     var birthDate = timestamp_to_Date(timestamp);
-    return birthDate && addYears(birthDate, 18) >= new Date();
+    return birthDate && addYears(birthDate, 15) >= new Date();
 }
 
 function compute_Person(info) {
@@ -617,7 +617,7 @@ function compute_Person(info) {
 
     var Person = $("<span>").text(person); 
     if (info.up1BirthDay && is_not_adult(info.up1BirthDay)) {
-        Person.append(" " + important(civilite.match(/Mme|Mlle/) ? "MINEURE" : "MINEUR", "moins-de-18-ans"));
+        Person.append(" " + important(civilite.match(/Mme|Mlle/) ? "MINEURE" : "MINEUR", "moins-de-15-ans"));
     }
 	Person.attr('title', 'Prénom : ' + info.givenName + (info.up1AltGivenName ? " (" + info.up1AltGivenName.join(' ') + ")" : '') + ", Nom : " + info.sn + ", Complet : " + info.cn);
     return Person;
