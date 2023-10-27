@@ -3,7 +3,7 @@
     var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, alum: 7, member: 8, "registered-reader": 9, "library-walk-in": 10 };
     var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", alum: "Anciens &eacute;tudiants", retired: "Retrait&eacute;s", "registered-reader": "Lecteur externe", "library-walk-in": "Visiteur biblioth&egrave;que" };
 
-  var category2order = { structures: 5, affiliation: 5, diploma: 1, elp: 2, gpelp: 3, gpetp: 4 };
+  var category2order = { location: 1, structures: 6, affiliation: 6, diploma: 2, elp: 3, gpelp: 4, gpetp: 5 };
 
   var category2text = {
       structures: 'Directions / Composantes / Laboratoires',
