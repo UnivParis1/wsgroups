@@ -8,6 +8,7 @@ var moreInfoUrl = baseURL + '/userMoreInfo';
 var helpUrl = 'https://dsiundoc.univ-paris1.fr/doku.php?id=refi:userinfo-web#HELP_ID';
 helpUrl = 'https://idp.univ-paris1.fr/idp/profile/Shibboleth/SSO?shire=https://dsiundoc.univ-paris1.fr/Shibboleth.sso/SAML/POST&target=' + escape(helpUrl) + '&providerId=https://dsiundoc.univ-paris1.fr';
 var impersonateUrl = 'https://ent-test.univ-paris1.fr/EsupUserApps/impersonate.html';
+var appsUrl = 'https://ent-test.univ-paris1.fr/EsupUserApps/layout';
 var apogeeStudentDetailUrl = 'https://apogee.univ-paris1.fr/up1/jsp/detail_etudiant.jsp?config=apoprod&cod_etu=';
 var userphotoUrl = 'https://userphoto-test.univ-paris1.fr/';
 var grouperUrl = 'https://grouper-test.univ-paris1.fr/grouper/grouperUi/app/UiV2Main.index?operation=UiV2Group.viewGroup&groupName=';
@@ -118,11 +119,13 @@ var main_attrs_labels = [ [
 ],
 [
     'Listes: Listes',
-    'memberOf-all: Groupes',
     'supannGroupeAdminDN-all: Responsables',
     'supannGroupeLecteurDN-all: Observateurs',
     'member-all: Membres',
     'Applications: Applications',
+],
+[
+    'memberOf-all: Groupes',
 ]
 ];
 
@@ -554,10 +557,12 @@ function format_supannEtuInscriptionAll(all, fInfo) {
 	fInfo['supannEtuInscription-prev'] = spanFromList($.map(prev, format_it), "<br>");
 }
 
+const compareLowerCased = (field) => (a, b) => (
+	a[field].toLowerCase().localeCompare(b[field].toLowerCase())
+) 
+
 function format_memberOf(all) {
-    all = all.sort(function (a, b) { 
-	return a.key.toLowerCase().localeCompare(b.key.toLowerCase());
-    });
+    all = all.sort(compareLowerCased("key"));
     var moreInfo = get_groupsMoreInfo(all);
     return spanFromList($.map(all, function (e) {
 	    var span = $("<span>").append(a_or_span(e.name && e.name.match(/:/) && toGrouperUrl(e.key), e.key))
@@ -957,6 +962,17 @@ function get_groupsMoreInfo(groups) {
     return r;
 }
     
+function get_Applications(info, fInfo) {
+    var infoDiv = $("<div>...</div>");
+    fInfo.Applications = $("<div>").append(infoDiv).append("<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>");
+
+    asyncInfoRaw(appsUrl, { uid: info.uid }, infoDiv, function (data) {
+        const apps = data.layout.folders.flatMap(e => e.portlets).sort(compareLowerCased("fname"))
+        infoDiv.empty();
+        infoDiv.append(spanFromList(apps.map(e => $("<span>", e).text(e.fname)), " "))
+    });
+}
+
 function asyncInfoRaw(url, params, infoDiv, success) {
     $.ajax({
 	url: url,
@@ -1143,7 +1159,7 @@ function formatUserInfo(info, showExtendedInfo) {
     if (info.allowExtendedInfo >= 1 && !info.isRole) fInfo["Photo"] = "<img src='" + userphotoUrl + "?uid=" + info.uid +
         (showExtendedInfo >= 2 ? "&app-cli=userinfo" : "") + "'>";
 
-    if (info.accountStatus === "active" && info.allowExtendedInfo >= 1 && !info.isRole) fInfo["Applications"] = "<a target='_blank' href='" + impersonateUrl + "#" + info.uid + "'>voir l'ENT de l'utilisateur</a>";
+    if (info.accountStatus === "active" && info.allowExtendedInfo >= 1 && !info.isRole) get_Applications(info, fInfo)
 
     return fInfo;
 }
