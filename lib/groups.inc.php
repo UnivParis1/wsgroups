@@ -514,9 +514,15 @@ function apply_category_restriction($groups, $category_filter) {
 
 function add_group_category(&$g) {
   $g["category"] = groupKeyToCategory($g["key"]);
-  if ($g["category"] === 'structures' && $g["businessCategory"] === 'location') {
-    $g["category"] = "location";
+  if ($g["category"] === 'structures' && isset($g["businessCategory"])) {
+    if ($g["businessCategory"] === 'location') {
+        $g["category"] = "location";
+        if (isset($g["rawKey"])) $g["groups_key"] = "groups-employees.location." . $g["rawKey"];
+    } else {
+        if (isset($g["rawKey"])) $g["groups_key"] = "groups-employees." . $g["businessCategory"] . "." . $g["rawKey"];
+    }
   }
+
 }
 function add_groups_category(&$groups) {
   foreach ($groups as &$g) add_group_category($g);

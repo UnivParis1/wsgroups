@@ -139,6 +139,8 @@ function searchGroup($token, $attr, $expected, $params = []) {
 
 searchGroup("dsiun", 'key', '["groups-employees.administration.DGH","groups-employees.administration.DGHA"]');
 searchGroup("dsiun", 'key', '["structures-DGH","structures-DGHA"]', ['filter_category' => 'structures']);
+searchGroup("dsiun", 'groups_key', '[null,null]', ['filter_category' => 'structures']);
+searchGroup("dsiun", 'groups_key', '["groups-employees.administration.DGH","groups-employees.administration.DGHA"]', ['filter_category' => 'structures', 'attrs' => 'businessCategory']);
 searchGroup("dsiun-sas", 'businessCategory', '[null]', ['filter_category' => 'structures']);
 searchGroup("dsiun-sas", 'businessCategory', '["administration"]', ['filter_category' => 'structures', 'attrs' => 'businessCategory']);
 
@@ -162,11 +164,11 @@ EOS;
 expect_json('getSuperGroups diploma', 'getSuperGroups', ['key' => 'diploma-L2T101', 'depth' => 99], $parents);
 
 $parents = <<<'EOS'
-{"structures-DGHA":{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","up1Flags":["included"],"rawKey":"DGHA","category":"structures","superGroups":["structures-DGH"]},"structures-DGH":{"key":"structures-DGH","name":"DSIUN : Direction du syst\u00e8me d'information et des Usages Num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","rawKey":"DGH","category":"structures","superGroups":["businessCategory-administration"]}}
+{"structures-DGHA":{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","up1Flags":["included"],"rawKey":"DGHA","category":"structures","groups_key":"groups-employees.administration.DGHA","superGroups":["structures-DGH"]},"structures-DGH":{"key":"structures-DGH","name":"DSIUN : Direction du syst\u00e8me d'information et des Usages Num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","rawKey":"DGH","category":"structures","groups_key":"groups-employees.administration.DGH","superGroups":["businessCategory-administration"]}}
 EOS;
 expect_json('getSuperGroups structures', 'getSuperGroups', ['key' => 'structures-DGHA', 'depth' => 1], $parents);
 $parents = <<<'EOS'
-{"structures-DGHA":{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","up1Flags":["included"],"rawKey":"DGHA","category":"structures","superGroups":["structures-DGH"]},"structures-DGH":{"key":"structures-DGH","name":"DSIUN : Direction du syst\u00e8me d'information et des Usages Num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","rawKey":"DGH","category":"structures","superGroups":[]}}
+{"structures-DGHA":{"key":"structures-DGHA","name":"DSIUN-SAS : Service des applications et services num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","up1Flags":["included"],"rawKey":"DGHA","category":"structures","groups_key":"groups-employees.administration.DGHA","superGroups":["structures-DGH"]},"structures-DGH":{"key":"structures-DGH","name":"DSIUN : Direction du syst\u00e8me d'information et des Usages Num\u00e9riques","description":"","businessCategory":"administration","labeledURI":"http:\/\/dsiun.univ-paris1.fr","rawKey":"DGH","category":"structures","groups_key":"groups-employees.administration.DGH","superGroups":[]}}
 EOS;
 expect_json('getSuperGroups only structures', 'getSuperGroups', ['key' => 'structures-DGHA', 'depth' => 1, 'filter_category' => 'structures'], $parents);
 
