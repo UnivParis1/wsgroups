@@ -14,7 +14,7 @@ if ($id !== NULL) {
 $attrs = GET_or_NULL("attrs");
 $format = GET_or_NULL("format");
 $anonymous = !(@$isTrustedIp || GET_uid());
-$maxRows = !$anonymous ? GET_or("maxRows", 0) : min(max(GET_or_NULL("maxRows"), 1), 10);
+$maxRows = GET_or("maxRows", 0); // but see restrictions if !$isTrustedIp
 $showErrors = GET_or_NULL("showErrors");
 $showExtendedInfo = GET_or_NULL("showExtendedInfo");
 $allowInvalidAccounts = GET_or_NULL("allowInvalidAccounts");
@@ -48,6 +48,12 @@ $attrRestrictions['allowRoles'] = $allowRoles;
 
 if ($attrRestrictions['forceProfile']) {
     $wanted_attrs['up1Profile'] = 'MULTI';
+}
+
+if (!@$isTrustedIp) {
+    # NB: even for "allowListeRouge", limit the number of results
+    $max_maxRows = GET_uid() && $attrRestrictions['allowListeRouge'] ? 1000 : 10;
+    $maxRows = $maxRows > 1 ? min($maxRows, $max_maxRows) : $max_maxRows;
 }
 
 global $USER_KEY_FIELD;
