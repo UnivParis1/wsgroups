@@ -1301,7 +1301,7 @@ const app = Vue.createApp({
                 } else if (data.length > 1) {
                     that.text("internal error (multiple user found)");
                 } else {
-                    that.allowExtendedInfo = data[0].allowExtendedInfo;
+                    that.allowExtendedInfo = data[0].allowExtendedInfo = data[0].globalInfo?.allowExtendedInfo;
                     that.text('', data[0]);
                 }
             });

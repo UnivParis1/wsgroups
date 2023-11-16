@@ -59,6 +59,10 @@ function expect_json($test_name, $ws, $params, $wanted, $remap = null) {
     $js = test($ws, $params);
     $r = json_decode($js);
     if ($r === NULL) fail($test_name, "invalid response\n$js");
+    if (is_array(($r))) {
+        // ignore globalInfo
+        foreach ($r as &$e) unset($e->globalInfo);
+    }
     $got = $remap ? $remap($r) : $r;
     $got_s = json_encode($got);
     if ($got_s !== $wanted) {
