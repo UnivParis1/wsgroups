@@ -715,7 +715,14 @@ function format_one_kerberosInfo(info, principal, krb) {
     } else {
 	if (info.expire) txtPassword.push(important("SANS EXPIRATION"));
     }
-    if (txtPassword.length) txt.push("mot de passe " + txtPassword.join(", "));
+    if (txtPassword.length) {
+        const elt = $("<span>").appendText("mot de passe " + txtPassword.join(", "))
+        const one_day = 24 * 60 * 60 * 1000;
+        if (info.allowExtendedInfo >= 2 && krb.lastmod && krb.lastmod * 1000 > Date.now() - 7 * one_day) {
+            elt.appendText(" ").append($('<small><a target="_blank" href="' + baseURL + '/userLastModifications.php?uid=' + info.uid + '">modifications des 7 derniers jours</a></small>'))
+        }
+        txt.push(elt);
+    }
     if (krb.locked) {
 	if (info.accountStatus != 'noaccess') txt.push(important("VERROUILLE"));
     } else {
