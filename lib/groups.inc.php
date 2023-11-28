@@ -608,7 +608,7 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
   }
   $structures = array();
   if (preg_match($category_filter, 'structures')) {
-    $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows, $restriction['allStructures']);
+    $structures = getGroupsFromStructuresDn(structures_filters($token), $maxRows, $restriction['allStructures'], $attrs);
     if (!in_array('businessCategory', $attrs)) {
         $structures = remove_businessCategory($structures);
     }
