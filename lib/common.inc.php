@@ -352,6 +352,14 @@ function array_flatten_non_rec($r) {
     return sizeof($r) > 0 ? call_user_func_array('array_merge', $r) : array();
 }
 
+// json_encode on the result of array_unique/array_filter may serialize as object instead of array (on this subject https://externals.io/message/116097 )
+function array_unique_($array) {
+    return array_values(array_unique($array));
+}
+function array_filter_($array, $cb) {
+    return array_values(array_filter($array, $cb));
+}
+
 function getAndUnset(&$a, $prop) {
   if (isset($a[$prop])) {
     $v = $a[$prop];

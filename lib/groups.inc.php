@@ -135,7 +135,7 @@ function removeStructureOrganization($map) {
 function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0, $timelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
   $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit, $timelimit);
-  $r = array_filter($r, 'notGrouperBasedOnLdapAttrs');
+  $r = array_filter_($r, 'notGrouperBasedOnLdapAttrs');
   foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "groups-" . $map["key"];
@@ -153,9 +153,9 @@ function getGroupsFromStructuresDn($filters, $sizelimit = 0, $all = false, $attr
   $r = getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs);
   if ($all) {
       if (!isset($_GET["with_organization"]))
-      $r = array_filter($r, 'removeStructureOrganization');
+      $r = array_filter_($r, 'removeStructureOrganization');
   } else {
-      $r = array_filter($r, 'structurePedagogyResearch');
+      $r = array_filter_($r, 'structurePedagogyResearch');
   }
   return $r;
 }
