@@ -828,7 +828,7 @@ function supannEtablissementShortname($key) {
 }
 
 function supannEtablissementAll($key) {
-    $r = [ key => $key ];
+    $r = [ 'key' => $key ];
     $name = supannEtablissementShortname($key);
     if ($name) $r['name'] = $name;
     return $r;
