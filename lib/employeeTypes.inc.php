@@ -7,6 +7,7 @@ global $employeeTypes; $employeeTypes = [
 
     "Professeur des universités" => [ "weight" => "02", "name-gender-f" => "Professeure des universités" ],
     "Directeur de recherche" => [ "weight" => "02", "name-gender-f" => "Directrice de recherche" ],
+    "Cpj emploi tit. corps professeur" => [ "weight" => "02", "name" => "Professeur des universités junior", "name-gender-f" => "Professeure des universités junior" ],
 
     "Maître de conférences" => [ "weight" => "03", "name-gender-f" => "Maîtresse de conférences" ],
     "Chargé de recherche" => [ "weight" => "03", "name-gender-f" => "Chargée de recherche" ],
