@@ -378,7 +378,11 @@ function attrRestrictions($allowExtendedInfo = -1) {
         array('allowListeRouge' => allowListeRouge($allowExtendedInfo),
         'allowMailForwardingAddress' => $allowExtendedInfo > 1,
         'allowExtendedInfo' => $allowExtendedInfo,
-        'forceProfile' => (isset($_GET["profile_supannEntiteAffectation"]) ? '/\[supannEntiteAffectation=(\w+;)*' . preg_quote($_GET["profile_supannEntiteAffectation"], '/') . '[;\]]/' : null),
+        'forceProfile' => 
+            (isset($_GET["profile_supannEntiteAffectation"]) ? '/\[supannEntiteAffectation=(\w+;)*' . preg_quote($_GET["profile_supannEntiteAffectation"], '/') . '[;\]]/' : 
+             (isset($_GET["profile_eduPersonAffiliation"]) ? '/\[eduPersonAffiliation=(\w+;)*' . preg_quote($_GET["profile_eduPersonAffiliation"], '/') . '[;\]]/' :
+             null)
+        ),
         );
 }
 
@@ -587,7 +591,8 @@ function forceProfile(&$user, $forceProfile, $allowExtendedInfo, $wanted_attrs) 
     foreach ($user['up1Profile'] as $profile_s) {
         if (preg_match($forceProfile, $profile_s)) {
             $full_profile = parse_up1Profile_one_raw($profile_s);
-            if ($full_profile['supannEntiteAffectationPrincipale'] !== $_GET["profile_supannEntiteAffectation"] && 
+            if ($_GET["profile_supannEntiteAffectation"] &&
+                $full_profile['supannEntiteAffectationPrincipale'] !== $_GET["profile_supannEntiteAffectation"] && 
                 $full_profile['eduPersonPrimaryAffiliation'] === 'staff' &&
                 in_array('teacher', $full_profile['eduPersonAffiliation'])) {
                 // "cuisine" mélange plusieurs contrats. Les supannActivite RIFSEEP sont forcément associés au contrat staff, donc les ignorer pour les chargés d'enseignement
