@@ -41,9 +41,11 @@ function seeAlso_filter($cn) {
 }
 
 function GET_extra_group_filter_from_params() {
+  require_once('lib/supannPerson.inc.php');
   $r = array(
        // default value
       'allStructures' => false,
+      'filters' => GET_filter_member_of_group(),
   );
   foreach (array("category") as $attr) {
     $in = GET_or_NULL("filter_$attr");
@@ -604,7 +606,8 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
 
   $groups = array();
   if (preg_match($category_filter, 'groups')) {
-    $groups = getGroupsFromGroupsDn(groups_filters($token), $maxRows);
+    $filters = apply_restrictions_to_filters(groups_filters($token), $restriction['filters']);
+    $groups = getGroupsFromGroupsDn($filters, $maxRows);
   }
   $structures = array();
   if (preg_match($category_filter, 'structures')) {
