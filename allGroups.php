@@ -3,7 +3,7 @@ require_once ('lib/groups.inc.php');
 
 $groups = array();
 
-$groups[] = getGroupsFromGroupsDn(array("(cn=*)"));
+$groups[] = getGroupsFromGroupsDn(array("(cn=*)"), true);
 
 $groups[] = getGroupsFromDiplomaDnOrPrev(array("(description=*)"), false);
 //$groups[] = getGroupsFromDiplomaDnOrPrev(array("(description=*)"), true);

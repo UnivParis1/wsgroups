@@ -56,6 +56,9 @@ function GET_extra_group_filter_from_params() {
       // special case
       $r['allStructures'] = true;
   }
+  // special case
+  $r['ignoreEquivToStructureGroups'] = GET_or("filter_category", "") !== "groups";
+
   $filter_attrs = GET_or_NULL("group_filter_attrs");
   if ($filter_attrs) {
       $r["filter_attrs"] = explode(',', $filter_attrs);
@@ -87,7 +90,7 @@ function isPersonnel($user) {
 }
 
 function getUserGroups($uid) {
-    $groups = getGroupsFromGroupsDn(array(member_filter($uid)));
+    $groups = getGroupsFromGroupsDn(array(member_filter($uid)), true);
 
     global $PEOPLE_DN;
     $attrs["supannEntiteAffectation"] = "MULTI";
@@ -134,10 +137,12 @@ function removeStructureOrganization($map) {
   return $map["businessCategory"] !== 'organization';
 }
 
-function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0, $timelimit = 0) {
+function getGroupsFromGroupsDnRaw($filters, $ignoreEquivToStructureGroups, $sizelimit, $timelimit = 0) {
   global $GROUPS_DN, $GROUPS_ATTRS;
   $r = getLdapInfoMultiFilters($GROUPS_DN, $filters, $GROUPS_ATTRS, "key", $sizelimit, $timelimit);
-  $r = array_filter_($r, 'notGrouperBasedOnLdapAttrs');
+  if ($ignoreEquivToStructureGroups) {
+      $r = array_filter_($r, 'notGrouperBasedOnLdapAttrs');
+  }
   foreach ($r as &$map) {
       $map["rawKey"] = $map["key"];
       $map["key"] = "groups-" . $map["key"];
@@ -145,8 +150,8 @@ function getGroupsFromGroupsDnRaw($filters, $sizelimit = 0, $timelimit = 0) {
   }
   return $r;
 }
-function getGroupsFromGroupsDn($filters, $sizelimit = 0) {
-    $r = getGroupsFromGroupsDnRaw($filters, $sizelimit);
+function getGroupsFromGroupsDn($filters, $ignoreEquivToStructureGroups, $sizelimit = 0) {
+    $r = getGroupsFromGroupsDnRaw($filters, $ignoreEquivToStructureGroups, $sizelimit);
     computeDescriptionsFromSeeAlso($r);
     return $r;
 }
@@ -171,7 +176,7 @@ function getGroupsFromStructuresDnAll($filters, $sizelimit, $attrs) {
       }
       if (in_array('groups-roles', $attrs)) {
           # used by econvention, cf GLPI UP1#149137
-          $map["groups-roles"] = getGroupsFromGroupsDn(array("(cn=employees.role.*-" . $map["key"] . ")"));
+          $map["groups-roles"] = getGroupsFromGroupsDn(array("(cn=employees.role.*-" . $map["key"] . ")"), false);
       }
       $map["rawKey"] = $map["key"];
       $map["key"] = "structures-" . $map["key"];
@@ -218,7 +223,7 @@ function getGroupsFromDiplomaDnOrPrev($filters, $want_prev, $sizelimit = 0) {
 
 function getGroupsFromSeeAlso($seeAlso) {
     $diploma = getGroupsFromDiplomaDn(array("(seeAlso=$seeAlso)"));
-    $groups = getGroupsFromGroupsDn(array("(seeAlso=$seeAlso)"));
+    $groups = getGroupsFromGroupsDn(array("(seeAlso=$seeAlso)"), false);
     return array_merge($diploma, $groups);
 }
 
@@ -233,7 +238,7 @@ function getGroupFromSeeAlso($seeAlso, $allStructures = false, $attrs = array())
     $seeAlso = normalizeSeeAlso($seeAlso);
 
     if (contains($seeAlso, $GROUPS_DN))
-	$groups = getGroupsFromGroupsDnRaw(array("(entryDN=$seeAlso)"), 1, 1);
+	$groups = getGroupsFromGroupsDnRaw(array("(entryDN=$seeAlso)"), false, 1, 1);
     else if (contains($seeAlso, $STRUCTURES_DN)) {
     $groups = getGroupsFromStructuresDn(array("(entryDN=$seeAlso)"), 1, $allStructures, $attrs);
     } else
@@ -461,7 +466,7 @@ function getSubGroups_one($key, $attrs) {
 
   $all_groups = array();
   if ($cn = removePrefixOrNULL($key, "groups-")) {
-    $all_groups = getGroupsFromGroupsDn(array(seeAlso_filter($cn)));
+    $all_groups = getGroupsFromGroupsDn(array(seeAlso_filter($cn)), false);
   } else if ($supannCodeEntite = removePrefixOrNULL($key, "structures-")) {
 
     // handle key like structures-U05-affiliation-student:
@@ -607,7 +612,7 @@ function searchGroups($token, $maxRows, $restriction, $attrs) {
   $groups = array();
   if (preg_match($category_filter, 'groups')) {
     $filters = apply_restrictions_to_filters(groups_filters($token), $restriction['filters']);
-    $groups = getGroupsFromGroupsDn($filters, $maxRows);
+    $groups = getGroupsFromGroupsDn($filters, $restriction['ignoreEquivToStructureGroups'], $maxRows);
   }
   $structures = array();
   if (preg_match($category_filter, 'structures')) {
