@@ -1196,7 +1196,7 @@ const app = Vue.createApp({
         <span v-if="!affiliations.includes('member')">
             (non membre)
         </span>
-        <span v-if="primary === 'staff' && up1Sources.includes('{HARPEGE}heberge')">
+        <span v-if="primary === 'staff' && up1Sources?.includes('{HARPEGE}heberge')">
             <Important s=" hébergé"></Important>
         </span>
     </span>`,
