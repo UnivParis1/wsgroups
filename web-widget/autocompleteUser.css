@@ -1,45 +1,91 @@
+/* kraaden.github.io-autocomplete.css */
+.autocomplete {
+    background: white;
+    z-index: 1000;
+    font: 14px/22px "-apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: auto;
+    box-sizing: border-box;
+    border: 1px solid rgba(50, 50, 50, 0.6);
+}
+
+.autocomplete * {
+    font: inherit;
+}
+
+.autocomplete > div {
+    padding: 0 4px;
+}
+
+.autocomplete > div:hover:not(.group),
+.autocomplete > div.selected {
+    cursor: pointer;
+}
+
+
+
+
 .ui-autocomplete-input::-ms-clear {
   display: none;
 }
 
-.ui-autocomplete-loading {
-    background: white url('ui-anim_basic_16x16.gif') right center no-repeat !important;
+.ac-loading {
+    background-image: url('ui-anim_basic_16x16.gif');
+    background-size: 25px 25px;
+    background-position: right 10px center;
+    background-repeat: no-repeat;
 }
+  
 .ui-menu-item {
     display: block;
-    float: none !important;
+    border: 1px solid transparent;
 }
 .ui-menu-item a { 
+    display: block;
     padding: 4px 6px 4px 6px !important; 
     line-height: 1 !important;
     color: black !important;
+    text-decoration: none !important; /* force it */
+}
+.ui-menu-item a:hover {
+    text-decoration: none !important; /* force it */
 }
 .ui-menu-item.userItem a { 
     min-height: 1.7em;
 }
-.ui-menu-item a.ui-state-hover, .ui-menu-item a.ui-state-active {
-    padding: 3px 5px !important; 
-    margin: 0 !important;
+.ui-menu-item.selected {
+    border-style: solid;
+    border-color: black;
+    border-radius: 3px;
 }
 
-.ui-menu-item.odd {
+.autocomplete > div.odd {
     background: #EEEEEE;
 }
 
-.ui-menu .details {
+.autocomplete > div:hover:not(.group) {
+    background: #ddd;
+}
+
+.autocomplete {
+    min-width: 308px;
+    border-radius: 4px;
+}
+.autocomplete .details {
     font-size: 80%;
 }
-.ui-menu .match {
+.autocomplete .match {
     font-weight: bold;
 }
-.ui-menu .warning {
+.autocomplete .warning {
     color: #2E5693; 
     font-size: 80%;
     font-weight: bold;
     padding-top: 0.1em; 
     list-style: none;
+    line-height: 120%;
 }
-.ui-menu .kind { 
+.autocomplete .group { 
+    background: white;
     color: #2E5693; 
     font-variant: small-caps;
     font-weight: bold;
@@ -48,8 +94,9 @@
     padding-top: 0.1em; 
     border-top: dotted 1px;
     list-style: none;
+    line-height: 120%;
 }
-.ui-menu .kind:first-child {
+.autocomplete .group:first-child {
     margin-top: 0;
     border-top: none;
     padding-top: 0;
@@ -68,7 +115,7 @@
           background: url(listArrow.png) no-repeat right center !important
     }
     .ui-menu-item a.ui-state-hover, 
-    .ui-menu-item a.ui-state-active {
+    .ui-menu-item a.selected {
           padding: 1px 35px 1px 1px !important; 
     }
 }

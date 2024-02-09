@@ -1321,8 +1321,7 @@ const app = Vue.createApp({
             var input = $(".token-autocomplete input");
 
             // remove previous
-            input.autocomplete("destroy");
-            input.removeData('autocomplete');
+            input.autocompleteUser_remove();
 
             input.autocompleteUser(searchUserURL, { 
                 select: select, disableEnterKey: true, 

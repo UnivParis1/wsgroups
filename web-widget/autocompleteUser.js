@@ -1,24 +1,24 @@
 (function ($) {
   var attrs = "uid,mail,displayName,cn,employeeType,departmentNumber,eduPersonPrimaryAffiliation,supannEntiteAffectation-ou,supannRoleGenerique,supannEtablissement";
     var affiliation2order = { staff: 1, teacher: 2, researcher: 3, emeritus: 4, student: 5, affiliate: 6, alum: 7, member: 8, "registered-reader": 9, "library-walk-in": 10 };
-    var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs &eacute;m&eacute;rites", affiliate: "Invit&eacute;", alum: "Anciens &eacute;tudiants", retired: "Retrait&eacute;s", "registered-reader": "Lecteur externe", "library-walk-in": "Visiteur biblioth&egrave;que" };
+    var affiliation2text = { teacher: "Enseignants", student: "Etudiants", staff: "Biatss", researcher: "Chercheurs", emeritus: "Professeurs émérites", affiliate: "Invité", alum: "Anciens étudiants", retired: "Retraités", "registered-reader": "Lecteur externe", "library-walk-in": "Visiteur bibliothèque" };
 
-  var category2order = { location: 1, structures: 6, affiliation: 6, diploma: 2, elp: 3, gpelp: 4, gpetp: 5 };
+  var category2order = { structures: 5, affiliation: 5, diploma: 1, elp: 2, gpelp: 3, gpetp: 4 };
 
   var category2text = {
       structures: 'Directions / Composantes / Laboratoires',
       location: 'Sites',
       affiliation: 'Directions / Composantes / Laboratoires',
-      diploma: 'Dipl&ocirc;mes / &Eacute;tapes',
-      elp: 'Groupes Mati&egrave;res',
+      diploma: 'Diplômes / Étapes',
+      elp: 'Groupes Matières',
       gpelp: 'Groupes TD'
   };
   var subAndSuper_category2text = {
       structures: 'Groupes parents',
       affiliation: 'Groupes parents',
-      diploma: '&Eacute;tapes associ&eacute;es',
-      elp: 'Mati&egrave;res associ&eacute;es',
-      gpelp: 'Groupes TD associ&eacute;s'
+      diploma: 'Étapes associées',
+      elp: 'Matières associées',
+      gpelp: 'Groupes TD associés'
   };
 
   var symbol_navigate = "\u21B8";
@@ -90,8 +90,9 @@
       return displayName;
   };
 
-  var renderOneWarning = function(ul, msg) {
-      return $("<li></li>").addClass("warning").append(msg).appendTo(ul);
+  var renderOneWarning = function(container, topOrBottom, msg) {
+      let elt = $("<div></div>").addClass("warning").append(msg)
+      if (topOrBottom === 'top') elt.prependTo(container); else elt.appendTo(container)
   };
 
   var defaultWarningMsgs = {
@@ -99,43 +100,30 @@
     listeRouge_one:    "NB : un r&eacute;sultat a &eacute;t&eacute; cach&eacute;<br>&agrave; la demande de la personne.",
 }
 
-  var renderWarningItem = function(ul, item, warningMsgs) {
-      var li = $();
+  var mayAddWarning = function(container, topOrBottom, item, warningMsgs) {
       if (item.nbListeRouge)
-	  li = renderOneWarning(ul, 
+	    renderOneWarning(container, topOrBottom, 
 	      item.nbListeRouge > 1 ? warningMsgs.listeRouge_plural : warningMsgs.listeRouge_one
 	  );
 
       if (item.partialResults)
-	  li = renderOneWarning(ul, "Votre recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
+	    renderOneWarning(container, topOrBottom, "Votre recherche est limit&eacute;e &agrave; " + item.partialResults + " r&eacute;sultats.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
       if (item.partialResultsNoFullSearch)
-	  li = renderOneWarning(ul, "Votre recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
-
-      if (item.wsError)
-	  li = renderOneWarning(ul, "Erreur web service");
-
-      return li;
+	    renderOneWarning(container, topOrBottom, "Votre recherche est limit&eacute;e.<br>Pour les autres r&eacute;sultats, veuillez affiner la recherche.");
   };
-  var myRenderItemRaw = function(ul, item, moreClass, warningMsgs, renderItemContent) {
-	if (item.warning) 
-	    return renderWarningItem(ul, item, warningMsgs);
-
-	if (item.pre)
-	    $("<li class='kind ui-menu-divider'><span>" + item.pre + "</span></li>").appendTo(ul);
+  var myRenderItemRaw = function(item, moreClass, renderItemContent) {
+	if (item.wsError) 
+        return $("<div></div>").addClass("warning").append("Erreur web service")[0]
 
 	var content = renderItemContent(item);
-      return $("<li></li>").addClass(item.odd_even ? "odd" : "even").addClass(moreClass)
+      return $("<div></div>").addClass(item.odd_even ? "odd" : "even").addClass(moreClass).addClass("ui-menu-item")
 	    .data("item.autocomplete", item)
-	    .append("<a>" + content + "</a>")
-	    .appendTo(ul);
-
+	    .append("<a>" + content + "</a>")[0]
   };
-  var myRenderUserItem = function (warningMsgs) {
-    return function (ul, item) {
-      return myRenderItemRaw(ul, item, 'userItem', warningMsgs, function (item) {
+  var myRenderUserItem = function (item) {
+      return myRenderItemRaw(item, 'userItem', function (item) {
 	  return getNiceDisplayName(item) + getDetails(item);
       });
-    };
   };
 
   var countOccurences = function (list) {
@@ -190,10 +178,8 @@
 	var cnOccurences = countOccurences($.map(items, function (item) { return item.cn }));
 	var displayNameOccurences = countOccurences($.map(items, function (item) { return item.displayName }));
 	$.each(items, function ( i, item ) {
-	    if (i === 0) {
 		var affiliation = item.eduPersonPrimaryAffiliation;
-		item.pre = affiliation2text[affiliation] || "Divers" ;
-	    }
+		item.group = affiliation2text[affiliation] || "Divers" ;
 
 	    if (displayNameOccurences[item.displayName] > 1 || cnOccurences[item.cn] > 1)
 		item.duplicateDisplayName = true;
@@ -202,44 +188,18 @@
       });
       return r;
   };
-
-  function handleEnterKey(input, disableEnterKey) {
-      if (disableEnterKey)
-          input.keydown(function(event){
-	      var keyCode = $.ui.keyCode;
-      	      switch( event.keyCode ) {
-      	      case keyCode.ENTER:
-	      case keyCode.NUMPAD_ENTER:
-		      event.preventDefault();
-		      event.stopPropagation();
-	      }
-          });
-      else
-          input.keyup(function(event){
-              var keyCode = $.ui.keyCode;
-              switch( event.keyCode ) {
-              case keyCode.ENTER:
-              case keyCode.NUMPAD_ENTER:
-                  input.autocomplete('close');
-              }
-          });
+ 
+  function onSelect(input, settings) {
+    return function(item) {
+        if (settings.select) {
+            const fake_event = {}
+            settings.select.bind(input)(fake_event, { item })
+        } else {
+            input.value = item.value;
+        }
+    }
   }
 
-  function ui_autocomplete_data(input) {
-      return input.data("ui-autocomplete") || input.data("autocomplete"); // compatibility with jquery-ui <= 1.8.x
-  }
-
-  var myOpen = function () {
-      var menu = ui_autocomplete_data($(this)).menu.element;
-      var menu_bottom = menu.position().top + menu.outerHeight();
-      var window_bottom = $(window).scrollTop() + $(window).height();
-      if (window_bottom < menu_bottom) {
-	  var best_offset = $(window).scrollTop() + menu_bottom - window_bottom;
-	  var needed_offset = $(this).offset().top
-	  $('html,body').scrollTop(Math.min(needed_offset, best_offset));
-      }
-  };
-    
   $.fn.autocompleteUser = function (searchUserURL, options) {
       if (!searchUserURL) throw "missing param searchUserURL";
 
@@ -248,7 +208,6 @@
 	    'minLengthFullSearch' : 4,
 	    'maxRows' : 10,
 	    'wantedAttr' : 'uid',
-	    'disableEnterKey': false,
 	    'attrs' : attrs
 	  }, options);
 
@@ -259,7 +218,7 @@
 	  attrs: settings.attrs + "," + settings.wantedAttr
       }, settings.wsParams);
 
-      var input = this;
+      var input = this[0];
 
       var source = function( request, response ) {
 	  wsParams.token = request.term = request.term.trim();
@@ -271,7 +230,8 @@
 		error: function () {
 		    // we should display on error. but we do not have a nice error to display
 		    // the least we can do is to show the user the request is finished!
-		    response([ { warning: true, wsError: true } ]);
+		    input.kraaden_autocomplete_installed.warning = {}
+		    response([ { wsError: true } ]);
 		},
 		success: function (dataAll) {
                     if (options.modifyResults) {
@@ -284,8 +244,8 @@
 
 		    data = transformUserItems(data, settings.wantedAttr, request.term);
 
-		    warning = { warning: true }
-		    data.unshift(warning);
+		    let warning = {}
+		    input.kraaden_autocomplete_installed.warning = warning
 		    if (data.length >= settings.maxRows) {
 			warning.partialResults = settings.maxRows;;
 		    } else if (request.term.length < settings.minLengthFullSearch) {
@@ -298,29 +258,24 @@
 	    });
       };
 
-      var params = {
-	  minLength: settings.minLength,
-	  source: source,
-	  open: myOpen
-      };
+      // disable browser proposing previous values
+      input.autocomplete = "off"     
 
-      if (settings.select) {
-	  params.select = settings.select;
-	  params.focus = function () {
-	    // prevent update of <input>
-	    return false;
-	  };
-      }
-
-      handleEnterKey(input, settings.disableEnterKey);
-
-      input.autocomplete(params);
-
-      ui_autocomplete_data(input)._renderItem = myRenderUserItem(warningMsgs);
-
-      // below is useful when going back on the search values
-      input.click(function () {
-      	  input.autocomplete("search");
+      input.kraaden_autocomplete_installed = window.kraaden_autocomplete({ 
+        showOnFocus: true,
+        minLength: settings.minLength,
+        debounceWaitMs: 200,
+        preventSubmit: 2, // settings.disableEnterKey ? 1 : 0
+        input: input, 
+        fetch: function(text, update) {
+           source({ term: text }, update)
+        },
+        onSelect: onSelect(input, settings),
+        emptyMsg: 'aucun résultat', // NB: emptyMsg is needed for "customize" to be called
+        render: myRenderUserItem,
+        customize: function(input, _inputRect, container) {
+            mayAddWarning(container, 'top', input.kraaden_autocomplete_installed.warning, warningMsgs);
+        },
       });
 
       return { wsParams: wsParams };
@@ -329,12 +284,8 @@
 
   var transformGroupItems = function (items, wantedAttr, searchedToken) {
       transformItems(items, wantedAttr, 'name', searchedToken);
-      var category;
       $.each(items, function ( i, item ) {
-	    if (category != item.category) {
-		category = item.category;
-		item.pre = category2text[category || ""] || 'Autres types de groupes';
-	    }
+      item.group = category2text[item.category || ""] || 'Autres types de groupes';
 	});
   };
 
@@ -349,9 +300,7 @@
       items.sort(function (a, b) { return a.name.localeCompare(b.name) });
       transformItems(items, 'key', 'name', searchedToken);
       $.each(items, function ( i, item ) {
-        if (i === 0) {
-            item.pre = 'Fonctions';
-        }
+        item.group = 'Fonctions';
       });
       return items;
   }
@@ -398,29 +347,24 @@
 	    item.label = item.name;
 	    item.value = item[wantedAttr];
 
-	    var categoryText_ = item.selected ? 'Selectionn&eacute;' : subAndSuper_category2text[item.category || ""] || 'Autres types de groupes';
+      var categoryText_ = item.selected ? 'Selectionné' : subAndSuper_category2text[item.category || ""] || 'Autres types de groupes';
 	    if (categoryText != categoryText_) {
-		item.pre = categoryText = categoryText_;
+      item.group = categoryText = categoryText_;
 	    }
 	    item.odd_even = odd_even = !odd_even;
 	});
   };
 
-    var onNavigate = function (input, settings) {
-	var response = function (items) {
-	    ui_autocomplete_data(input)._suggest(items);
-	};
+  var onNavigate = function (input) {
 	return function (item) {
-	    var allItems = [];
-	    var cookAndAddReponses = function (items) {
-		allItems = $.merge(allItems, items);
-		transformSubAndSuperGroups(items, settings.wantedAttr);
-		response(allItems);
-	    };
-
+        input.kraaden_autocomplete_installed.navigate = item
+        input.kraaden_autocomplete_installed.warning = {};
+        input.kraaden_autocomplete_installed.fetch()
+    }
+  }
+  function fetch_subAndSuperGroups(item, settings, response) {
 	    var current = $.extend({}, item);
 	    current.selected = true;
-	    cookAndAddReponses([current]);
 
 	    var wsParams = $.extend({ 
 		key: item.key,
@@ -435,35 +379,30 @@
 		error: function () {
 		    // we should display on error. but we do not have a nice error to display
 		    // the least we can do is to show the user the request is finished!
-		    response([ { warning: true, wsError: true } ]);
+          input.kraaden_autocomplete_installed.warning = {}
+          response([ { wsError: true } ]);
 		},
 		success: function (data) {
 		    var subGroups = sortByGroupCategory(data.subGroups);
 		    simplifySubGroups(subGroups);
 		    var superGroups = flattenSuperGroups(data.superGroups, item.key);
 		    var items = $.merge(subGroups, superGroups);
-		    cookAndAddReponses(items);
+          transformSubAndSuperGroups(items, settings.wantedAttr);
+          response($.merge([current], items));
 		}
 	    });
-      };
-    };
+  }
 
-  var myRenderGroupItem = function (warningMsgs, navigate) {
-     return function (ul, item) {
-	if (item.warning) 
-	     return renderWarningItem(ul, item, warningMsgs);
-
-	if (item.pre)
-	    $("<li class='kind'><span>" + item.pre + "</span></li>").appendTo(ul);
+var myRenderGroupItem = function (navigate) {
+   return function (item) {
 
 	var content = item.name;
-        var li = $("<li></li>").addClass(item.odd_even ? "odd" : "even").addClass('groupItem')
+      var li = $("<div></div>").addClass(item.odd_even ? "odd" : "even").addClass('groupItem').addClass("ui-menu-item")
 	     .data("item.autocomplete", item);
 
 	var button_navigate;
 	if (navigate && !item.selected) {
 	  button_navigate = $("<a style='display: inline' href='#'>" + symbol_navigate + "</a>").click(function (event) {
-	    var item = $(this).closest("li").data("item.autocomplete");
 	    navigate(item);
 	    return false;
 	  });
@@ -471,7 +410,7 @@
 	}
         li.append($("<a style='display: inline' >")
 		   .append(content + " &nbsp;"));
-	li.appendTo(ul);
+      return li[0]
      };
   };
 
@@ -489,7 +428,6 @@
 	  { 'minLength' : 3,
 	    'maxRows' : 20,
 	    'wantedAttr' : 'key',
-	    'disableEnterKey': false
 	  }, options);
 
       var warningMsgs = $.extend(defaultWarningMsgs, settings.warningMsgs);    
@@ -498,9 +436,14 @@
 	  maxRows: settings.maxRows
       }, settings.wsParams);
 
-      var input = this;
+    var input = this[0];
 
       var source = function( request, response ) {
+      if (input.kraaden_autocomplete_installed.navigate) {
+        var pivot_item = input.kraaden_autocomplete_installed.navigate
+        delete input.kraaden_autocomplete_installed.navigate;
+        return fetch_subAndSuperGroups(pivot_item, settings, response)
+      }
 	  wsParams.token = request.term = request.term.trim();
 	    $.ajax({
 		url: searchGroupURL,
@@ -510,14 +453,15 @@
 		error: function () {
 		    // we should display on error. but we do not have a nice error to display
 		    // the least we can do is to show the user the request is finished!
-		    response([ { warning: true, wsError: true } ]);
+          input.kraaden_autocomplete_installed.warning = {}
+          response([ { wsError: true } ]);
 		},
 		success: function (data) {
 		    data = sortByGroupCategory(data);
 		    transformGroupItems(data, settings.wantedAttr, request.term);
 
-		    warning = { warning: true }
-		    data.push(warning);
+          let warning = {}
+          input.kraaden_autocomplete_installed.warning = warning
 		    if (data.length >= settings.maxRows) {
 			warning.partialResults = settings.maxRows;;
 		    }
@@ -526,40 +470,34 @@
 	    });
       };
 
-      var params = {
-	  minLength: settings.minLength,
-	  source: source,
-	  open: myOpen
-      };
+    var navigate = settings.subAndSuperGroupsURL && onNavigate(input);
 
-      if (settings.select) {
-	  params.select = settings.select;
-	  params.focus = function () {
-	    // prevent update of <input>
-	    return false;
-	  };
-      }
+    // disable browser proposing previous values
+    input.autocomplete = "off"     
 
-      handleEnterKey(input, settings.disableEnterKey);
-
-      input.autocomplete(params);
-
-      var navigate = settings.subAndSuperGroupsURL && onNavigate(input, settings);
-      ui_autocomplete_data(input)._renderItem = myRenderGroupItem(warningMsgs, navigate);
-
-      // below is useful when going back on the search values
-      input.click(function () {
-      	  input.autocomplete("search");
+    input.kraaden_autocomplete_installed = window.kraaden_autocomplete({ 
+        showOnFocus: true,
+        minLength: settings.minLength,
+        debounceWaitMs: 200,
+        preventSubmit: 2, // settings.disableEnterKey ? 1 : 0
+        input: input, 
+        fetch: function(text, update) {
+           source({ term: text }, update)
+        },
+        onSelect: onSelect(input, settings),
+        emptyMsg: 'aucun résultat', // NB: emptyMsg is needed for "customize" to be called
+        render: myRenderGroupItem(navigate),
+        customize: function(input, _inputRect, container) {
+            mayAddWarning(container, 'top', input.kraaden_autocomplete_installed.warning, warningMsgs);
+        },
       });
   };
 
-  function myRenderUserOrGroupItem(warningMsgs) {
-      return function (ul, item) {
+  function myRenderUserOrGroupItem(item) {
       if (item && item.category === 'users')
-          myRenderUserItem(warningMsgs)(ul, item);
+          return myRenderUserItem(item);
       else
-          myRenderGroupItem(warningMsgs)(ul, item);
-      }
+          return myRenderGroupItem(undefined)(item);
   }
 
   $.fn.autocompleteUserAndGroup = function (searchUserAndGroupURL, options) {
@@ -571,20 +509,20 @@
 	    'user_attrs' : attrs,
 	    'maxRows' : 10,
             'group_minLength' : 2,
-	    'disableEnterKey': false,
+        'warningPosition': 'bottom',
 	  }, options);
 
       var warningMsgs = $.extend(defaultWarningMsgs, settings.warningMsgs);     
       
-      var wsParams = $.extend({ 
-	  maxRows: settings.maxRows,
-	  user_attrs: settings.user_attrs
-      }, settings.wsParams);
 
-      var input = this;
+      var input = this[0];
 
       var source = function( request, response ) {
-	  wsParams.token = request.term = request.term.trim();
+        var wsParams = $.extend({ 
+            maxRows: settings.maxRows,
+            user_attrs: settings.user_attrs
+        }, options.wsParams);
+        wsParams.token = request.term = request.term.trim();
 	    $.ajax({
 		url: searchUserAndGroupURL,
 		dataType: "jsonp",
@@ -593,7 +531,8 @@
 		error: function () {
 		    // we should display on error. but we do not have a nice error to display
 		    // the least we can do is to show the user the request is finished!
-		    response([ { warning: true, wsError: true } ]);
+          input.kraaden_autocomplete_installed.warning = {}
+          response([ { wsError: true } ]);
 		},
 		success: function (data) {
                     if (settings.onSearchSuccess) data = settings.onSearchSuccess(data);
@@ -604,14 +543,13 @@
 
                     $.each(users, function (i, item) { item.category = 'users'; });                    
 		    users = transformUserItems(users, 'uid', request.term);
-		    data.groups = sortByGroupCategory(data.groups)
 		    transformGroupItems(data.groups, 'key', request.term);
 
             var roles = transformRoleGeneriqueItems(data.supannRoleGenerique || [], data.supannActivite || [], 'key', request.term);
             
-		    warning = { warning: true }
+            let warning = {}
+            input.kraaden_autocomplete_installed.warning = warning
                     var l = users.concat(roles, data.groups);
-		    l.push(warning);
 		    if (users.length >= settings.maxRows || data.groups.length >= settings.maxRows) {
 			warning.partialResults = settings.maxRows;;
 		    } else if (request.term.length < settings.user_minLengthFullSearch) {
@@ -619,62 +557,43 @@
 		    }
 		    warning.nbListeRouge = nbListeRouge;
                    
-		    response(l);
+            response(l);
 		}
 	    });
       };
 
-      var params = {
-	  minLength: settings.minLength,
-	  source: source,
-	  open: myOpen
-      };
+      // disable browser proposing previous values
+      input.autocomplete = "off"     
 
-      if (settings.select) {
-	  params.select = settings.select;
-	  params.focus = function () {
-	    // prevent update of <input>
-	    return false;
-	  };
-      }
-
-      handleEnterKey(input, settings.disableEnterKey);
-
-      input.autocomplete(params);
-
-      ui_autocomplete_data(input)._renderItem = myRenderUserOrGroupItem(warningMsgs);
-
-      // below is useful when going back on the search values
-      input.click(function () {
-      	  input.autocomplete("search");
+      input.kraaden_autocomplete_installed = window.kraaden_autocomplete({ 
+        showOnFocus: true,
+        minLength: settings.minLength,
+        disableAutoSelect: settings.disableAutoSelect,
+        debounceWaitMs: 200,
+        preventSubmit: 2, // settings.disableEnterKey ? 1 : 0
+        input: input, 
+        fetch: function(text, update) {
+           source({ term: text }, update)
+        },
+        onSelect: onSelect(input, settings),
+        emptyMsg: 'aucun résultat', // NB: emptyMsg is needed for "customize" to be called
+        render: myRenderUserOrGroupItem,
+        customize: function(input, _inputRect, container) {
+            mayAddWarning(container, settings.warningPosition, input.kraaden_autocomplete_installed.warning, warningMsgs);
+        },
       });
   };
     
+  $.fn.autocompleteUser_remove = function () {
+    var input = this[0];
+    if (input.kraaden_autocomplete_installed)  {
+        input.kraaden_autocomplete_installed.destroy()
+        delete input.kraaden_autocomplete_installed
+    }
+  }
 
   $.fn.handlePlaceholderOnIE = function () {
-
-      var handlePlaceholder = 'placeholder' in document.createElement('input');
-      if (handlePlaceholder) return; // cool, the browser handle it, nothing to do
-
-      this.each(function(){
-	  var o = $(this);
-	  if (o.attr("placeholder") =="") return;
-
-          var prevColor;
-          var displayPlaceholder = function(){
-	      if(o.val()!="") return;
-              o.val(o.attr("placeholder"));
-              prevColor = o.css("color");
-              o.css("color", "#808080");
-	  };
-	  o.focus(function(){
-              o.css("color", prevColor);
-	      if(o.val()==o.attr("placeholder")) o.val("");
-	  });
-	  o.blur(displayPlaceholder);
-          displayPlaceholder();
-      });
-
+    // doing nothing (IE is dead!)
   };
 
 })(jQuery);

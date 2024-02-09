@@ -17,8 +17,8 @@ function loadCSS_urls($urls) {
 $loadCSS
 })();";
 }
-loadCSS_urls([ "$base/jquery-ui.css", "$base/ui.theme.css", "$base/autocompleteUser.css" ]);
+loadCSS_urls([ "$base/autocompleteUser.css" ]);
 
 include "jquery-1.7.2.min.js";
-include "jquery-ui-1.8.21.custom.min.js";
+include "kraaden.github.io-autocomplete.js";
 include "autocompleteUser.js";
