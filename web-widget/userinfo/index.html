@@ -15,18 +15,29 @@
 <div id="annuaire">
     <form method='get' action='/foo' class='welcomeAutocompleteSearch'>
 	    <div class='ui-widget'>
-		    <label for='all'>Saisissez le nom et/ou prénom d'un étudiant ou d'un personnel</label>
+		    <label for='all'>
+                <template v-if="autocompleteKind === 'searchGroups'">Saisissez le nom d'un groupe (ou mots de la description)</template>
+                <template v-else>Saisissez le nom et/ou prénom d'un étudiant ou d'un personnel</template>
+            </label>
 		    <span class='token-autocomplete'>
-                <input name='all' :autofocus="'autofocus'" placeholder='Nom prénom'>
+                <input name='all' :autofocus="'autofocus'" :placeholder="autocompleteKind === 'searchGroups' ? 'Nom' : 'Nom prénom'">
             </span>
             <select v-model="showExtendedInfo" v-if="allowExtendedInfo >= 1">
                 <option value='2' v-if="allowExtendedInfo >= 2">Niveau 2</option>"
                 <option value='1' v-if="allowExtendedInfo >= 1">Niveau 1</option>
                 <option value='0' v-if="allowExtendedInfo >= 1">Niveau 0</option>
             </select>
-		    <label class='checkbox'>
-			    <input type='checkbox' v-model='allowInvalidAccounts'>
+		    <label class='radio'>
+			    <input type='radio' v-model='autocompleteKind' value="">
+                Défaut
+            </label>
+		    <label class='radio'>
+			    <input type='radio' v-model='autocompleteKind' value="allowInvalidAccounts">
                 Chercher des comptes non actifs
+            </label>
+		    <label class='radio'>
+			    <input type='radio' v-model='autocompleteKind' value="searchGroups">
+                Chercher des groupes
             </label>
         </div>
     </form>    

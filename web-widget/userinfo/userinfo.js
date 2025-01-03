@@ -1311,7 +1311,7 @@ const app = Vue.createApp({
   },
  },
     data: function () { return {
-        allowInvalidAccounts: false,
+        autocompleteKind: '',
         currentUser: undefined,
         allowExtendedInfo: undefined,
         showExtendedInfo: 1,
@@ -1339,7 +1339,7 @@ const app = Vue.createApp({
         baseURL: () => baseURL,
     },
     watch: {
-        'allowInvalidAccounts': function () {
+        'autocompleteKind': function () {
             this.install_autocompleteUser();
             this.asyncInfo();
         },
@@ -1412,7 +1412,7 @@ const app = Vue.createApp({
             });
         },
         install_autocompleteUser: function () {
-            console.log("install_autocompleteUser", this.allowInvalidAccounts);
+            console.log("install_autocompleteUser", this.autocompleteKind);
             var that = this;
             var select = function (event, ui) {
                 $(this).blur(); // important to close virtual keyboard on mobile phones
@@ -1428,12 +1428,18 @@ const app = Vue.createApp({
             // remove previous
             input.autocompleteUser_remove();
 
-            input.autocompleteUser(searchUserURL, { 
-                select: select, disableEnterKey: true, 
-                wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
-                wsParams: { showExtendedInfo: true, showErrors: this.allowInvalidAccounts, allowNoAffiliationAccounts: true, allowInvalidAccounts: this.allowInvalidAccounts && 'all' || undefined },
-            });
-            input.attr('placeholder', 'Nom prénom'); // why?
+            if (this.autocompleteKind === 'searchGroups') {
+                input.autocompleteGroup(baseURL + '/searchGroup', {
+                    select: select, disableEnterKey: true, 
+                    wsParams: { filter_category: 'groups' },
+                })
+            } else {
+                input.autocompleteUser(searchUserURL, { 
+                    select: select, disableEnterKey: true, 
+                    wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
+                    wsParams: { showExtendedInfo: true, showErrors: this.autocompleteKind === 'allowInvalidAccounts', allowNoAffiliationAccounts: true, allowInvalidAccounts: this.autocompleteKind === 'allowInvalidAccounts' && 'all' || undefined },
+                });
+            }
             input.handlePlaceholderOnIE();
         },
         install_clickedTitle: function () {
