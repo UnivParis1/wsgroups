@@ -459,7 +459,7 @@ function userHandle_PersonnelEnActivitePonctuelle(&$user) {
             }
         }
         $allow_remove_all_affectations = count(array_intersect($user['eduPersonAffiliation'], ['teacher', 'researcher'])) === 0;
-        if (count($user['supannEntiteAffectation']) > ($allow_remove_all_affectations ? 0 : 1)) {
+        if (safe_count($user['supannEntiteAffectation']) > ($allow_remove_all_affectations ? 0 : 1)) {
             array_shift($user['supannEntiteAffectation']);
             $user['supannEntiteAffectationPrincipale'] = $user['supannEntiteAffectation'][0];
         }
