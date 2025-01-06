@@ -826,9 +826,9 @@ function userHandleSpecialAttributeValues_pre(&$user, $allowExtendedInfo) {
                 // pour les multi-profils, on conserve les valeurs venant du profil teacher/emeritus/researcher
                 // comme on ne peut pas le savoir facilement, on conserve les valeurs importantes listées dans lib/employeeTypes.inc.php
                 require_once 'lib/employeeTypes.inc.php';
-                $user['employeeType'] = array_filter($user['employeeType'], function ($name) { 
+                $user['employeeType'] = array_values(array_filter($user['employeeType'], function ($name) { 
                     return isset($GLOBALS['employeeTypes'][$name]);
-                });
+                }));
             }
         }    
     }
