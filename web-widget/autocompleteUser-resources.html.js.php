@@ -17,6 +17,7 @@ function loadCSS_urls($urls) {
 $loadCSS
 })();";
 }
+header('Content-type: application/javascript; charset=UTF-8');   
 loadCSS_urls([ "$base/autocompleteUser.css" ]);
 
 include "jquery-1.7.2.min.js";
