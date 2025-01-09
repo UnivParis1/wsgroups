@@ -89,8 +89,12 @@ function find_prefix($array, $prefix) {
 }
 
 function get_barcodes($uid) {
-    global $PEOPLE_DN;
-    $attrs = getFirstLdapInfo($PEOPLE_DN, "(uid=$uid)", [ 'up1Profile' => 'MULTI' ]);
+    global $PEOPLE_DN, $LDAP_CONNECT;
+
+    // to access supannRefId
+    $LDAP_CONNECT = $GLOBALS['LDAP_CONNECT_LEVEL2'];
+    
+    $attrs = getFirstLdapInfo($PEOPLE_DN, "(uid=$uid)", [ 'up1Profile' => 'MULTI', 'supannRefId' => 'MULTI' ]);
 
     $barcodes = [];
     foreach ($attrs["up1Profile"] ?? [] as $profile_s) {
@@ -105,9 +109,15 @@ function get_barcodes($uid) {
     }
     if (count($barcodes) === 0) {
         header('HTTP/1.0 403 Forbidden');
-        echo "Vous n'avez pas de profil compte lecteur BIS.";
-        echo "<p></p>";
-        echo "Si vous avez un compte lecteur BIS, vous devez migrer votre compte en cliquant <a href='https://comptex.univ-paris1.fr/bis/migration'>ICI</a>.";
+        if (find_prefix($attrs['supannRefId'] ?? [], '{UAI:0752705H:SIGB}')) {
+            echo "Votre compte lecteur BIS est expiré.";
+            echo "<p></p>";
+            echo "Veuillez contacter les bureaux d’inscription de la BIS pour prolonger votre compte.";
+        } else {
+            echo "Votre compte Paris 1 Panthéon-Sorbonne n'est pas relié à un compte lecteur BIS.";
+            echo "<p></p>";
+            echo "Si vous avez un compte lecteur BIS, vous devez migrer votre compte en cliquant <a href='https://comptex.univ-paris1.fr/bis/migration'>ICI</a>.";
+        }
         exit(1);
     }
     return $barcodes;
