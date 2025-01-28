@@ -285,8 +285,8 @@
   };
 
 
-  var transformGroupItems = function (items, wantedAttr, searchedToken) {
-      transformItems(items, wantedAttr, 'name', searchedToken);
+  var transformGroupItems = function (items, wantedAttr, displayAttr, searchedToken) {
+      transformItems(items, wantedAttr, displayAttr, searchedToken);
       $.each(items, function ( i, item ) {
       item.group = category2text[item.category || ""] || 'Autres types de groupes';
 	});
@@ -394,7 +394,7 @@
 var myRenderGroupItem = function (navigate) {
    return function (item) {
 
-	var content = item.name;
+	var content = item.label;
       var li = $("<div></div>").addClass(item.odd_even ? "odd" : "even").addClass('groupItem').addClass("ui-menu-item")
 	     .data("item.autocomplete", item);
 
@@ -426,6 +426,7 @@ var myRenderGroupItem = function (navigate) {
 	  { 'minLength' : 3,
 	    'maxRows' : 20,
 	    'wantedAttr' : 'key',
+	    'displayAttr': 'name',
 	  }, options);
 
       var warningMsgs = $.extend(defaultWarningMsgs, settings.warningMsgs);    
@@ -455,7 +456,7 @@ var myRenderGroupItem = function (navigate) {
           response([ { wsError: true } ]);
 		},
 		success: function (data) {
-		    data = transformGroupItems(data, settings.wantedAttr, request.term);
+		    data = transformGroupItems(data, settings.wantedAttr, settings.displayAttr, request.term);
 
           let warning = {}
           input.kraaden_autocomplete_installed.warning = warning
@@ -540,7 +541,7 @@ var myRenderGroupItem = function (navigate) {
 
                     $.each(users, function (i, item) { item.category = 'users'; });                    
 		    users = transformUserItems(users, 'uid', request.term);
-		    var groups = transformGroupItems(data.groups, 'key', request.term);
+		    var groups = transformGroupItems(data.groups, 'key', 'name', request.term);
 
             var roles = 
                 transformRoleGeneriqueItems(data.supannRoleGenerique || [], 'supannRoleGenerique', 'Fonctions', request.term).concat(
