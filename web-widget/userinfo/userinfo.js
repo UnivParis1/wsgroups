@@ -728,8 +728,8 @@ function formatLastLoginsOTP(info, list, div) {
         const info = [ e.method || e.reason || e.service ]
         if (e.validated_otp_too_old) info.push('validated_otp_too_old')
         const category = { 'valid OTP': 'success', 'no OTP': 'notice' }[e.msg] || ''
-	    var t = `${formatDateTime_(e.date)} : <span class='${category}'>${e.msg}</span> <small>(<span class='small-ellipsis'>${info.join(', ')}</span>)</small>`
-	    details.append(t + '<br>');
+	    var t = `${formatDateTime_(e.date)} : <span class='${category}'>${e.msg}</span> <small>(${e.ip} | <span class='small-ellipsis'>${info.join(', ')}</span>)</small>`
+        details.append(t + '<br>');
 	}
 	div.append($("<span class='clickable'>").append(" <small>details</small>").click(function () { details.toggleClass("hidden") }));
 	div.append(details);
