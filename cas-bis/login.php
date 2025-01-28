@@ -10,11 +10,15 @@ if (isset($_GET["id"])) {
 
     session_start();
     $ticket = session_id();
+    if (!isset($_SESSION['ids'])) {
+	    echo "<html>Page expirée. Tentative de revenir à une page précédente...<script> history.back(); </script></html>";
+	    exit;
+    }
     $ids = $_SESSION['ids'];
     $service = $_SESSION['service'];
 
     // validating $id:
-    if (!in_array($id, $ids)) exit("invalid id");
+    if (!in_array($id, $ids ?? [])) exit("invalid id");
     // NB: service is already validated
 
     $_SESSION['id'] = $id;
