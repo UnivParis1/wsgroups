@@ -1388,7 +1388,7 @@ const app = Vue.createApp({
              } : {
                 id: user.value,
                 showErrors: this.showExtendedInfo,
-                allowInvalidAccounts: 'all',
+                allowInvalidAccounts: this.showExtendedInfo,
                 allowRoles: true,
                 showExtendedInfo: this.showExtendedInfo
             };
