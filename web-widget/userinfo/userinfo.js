@@ -1313,7 +1313,6 @@ const app = Vue.createApp({
     data: function () { return {
         autocompleteKind: '',
         currentUser: undefined,
-        allowExtendedInfo: undefined,
         showExtendedInfo: 1,
         result: { msg: undefined, info: {} },
         selectedProfile: undefined,
@@ -1407,7 +1406,8 @@ const app = Vue.createApp({
                 } else if (data.length > 1) {
                     that.text("internal error (multiple user found)");
                 } else {
-                    that.allowExtendedInfo = data[0].allowExtendedInfo = data[0].globalInfo?.allowExtendedInfo;
+                    // pour éviter d'avoir à passer allowExtendedInfo aux fonctions travaillant sur "info" :
+                    data[0].allowExtendedInfo = data[0].globalInfo?.allowExtendedInfo;
                     that.text('', data[0]);
                 }
             });
@@ -1479,9 +1479,11 @@ $.ajax({
         if (!data.USER) {
             console.log("wsgroups autologin failed, forcing a redirect to", data.LOGIN_URL)
             document.location = data.LOGIN_URL + '?service=' + encodeURIComponent(document.location.href)
+        } else {
+            app.config.globalProperties.allowExtendedInfo = data.loggedUserAllowedLevel
+            app.mount('#annuaire');
         }
     },
 });
 
-app.mount('#annuaire');
 

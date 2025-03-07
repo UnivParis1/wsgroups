@@ -6,7 +6,8 @@ $r = [];
 if (GET_bool("CAS")) {
     initPhpCAS();
     if (phpCAS::checkAuthentication()) {
-        $r['USER'] = phpCAS::getUser();
+        $r['USER'] = $_SERVER["HTTP_CAS_USER"] = phpCAS::getUser();
+        $r['loggedUserAllowedLevel'] = loggedUserAllowedLevel();
     }    
     $r['LOGIN_URL'] = "https://$CAS_HOST$CAS_CONTEXT/login";
 }
