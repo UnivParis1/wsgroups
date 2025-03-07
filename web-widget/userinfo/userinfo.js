@@ -1373,6 +1373,7 @@ const app = Vue.createApp({
         },
         asyncInfo: function () {
             var user = this.currentUser;
+            if (!user) return;
             console.log('asyncInfo', user.label);
             this.text("Vous avez selectionné " + user.label + ". Veuillez patienter...");
             // to be able to bookmark users
