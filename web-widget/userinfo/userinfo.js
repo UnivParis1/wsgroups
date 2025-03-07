@@ -1348,6 +1348,7 @@ const app = Vue.createApp({
         },
         'showExtendedInfo': function () {
             console.log('showExtendedInfo is now ', this.showExtendedInfo);
+            this.install_autocompleteUser();
             this.asyncInfo();
         },
         'user_info': function () {
@@ -1413,7 +1414,7 @@ const app = Vue.createApp({
             });
         },
         install_autocompleteUser: function () {
-            console.log("install_autocompleteUser", this.autocompleteKind);
+            console.log("install_autocompleteUser", this.autocompleteKind, this.showExtendedInfo);
             var that = this;
             var select = function (event, ui) {
                 $(this).blur(); // important to close virtual keyboard on mobile phones
@@ -1438,7 +1439,7 @@ const app = Vue.createApp({
                 input.autocompleteUser(searchUserURL, { 
                     select: select, disableEnterKey: true, 
                     wantedAttr: 'mail', // mail is best attr to do a further searchUser to get all attrs
-                    wsParams: { showExtendedInfo: true, showErrors: this.autocompleteKind === 'allowInvalidAccounts', allowNoAffiliationAccounts: true, allowInvalidAccounts: this.autocompleteKind === 'allowInvalidAccounts' && 'all' || undefined },
+                    wsParams: { showErrors: this.autocompleteKind === 'allowInvalidAccounts', allowNoAffiliationAccounts: true, allowInvalidAccounts: this.autocompleteKind === 'allowInvalidAccounts' && this.showExtendedInfo || undefined },
                 });
             }
             input.handlePlaceholderOnIE();
