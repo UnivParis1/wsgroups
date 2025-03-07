@@ -169,9 +169,9 @@ The first part of a group key is the *category*.
 * `format=vcard` (by default users are exported in JSON/JSONP, forces a different format)
 
 params allowed if casified user member of `$LEVEL1_FILTER` & `$LEVEL2_FILTER`:
-* `showExtendedInfo=true`
+* `showExtendedInfo=true|1|2`
 * `showErrors=true`
-* `allowInvalidAccounts=true|all`
+* `allowInvalidAccounts=true|all|1|2`
 
 ### known usages:
 
