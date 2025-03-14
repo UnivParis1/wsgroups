@@ -585,7 +585,7 @@ function parse_up1Profile_one_raw($up1Profile) {
         if (!$attr_kinds) {
             // ignore
         } else if ($attr_kinds['MULTI']) {
-            $r[$key] = array_map('unescape_sharpFF', explode(';', $val));
+            $r[$key] = array_merge($r[$key] ?? [], array_map('unescape_sharpFF', explode(';', $val)));
         } else {
             $r[$key] = unescape_sharpFF($val);
         }
